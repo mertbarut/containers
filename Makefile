@@ -6,7 +6,7 @@
 #    By: mbarut <mbarut@student.42wolfsburg.de>     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/11/21 15:55:20 by mbarut            #+#    #+#              #
-#    Updated: 2021/12/23 14:30:34 by mbarut           ###   ########.fr        #
+#    Updated: 2021/12/23 15:22:17 by mbarut           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -14,7 +14,7 @@ NAME=ft_containers
 
 DRIVER=driver/main.cpp
 
-#SRC=
+SRC=src/test.cpp
 
 CC=clang++
 
@@ -23,7 +23,7 @@ CFLAGS= -Wall -Werror -Wextra -std=c++98 -o
 all: $(NAME)
 
 $(NAME):
-	$(CC) $(DRIVER) $(CFLAGS) $(NAME)
+	$(CC) $(SRC) $(CFLAGS) $(NAME)
 
 clean:
 	@rm -f ./*.o
