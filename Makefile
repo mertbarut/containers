@@ -6,7 +6,7 @@
 #    By: mbarut <mbarut@student.42wolfsburg.de>     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/11/21 15:55:20 by mbarut            #+#    #+#              #
-#    Updated: 2021/12/25 22:56:49 by mbarut           ###   ########.fr        #
+#    Updated: 2021/12/26 16:38:20 by mbarut           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -33,8 +33,5 @@ fclean: clean
 	@rm -f $(NAME)
 
 re: fclean all
-
-enable_if:
-	$(CC) $(ENABLE_IF) $(CFLAGS) $(NAME)
 
 .PHONY: all clean fclean re
