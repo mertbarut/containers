@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   vector.hpp                                         :+:      :+:    :+:   */
+/*   Vector.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mbarut <mbarut@student.42wolfsburg.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/23 14:44:38 by mbarut            #+#    #+#             */
-/*   Updated: 2021/12/23 19:37:22 by mbarut           ###   ########.fr       */
+/*   Updated: 2021/12/25 18:32:53 by mbarut           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 
 # include <memory>
 # include <iterator>
+# include <iostream>
 
 namespace ft
 {
@@ -24,19 +25,17 @@ namespace ft
 	
 	public:
 
-		/* Type definitions to make life easier */
-
-		typedef T										value_type;
-		typedef T&										reference;
-		typedef const T&								const_reference;
-		typedef T*										pointer;
-		typedef const T*								const_pointer;
-		typedef Allocator								allocator_type;
-		typedef	size_t									size_type;
+		typedef T							value_type;
+		typedef T&							reference;
+		typedef const T&					const_reference;
+		typedef T*							pointer;
+		typedef const T*					const_pointer;
+		typedef Allocator					allocator_type;
+		typedef	size_t						size_type;
 
 	private:
 	
-		T									*_data;
+		value_type							*_data;
 		size_t								_capacity;
 		size_t								_size;
 		allocator_type						_allocator;
@@ -71,7 +70,6 @@ namespace ft
 		}
 		
 		/* Assignment operator overload */
-
 		Vector& operator= ( const Vector &obj )
 		{
 			this->_data = this->_allocator.allocate(this->_capacity);
@@ -81,8 +79,7 @@ namespace ft
 		}
 		
 	};
-	
-	
+
 }	// namespace ft
 
 #endif
