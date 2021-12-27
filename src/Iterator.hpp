@@ -6,7 +6,7 @@
 /*   By: mbarut <mbarut@student.42wolfsburg.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/23 23:13:25 by mbarut            #+#    #+#             */
-/*   Updated: 2021/12/25 16:09:52 by mbarut           ###   ########.fr       */
+/*   Updated: 2021/12/27 18:40:09 by mbarut           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -268,7 +268,7 @@ namespace ft
 
 		/* Constructors */
 		/* (1) default constructor */
-		/* Constructs a reverse iterator that points to no object. */
+		/* Constructs a reverse iterator that points to NULL. */
 		reverse_iterator(void)
 		: _base(NULL)
 		{
@@ -332,7 +332,7 @@ namespace ft
 
 		pointer operator& ()
 		{
-			return &this->getPointer();
+			return &this->getBase();
 		}
 
 		/* Increment/decrement operators */

@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   test.cpp                                           :+:      :+:    :+:   */
+/*   main.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mbarut <mbarut@student.42wolfsburg.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/23 15:19:31 by mbarut            #+#    #+#             */
-/*   Updated: 2021/12/26 16:37:39 by mbarut           ###   ########.fr       */
+/*   Updated: 2021/12/27 18:29:41 by mbarut           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,21 +109,16 @@
 //	return 0;
 //}
 
-/* template specialization */
-
-void foo(unsigned int i)
-{
-	std::cout << "unsigned " << i << std::endl;
-}
-
-template <typename T>
-void foo(const T& t)
-{
-	std::cout << "template " << t << std::endl;
-}
+#include <iostream>
 
 int main()
 {
-	foo(42);
+	char one[] = "bpple";
+    char two[] = "cpple";
+	
+	if (ft::lexicographical_compare(one, one + 5, two, two + 5))
+		std::cout << "*one is lexicographically less than *two\n"; 
+	else
+		std::cout << "*one is not lexicographically less than *two\n";
 	std::cout << ft::is_same<int, int>::value << std::endl;
 }

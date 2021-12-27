@@ -6,16 +6,15 @@
 #    By: mbarut <mbarut@student.42wolfsburg.de>     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/11/21 15:55:20 by mbarut            #+#    #+#              #
-#    Updated: 2021/12/26 16:38:20 by mbarut           ###   ########.fr        #
+#    Updated: 2021/12/27 14:34:41 by mbarut           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME=ft_containers
 
 DRIVER=driver/main.cpp
-ENABLE_IF=driver/main_enable_if.cpp
 
-SRC=src/test.cpp
+SRC=src/main.cpp
 
 CC=clang++
 
