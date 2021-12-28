@@ -6,7 +6,7 @@
 /*   By: mbarut <mbarut@student.42wolfsburg.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/23 15:19:31 by mbarut            #+#    #+#             */
-/*   Updated: 2021/12/28 15:22:01 by mbarut           ###   ########.fr       */
+/*   Updated: 2021/12/28 18:14:13 by mbarut           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,6 @@
 #include "Stack.hpp"
 #include "Map.hpp"
 
-#include "../ft/Iterator.hpp"
 #include "../ft/misc.hpp"
 #include "../ft/pair.hpp"
 
@@ -114,15 +113,45 @@
 #include <utility>
 #include <string>
 
+#include "../ft/iterator_base_types.hpp"
+#include "../ft/iterator_base_funcs.hpp"
+
 int main()
 {
-	ft::pair <std::string, double> product00;
-	ft::pair <std::string, double> product01 ("lalalalalala", 42.02);
-	ft::pair <std::string, double> product02 (product01);
-	
-	std::cout << "Name: " << product01.first << std::endl;
-	std::cout << "Price: " << product01.second << std::endl;
 
-	ft::pair <int, std::string> test00 = ft::make_pair(42, "Hey");
-	std::cout << "test00: (" << test00.first << ", " << test00.second << ")" << std::endl;
+	std::vector<int> v1;
+	std::vector<int> v2;
+
+	std::vector<int>::iterator it1;
+	std::vector<int>::iterator it2;
+	std::vector<int>::iterator it3;
+//	std::vector<int>::const_iterator it_const;
+//	std::vector<int>::reverse_iterator it_r;
+//	std::vector<int>::const_reverse_iterator it_rconst;
+
+	v1.reserve(12);
+	v1.push_back( 1 );
+	v1.push_back( 2 );
+	v1.push_back( 3 );
+	v1.push_back( 4 );
+	v1.push_back( 5 );
+	v1.push_back( 6 );
+	v1.push_back( 7 );
+	v1.push_back( 8 );
+	v1.push_back( 9 );
+	v1.push_back( 10 );
+	v1.push_back( 11 );
+	v1.push_back( 12 );
+	
+	typedef std::vector<int>::iterator Iterator_vector_int_normal;
+	
+	ft::iterator_traits<Iterator_vector_int_normal>::iterator_category Iterator_vector_int_normal_iterator_category;
+	(void)Iterator_vector_int_normal_iterator_category;
+
+	it1 = v1.begin();
+	it2 = v1.end();
+
+	std::cout << ft::distance(it1, it2) << std::endl;
+	ft::advance(it1, 4);
+	std::cout << ft::distance(it1, it2) << std::endl;
 }
