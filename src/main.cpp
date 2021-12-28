@@ -6,7 +6,7 @@
 /*   By: mbarut <mbarut@student.42wolfsburg.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/23 15:19:31 by mbarut            #+#    #+#             */
-/*   Updated: 2021/12/27 18:29:41 by mbarut           ###   ########.fr       */
+/*   Updated: 2021/12/28 15:22:01 by mbarut           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,9 @@
 #include "Stack.hpp"
 #include "Map.hpp"
 
-#include "Iterator.hpp"
-#include "misc.hpp"
+#include "../ft/Iterator.hpp"
+#include "../ft/misc.hpp"
+#include "../ft/pair.hpp"
 
 #include <iostream>
 #include <algorithm>
@@ -110,15 +111,18 @@
 //}
 
 #include <iostream>
+#include <utility>
+#include <string>
 
 int main()
 {
-	char one[] = "bpple";
-    char two[] = "cpple";
+	ft::pair <std::string, double> product00;
+	ft::pair <std::string, double> product01 ("lalalalalala", 42.02);
+	ft::pair <std::string, double> product02 (product01);
 	
-	if (ft::lexicographical_compare(one, one + 5, two, two + 5))
-		std::cout << "*one is lexicographically less than *two\n"; 
-	else
-		std::cout << "*one is not lexicographically less than *two\n";
-	std::cout << ft::is_same<int, int>::value << std::endl;
+	std::cout << "Name: " << product01.first << std::endl;
+	std::cout << "Price: " << product01.second << std::endl;
+
+	ft::pair <int, std::string> test00 = ft::make_pair(42, "Hey");
+	std::cout << "test00: (" << test00.first << ", " << test00.second << ")" << std::endl;
 }
