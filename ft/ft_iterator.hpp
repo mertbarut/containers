@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   Iterator.hpp                                       :+:      :+:    :+:   */
+/*   ft_iterator.hpp                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mbarut <mbarut@student.42wolfsburg.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/23 23:13:25 by mbarut            #+#    #+#             */
-/*   Updated: 2021/12/27 18:40:09 by mbarut           ###   ########.fr       */
+/*   Updated: 2021/12/29 18:44:50 by mbarut           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,40 +16,10 @@
 #include <iterator>
 #include <iostream>
 
+#include "misc.hpp"
+
 namespace ft
 {
-	/* Any iterator */
-	template<typename I>
-	struct iterator_traits
-	{
-		typedef typename I::value_type			value_type;
-		typedef typename I::difference_type		difference_type;
-		typedef typename I::iterator_category	iterator_category;
-		typedef typename I::pointer				pointer;
-		typedef typename I::reference			reference;
-	};
-
-	/* Any pointer */
-	template <typename T>
-	struct iterator_traits<T*>
-	{
-		typedef T								value_type;
-		typedef std::ptrdiff_t					difference_type;
-		typedef std::random_access_iterator_tag	iterator_category;
-		typedef T*								pointer;
-		typedef T&								reference;
-	};
-
-	/* Any const pointer */
-	template <typename T>
-	struct iterator_traits<const T*>
-	{
-		typedef T								value_type;
-		typedef std::ptrdiff_t					difference_type;
-		typedef std::random_access_iterator_tag	iterator_category;
-		typedef const T*						pointer;
-		typedef const T&						reference;
-	};
 
 	/* Random access iterator */
 	template <typename T>
@@ -241,19 +211,27 @@ namespace ft
 
 	template <typename Iterator>
 	class reverse_iterator
+	: public iterator
+	<
+	typename ft::iterator_traits<Iterator>::iterator_category,
+	typename ft::iterator_traits<Iterator>::value_type,
+	typename ft::iterator_traits<Iterator>::difference_type,
+	typename ft::iterator_traits<Iterator>::pointer,
+	typename ft::iterator_traits<Iterator>::reference
+	>
 	{
-		typedef Iterator						iterator_type;
-		typedef ft::iterator_traits<Iterator>	iterator_category;
-		typedef ft::iterator_traits<Iterator>	value_type;
-		typedef ft::iterator_traits<Iterator>	difference_type;
-		typedef ft::iterator_traits<Iterator>	pointer;
-		typedef ft::iterator_traits<Iterator>	reference;
+	public:
+
+		typedef Iterator											iterator_type;
+		typedef typename ft::iterator_traits<Iterator>::difference_type difference_type;
+		typedef typename ft::iterator_traits<Iterator>::reference		reference;
+		typedef typename ft::iterator_traits<Iterator>::pointer			pointer;
 
 	protected:
 
-		iterator_type	_base;
+		Iterator	_base;
 	
-		/* Getter & Setter */
+		/* Trivial Getter & Setter */
 		iterator_type	getBase()
 		{
 			return this->_base;
@@ -277,6 +255,7 @@ namespace ft
 
 		/* (2) initalization constructor */
 		/* Constructs a reverse iterator from some original iterator 'iterator'. */
+		/* explicit keyword is used because implicit conversion from other iterators is not desired */
 		explicit reverse_iterator(iterator_type iterator)
 		: _base(iterator)
 		{
@@ -304,7 +283,7 @@ namespace ft
 		//	return *this;
 		//}
 
-		/* Get Base iterator */
+		/* Exposing Base iterator */
 		iterator_type	base() const
 		{
 			return this->getBase();
@@ -325,9 +304,7 @@ namespace ft
 
 		pointer operator-> () const
 		{
-			iterator_type tmp = this->getBase();
-			--tmp;
-			return &(*tmp);
+			return &(operator*());
 		}
 
 		pointer operator& ()
@@ -381,14 +358,14 @@ namespace ft
 
 		/* Increment/decrement assignment operators */
 		/* reverse_iterator += d */
-		reverse_iterator& operator += (difference_type d)
+		reverse_iterator& operator += (difference_type d) const
 		{
 			this->setBase(this->getBase() - d);
 			return *this;
 		}
 
 		/* reverse_iterator -= d */
-		reverse_iterator& operator -= (difference_type d)
+		reverse_iterator& operator -= (difference_type d) const
 		{
 			this->setBase(this->getBase() + d);
 			return *this;
@@ -399,7 +376,7 @@ namespace ft
 
 	/* Relational operators */
 	template <class Iterator>
-	bool operator == (
+	inline bool operator == (
 		const reverse_iterator<Iterator>& lhs,
 		const reverse_iterator<Iterator>& rhs)
 	{
@@ -407,15 +384,15 @@ namespace ft
 	}
 
 	template <class Iterator>
-	bool operator != (
+	inline bool operator != (
 		const reverse_iterator<Iterator>& lhs,
 		const reverse_iterator<Iterator>& rhs)
 	{
-		return lhs->base() != rhs->base();
+		return !(lhs->base() == rhs->base());
 	}
 	
 	template <class Iterator>
-	bool operator < (
+	inline bool operator < (
 		const reverse_iterator<Iterator>& lhs,
 		const reverse_iterator<Iterator>& rhs)
 	{
@@ -423,15 +400,15 @@ namespace ft
 	}
 	
 	template <class Iterator>
-	bool operator <= (
+	inline bool operator <= (
 		const reverse_iterator<Iterator>& lhs,
 		const reverse_iterator<Iterator>& rhs)
 	{
-		return lhs->base() >= rhs->base();
+		return !(lhs->base() < rhs->base());
 	}
 	
 	template <class Iterator>
-	bool operator > (
+	inline bool operator > (
 		const reverse_iterator<Iterator>& lhs,
 		const reverse_iterator<Iterator>& rhs)
 	{
@@ -439,29 +416,229 @@ namespace ft
 	}
 	
 	template <class Iterator>
-	bool operator >= (
+	inline bool operator >= (
 		const reverse_iterator<Iterator>& lhs,
 		const reverse_iterator<Iterator>& rhs)
 	{
-		return lhs->base() <= rhs->base();
+		return !(lhs->base() > rhs->base());
 	}
 
-	/* return = i + obj */
+	/* return an iterator i where obj - i = d */
 	template <class Iterator>
-	reverse_iterator<Iterator> operator+ (
+	inline reverse_iterator<Iterator> operator+ (
 		typename reverse_iterator<Iterator>::difference_type d,
 		const reverse_iterator<Iterator>& obj)
 	{
 		return reverse_iterator<Iterator>(obj.base() - d);
 	}
 
-	/* distance = right - left */
+	/* return the distance between iterators ( = right - left ) */
 	template <class Iterator>
-	typename reverse_iterator<Iterator>::difference_type operator- (
+	inline typename reverse_iterator<Iterator>::difference_type operator- (
 		const reverse_iterator<Iterator>& lhs,
 		const reverse_iterator<Iterator>& rhs)
 	{
 		return rhs.base() - lhs.base();
 	}
 
+	/* Front insert iterator */
+	template <typename Container>
+	class front_insert_iterator
+	: public iterator <output_iterator_tag, void, void, void, void>
+	{
+	protected:
+		Container* container;
+
+	public:
+		typedef Container	container_type;
+		
+		/* Ctors */
+
+		explicit front_insert_iterator(Container& cont) : container (&cont)
+		{
+			
+		}
+
+		/* Assignment overload operator */
+		front_insert_iterator& operator= (typename Container::const_reference value)
+		{
+			container->push_front(value);
+			return *this;
+		}
+
+		/* Access operators */
+		front_insert_iterator& operator* (void)
+		{
+			return *this;
+		}
+	
+		/* Trivial Increment operators */
+
+		front_insert_iterator& operator++ (void)
+		{
+			return *this;
+		}
+	
+		front_insert_iterator operator++ (int)
+		{
+			return *this;
+		}
+	};
+
+	/* Returns an instance of front_insert_iterator for type Container */
+	template <typename Container>
+	inline front_insert_iterator<Container> front_inserter(Container& container)
+	{
+		return front_insert_iterator<Container>(container);
+	}
+
+	/* Back insert iterator */
+	template <typename Container>
+	class back_insert_iterator
+	: public iterator <output_iterator_tag, void, void, void, void>
+	{
+	protected:
+		Container* container;
+
+	public:
+		typedef Container	container_type;
+		
+		/* Ctors */
+
+		explicit back_insert_iterator(Container& cont) : container (&cont)
+		{
+			
+		}
+
+		/* Assignment overload operator */
+		back_insert_iterator& operator= (typename Container::const_reference value)
+		{
+			container->push_back(value);
+			return *this;
+		}
+
+		/* Access operators */
+		back_insert_iterator& operator* (void)
+		{
+			return *this;
+		}
+	
+		/* Trivial Increment operators */
+
+		back_insert_iterator& operator++ (void)
+		{
+			return *this;
+		}
+	
+		back_insert_iterator operator++ (int)
+		{
+			return *this;
+		}
+	};
+
+	/* Returns an instance of back_insert_iterator for type Container */
+	template <typename Container>
+	inline back_insert_iterator<Container> back_inserter(Container& container)
+	{
+		return back_insert_iterator<Container>(container);
+	}
+
+	/* Insert Iterator */
+	template <typename Container>
+	class insert_iterator : public iterator<output_iterator_tag, void, void, void, void>
+	{
+	protected:
+		Container* container;
+		typename Container::iterator iter;
+		
+	public:
+		typedef Container container_type;
+		
+	/* Ctor */
+	insert_iterator(Container& cont, typename Container::iterator i) : container(&cont), iter(i)
+	{
+		
+	}
+
+	/* Assignment operator overload */
+	insert_iterator& operator=(typename Container::const_reference value)
+	{
+		iter = container->insert(iter, value);
+		++iter;
+		return *this;
+	}
+
+	/* Access operators */
+	insert_iterator& operator* (void)
+	{
+		return *this;
+	}
+	
+	/* Trivial Increment operators */
+
+	insert_iterator& operator++ (void)
+	{
+		return *this;
+	}
+	
+	insert_iterator operator++ (int)
+	{
+		return *this;
+	}
+
+	};
+
+	/* Returns an instance of back_insert_iterator for type Container */
+	template <typename Container, typename Iterator>
+	inline insert_iterator<Container> inserter(Container& container, Iterator i)
+	{
+		return insert_iterator<Container>(container, typename Container::iterator(i));
+	}
+
+	/* Normal iterator */
+	/* Converts a pointer to an iterator */
+	
+	template <typename Iterator, typename Container>
+	class normal_iterator
+	{
+	protected:
+		Iterator base;
+		
+	public:
+		typedef Iterator												iterator_type;
+		typedef typename ft::iterator_traits<Iterator>::value_type		value_type;
+		typedef typename ft::iterator_traits<Iterator>::difference_type difference_type;
+		typedef typename ft::iterator_traits<Iterator>::reference		reference;
+		typedef typename ft::iterator_traits<Iterator>::pointer			pointer;
+
+		/* Ctors */
+		normal_iterator() : base(Iterator())
+		{
+			
+		}
+
+		/* Copy ctor */
+		explicit normal_iterator(const Iterator& i) : base(i)
+		{
+			
+		}
+
+		/* iterator -> const_iterator */
+		/* Lord help us */ 
+		template<typename Iter>
+		normal_iterator(const normal_iterator<
+			Iter,
+			typename ft::enable_if<			
+				(ft::is_same<Iter, typename Container::pointer>::value),
+				Container
+				>::type>& i)
+		: base(i.base())
+		{
+			
+		}
+
+	};
+	
 }
+
+#pragma endregion

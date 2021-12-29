@@ -6,7 +6,7 @@
 /*   By: mbarut <mbarut@student.42wolfsburg.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/23 15:19:31 by mbarut            #+#    #+#             */
-/*   Updated: 2021/12/28 18:14:13 by mbarut           ###   ########.fr       */
+/*   Updated: 2021/12/29 16:00:24 by mbarut           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,8 +113,9 @@
 #include <utility>
 #include <string>
 
-#include "../ft/iterator_base_types.hpp"
-#include "../ft/iterator_base_funcs.hpp"
+#include "../ft/ft_iterator_base_types.hpp"
+#include "../ft/ft_iterator_base_funcs.hpp"
+#include "../ft/ft_iterator.hpp"
 
 int main()
 {

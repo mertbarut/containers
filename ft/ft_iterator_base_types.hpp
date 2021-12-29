@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   iterator_base_types.hpp                            :+:      :+:    :+:   */
+/*   ft_iterator_base_types.hpp                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mbarut <mbarut@student.42wolfsburg.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/28 16:02:53 by mbarut            #+#    #+#             */
-/*   Updated: 2021/12/28 17:42:33 by mbarut           ###   ########.fr       */
+/*   Updated: 2021/12/29 18:38:07 by mbarut           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,3 +79,5 @@ namespace ft
 		return typename iterator_traits<Iterator>::iterator_category();
 	}
 }
+
+#pragma endregion

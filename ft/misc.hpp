@@ -6,9 +6,11 @@
 /*   By: mbarut <mbarut@student.42wolfsburg.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/26 14:09:36 by mbarut            #+#    #+#             */
-/*   Updated: 2021/12/28 13:34:09 by mbarut           ###   ########.fr       */
+/*   Updated: 2021/12/29 18:37:52 by mbarut           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+#pragma once
 
 namespace ft
 {
@@ -90,3 +92,5 @@ namespace ft
 		return (begin2 != end2);
 	}
 }
+
+#pragma endregion
