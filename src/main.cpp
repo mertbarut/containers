@@ -6,21 +6,23 @@
 /*   By: mbarut <mbarut@student.42wolfsburg.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/23 15:19:31 by mbarut            #+#    #+#             */
-/*   Updated: 2021/12/29 16:00:24 by mbarut           ###   ########.fr       */
+/*   Updated: 2022/01/30 18:39:51 by mbarut           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
-#include "Vector.hpp"
-#include "Stack.hpp"
-#include "Map.hpp"
-
-#include "../ft/misc.hpp"
-#include "../ft/pair.hpp"
 
 #include <iostream>
 #include <algorithm>
 #include <vector>
 #include <iterator>
+#include <iostream>
+#include <utility>
+#include <string>
+
+#include "Vector.hpp"
+#include "Stack.hpp"
+#include "Map.hpp"
+#include "../ft/ft_iterator.hpp"
+#include "../ft/ft_pair.hpp"
 
 /* vectors & its iterators */
 
@@ -109,50 +111,11 @@
 //	return 0;
 //}
 
-#include <iostream>
-#include <utility>
-#include <string>
-
-#include "../ft/ft_iterator_base_types.hpp"
-#include "../ft/ft_iterator_base_funcs.hpp"
-#include "../ft/ft_iterator.hpp"
-
 int main()
 {
+	ft::pair<std::string, std::string> person01 = ft::make_pair("John", "Smith");
+	ft::pair<std::string, std::string> person02("Max", "Miller");
 
-	std::vector<int> v1;
-	std::vector<int> v2;
-
-	std::vector<int>::iterator it1;
-	std::vector<int>::iterator it2;
-	std::vector<int>::iterator it3;
-//	std::vector<int>::const_iterator it_const;
-//	std::vector<int>::reverse_iterator it_r;
-//	std::vector<int>::const_reverse_iterator it_rconst;
-
-	v1.reserve(12);
-	v1.push_back( 1 );
-	v1.push_back( 2 );
-	v1.push_back( 3 );
-	v1.push_back( 4 );
-	v1.push_back( 5 );
-	v1.push_back( 6 );
-	v1.push_back( 7 );
-	v1.push_back( 8 );
-	v1.push_back( 9 );
-	v1.push_back( 10 );
-	v1.push_back( 11 );
-	v1.push_back( 12 );
-	
-	typedef std::vector<int>::iterator Iterator_vector_int_normal;
-	
-	ft::iterator_traits<Iterator_vector_int_normal>::iterator_category Iterator_vector_int_normal_iterator_category;
-	(void)Iterator_vector_int_normal_iterator_category;
-
-	it1 = v1.begin();
-	it2 = v1.end();
-
-	std::cout << ft::distance(it1, it2) << std::endl;
-	ft::advance(it1, 4);
-	std::cout << ft::distance(it1, it2) << std::endl;
+	std::cout << person02.first << std::endl;
+	std::cout << (person02 < person01) << std::endl;
 }

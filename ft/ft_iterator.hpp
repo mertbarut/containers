@@ -6,212 +6,20 @@
 /*   By: mbarut <mbarut@student.42wolfsburg.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/23 23:13:25 by mbarut            #+#    #+#             */
-/*   Updated: 2021/12/29 18:44:50 by mbarut           ###   ########.fr       */
+/*   Updated: 2022/01/30 18:37:05 by mbarut           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
-#include <cstddef>
-#include <iterator>
-#include <iostream>
-
-#include "misc.hpp"
+#include "ft_iterator_base_funcs.hpp"
+#include "ft_iterator_base_types.hpp"
+#include "ft_util.hpp"
 
 namespace ft
 {
-
-	/* Random access iterator */
-	template <typename T>
-	class random_access_iterator
-	{
-		typedef T								value_type;
-		typedef std::ptrdiff_t					difference_type;
-		typedef std::random_access_iterator_tag	iterator_category;
-		typedef T*								pointer;
-		typedef T&								reference;
-		typedef random_access_iterator<T>		iterator;
-		typedef random_access_iterator<const T>	const_iterator;
-
-	protected:
-
-		pointer		_pointer;
-	
-		/* Getter & Setter */
-		pointer		getPointer()
-		{
-			return this->_pointer;
-		}
-
-		void		setPointer(pointer obj)
-		{
-			this->_pointer = obj->getPointer();
-		}
-	
-	public:
-
-		/* Constructors */
-		random_access_iterator(void)
-		: _pointer(NULL)
-		{
-			std::cout << "A random access iterator has been constructed\n";
-		}
-
-		explicit random_access_iterator(T* pointer)
-		: _pointer(pointer)
-		{
-			std::cout << "A random access iterator has been constructed using another random access iterator\n";
-		}
-
-		/* Destructors */
-		~random_access_iterator(void)
-		{
-			std::cout << "A random access iterator has been destructed\n";
-		}
-
-		/* Copy constructors */
-		random_access_iterator(const random_access_iterator& obj)
-		{
-			std::cout << "A copy constructor for the template class random access iterator has been called\n";
-			*this = obj;
-		}
-
-		/* Assignment operator overload */
-		random_access_iterator& operator= (const random_access_iterator& obj)
-		{
-			if (this != &obj)
-				this->setPointer(obj);
-			return *this;
-		}
-
-		/* Member access operators */
-		reference operator[] (const difference_type d) const
-		{
-			return this->getPointer()[d];
-		}
-
-		reference operator* ()
-		{
-			return *this->getPointer();
-		}
-
-		reference operator-> ()
-		{
-			return this->getPointer();
-		}
-
-		pointer operator& ()
-		{
-			return &this->getPointer();
-		}
-
-		/* Relational operators */
-		bool operator== (const iterator& obj) const
-		{
-			return this->getPointer() == obj.getPointer();
-		}
-
-		bool operator!= (const iterator& obj) const
-		{
-			return this->getPointer() != obj.getPointer();
-		}
-
-		bool operator<= (const iterator& obj) const
-		{
-			return this->getPointer() <= obj.getPointer();
-		}
-
-		bool operator>= (const iterator& obj) const
-		{
-			return this->getPointer() >= obj.getPointer();
-		}
-
-		bool operator< (const iterator& obj) const
-		{
-			return this->getPointer() < obj.getPointer();
-		}
-
-		bool operator> (const iterator& obj) const
-		{
-			return this->getPointer() > obj.getPointer();
-		}
-
-		/* Increment/decrement operators */
-		iterator& operator++ ()
-		{
-			++this->getPointer();
-			return *this;
-		}
-
-		iterator operator++ (int)
-		{
-			iterator tmp = *this;
-			++this->getPointer();
-			return tmp;
-		}
-		
-		iterator& operator-- ()
-		{
-			--this->getPointer();
-			return *this;
-		}
-
-		iterator operator-- (int)
-		{
-			iterator tmp = *this;
-			--this->getPointer();
-			return tmp;
-		}
-
-		/* Pointer Arithmetic operators */
-		friend iterator operator+ (int d, iterator obj)
-		{
-			return iterator(obj.getPointer() + d);
-		}
-		
-		iterator operator+ (const int d) const
-		{
-			return iterator(this->getPointer() + d);
-		}
-		
-		difference_type operator+ (const iterator& obj)
-		{
-			return this->getPointer() + obj.getPointer();
-		}
-		
-		friend iterator operator- (int d, iterator obj)
-		{
-			return iterator(obj.getPointer() - d);
-		}
-		
-		iterator operator- (const int d) const
-		{
-			return iterator(this->getPointer() - d);
-		}
-		
-		difference_type operator- (const iterator& obj)
-		{
-			return getPointer() - obj.getPointer();
-		}
-		
-		/* Increment/decrement assignment operators */
-		iterator& operator += (int d)
-		{
-			this->setPointer(this->getPointer() + d);
-			return *this;
-		}
-
-		iterator& operator -= (int d)
-		{
-			this->setPointer(this->getPointer() - d);
-			return *this;
-		}
-
-	};
-
 	template <typename Iterator>
-	class reverse_iterator
-	: public iterator
+	class reverse_iterator : public iterator
 	<
 	typename ft::iterator_traits<Iterator>::iterator_category,
 	typename ft::iterator_traits<Iterator>::value_type,
@@ -222,7 +30,7 @@ namespace ft
 	{
 	public:
 
-		typedef Iterator											iterator_type;
+		typedef Iterator												iterator_type;
 		typedef typename ft::iterator_traits<Iterator>::difference_type difference_type;
 		typedef typename ft::iterator_traits<Iterator>::reference		reference;
 		typedef typename ft::iterator_traits<Iterator>::pointer			pointer;
@@ -247,35 +55,34 @@ namespace ft
 		/* Constructors */
 		/* (1) default constructor */
 		/* Constructs a reverse iterator that points to NULL. */
-		reverse_iterator(void)
-		: _base(NULL)
+		reverse_iterator(void) : _base(NULL)
 		{
-			std::cout << "A reverse iterator has been constructed\n";
+			// std::cout << "A reverse iterator has been constructed\n";
 		}
 
 		/* (2) initalization constructor */
 		/* Constructs a reverse iterator from some original iterator 'iterator'. */
 		/* explicit keyword is used because implicit conversion from other iterators is not desired */
-		explicit reverse_iterator(iterator_type iterator)
-		: _base(iterator)
+		explicit reverse_iterator(iterator_type iterator) : _base(iterator)
 		{
-			std::cout << "A reverse iterator has been constructed using another reverse iterator\n";
+			// std::cout << "A reverse iterator has been constructed using another reverse iterator\n";
 		}
 
 		/* Destructors */
+		/* not implemented in the original */
 		//~reverse_iterator(void)
 		//{
 		//	std::cout << "A reverse iterator has been destructed\n";
 		//}
 
 		/* Copy constructors */
-		reverse_iterator(const reverse_iterator<Iterator>& obj)
+		reverse_iterator(const reverse_iterator<Iterator>& obj) : _base(obj.base())
 		{
-			std::cout << "A copy constructor for the template class reverse iterator has been called\n";
-			*this = obj;
+			//std::cout << "A copy constructor for the template class reverse iterator has been called\n";
 		}
 
 		/* Assignment operator overload */
+		/* not implemented in the original */
 		//reverse_iterator& operator= (const reverse_iterator& obj)
 		//{
 		//	if (this != &obj)
@@ -295,7 +102,7 @@ namespace ft
 			return *(*this + d);
 		}
 
-		reference operator* ()
+		reference operator* () const
 		{
 			iterator_type tmp = this->getBase();
 			--tmp;
@@ -307,12 +114,14 @@ namespace ft
 			return &(operator*());
 		}
 
-		pointer operator& ()
-		{
-			return &this->getBase();
-		}
+		/* not implemented */
+		//pointer operator& ()
+		//{
+		//	return &this->getBase();
+		//}
 
 		/* Increment/decrement operators */
+
 		/* ++i */
 		reverse_iterator& operator++ ()
 		{
@@ -358,14 +167,14 @@ namespace ft
 
 		/* Increment/decrement assignment operators */
 		/* reverse_iterator += d */
-		reverse_iterator& operator += (difference_type d) const
+		reverse_iterator& operator+= (difference_type d)
 		{
 			this->setBase(this->getBase() - d);
 			return *this;
 		}
 
 		/* reverse_iterator -= d */
-		reverse_iterator& operator -= (difference_type d) const
+		reverse_iterator& operator-= (difference_type d)
 		{
 			this->setBase(this->getBase() + d);
 			return *this;
@@ -376,49 +185,43 @@ namespace ft
 
 	/* Relational operators */
 	template <class Iterator>
-	inline bool operator == (
-		const reverse_iterator<Iterator>& lhs,
-		const reverse_iterator<Iterator>& rhs)
+	inline bool operator== (const reverse_iterator<Iterator>& lhs,
+							const reverse_iterator<Iterator>& rhs)
 	{
 		return lhs->base() == rhs->base();
 	}
 
 	template <class Iterator>
-	inline bool operator != (
-		const reverse_iterator<Iterator>& lhs,
-		const reverse_iterator<Iterator>& rhs)
+	inline bool operator!= (const reverse_iterator<Iterator>& lhs,
+							const reverse_iterator<Iterator>& rhs)
 	{
 		return !(lhs->base() == rhs->base());
 	}
 	
 	template <class Iterator>
-	inline bool operator < (
-		const reverse_iterator<Iterator>& lhs,
-		const reverse_iterator<Iterator>& rhs)
+	inline bool operator < (const reverse_iterator<Iterator>& lhs,
+							const reverse_iterator<Iterator>& rhs)
 	{
 		return lhs->base() > rhs->base();
 	}
 	
 	template <class Iterator>
-	inline bool operator <= (
-		const reverse_iterator<Iterator>& lhs,
-		const reverse_iterator<Iterator>& rhs)
+	inline bool operator<= (const reverse_iterator<Iterator>& lhs,
+							const reverse_iterator<Iterator>& rhs)
 	{
 		return !(lhs->base() < rhs->base());
 	}
 	
 	template <class Iterator>
-	inline bool operator > (
-		const reverse_iterator<Iterator>& lhs,
-		const reverse_iterator<Iterator>& rhs)
+	inline bool operator > (const reverse_iterator<Iterator>& lhs,
+							const reverse_iterator<Iterator>& rhs)
 	{
 		return lhs->base() < rhs->base();
 	}
 	
 	template <class Iterator>
-	inline bool operator >= (
-		const reverse_iterator<Iterator>& lhs,
-		const reverse_iterator<Iterator>& rhs)
+	inline bool operator>= (const reverse_iterator<Iterator>& lhs,
+							const reverse_iterator<Iterator>& rhs)
 	{
 		return !(lhs->base() > rhs->base());
 	}
@@ -441,71 +244,22 @@ namespace ft
 		return rhs.base() - lhs.base();
 	}
 
-	/* Front insert iterator */
-	template <typename Container>
-	class front_insert_iterator
-	: public iterator <output_iterator_tag, void, void, void, void>
-	{
-	protected:
-		Container* container;
-
-	public:
-		typedef Container	container_type;
-		
-		/* Ctors */
-
-		explicit front_insert_iterator(Container& cont) : container (&cont)
-		{
-			
-		}
-
-		/* Assignment overload operator */
-		front_insert_iterator& operator= (typename Container::const_reference value)
-		{
-			container->push_front(value);
-			return *this;
-		}
-
-		/* Access operators */
-		front_insert_iterator& operator* (void)
-		{
-			return *this;
-		}
-	
-		/* Trivial Increment operators */
-
-		front_insert_iterator& operator++ (void)
-		{
-			return *this;
-		}
-	
-		front_insert_iterator operator++ (int)
-		{
-			return *this;
-		}
-	};
-
-	/* Returns an instance of front_insert_iterator for type Container */
-	template <typename Container>
-	inline front_insert_iterator<Container> front_inserter(Container& container)
-	{
-		return front_insert_iterator<Container>(container);
-	}
-
 	/* Back insert iterator */
+	
 	template <typename Container>
-	class back_insert_iterator
-	: public iterator <output_iterator_tag, void, void, void, void>
+	class back_insert_iterator : public iterator<output_iterator_tag, void, void, void, void>
 	{
+
 	protected:
+
 		Container* container;
 
 	public:
+
 		typedef Container	container_type;
 		
-		/* Ctors */
-
-		explicit back_insert_iterator(Container& cont) : container (&cont)
+		/* Ctor */
+		explicit back_insert_iterator(Container& cont) : container(&cont)
 		{
 			
 		}
@@ -517,7 +271,7 @@ namespace ft
 			return *this;
 		}
 
-		/* Access operators */
+		/* Trivial access operator */
 		back_insert_iterator& operator* (void)
 		{
 			return *this;
@@ -525,7 +279,7 @@ namespace ft
 	
 		/* Trivial Increment operators */
 
-		back_insert_iterator& operator++ (void)
+		back_insert_iterator& operator++ ()
 		{
 			return *this;
 		}
@@ -538,20 +292,76 @@ namespace ft
 
 	/* Returns an instance of back_insert_iterator for type Container */
 	template <typename Container>
-	inline back_insert_iterator<Container> back_inserter(Container& container)
+	inline back_insert_iterator<Container> back_inserter(Container& cont)
 	{
-		return back_insert_iterator<Container>(container);
+		return back_insert_iterator<Container>(cont);
+	}
+
+	/* Front insert iterator */
+	
+	template <typename Container>
+	class front_insert_iterator : public iterator <output_iterator_tag, void, void, void, void>
+	{
+	
+	protected:
+
+		Container* container;
+
+	public:
+
+		typedef Container	container_type;
+		
+		/* Ctor */
+		explicit front_insert_iterator(Container& cont) : container(&cont)
+		{
+			
+		}
+
+		/* Assignment overload operator */
+		front_insert_iterator& operator= (typename Container::const_reference value)
+		{
+			container->push_front(value);
+			return *this;
+		}
+
+		/* Trivial access operator */
+		front_insert_iterator& operator* (void)
+		{
+			return *this;
+		}
+	
+		/* Trivial Increment operators */
+
+		front_insert_iterator& operator++ ()
+		{
+			return *this;
+		}
+	
+		front_insert_iterator operator++ (int)
+		{
+			return *this;
+		}
+	};
+
+	/* Returns an instance of front_insert_iterator for type Container */
+	template <typename Container>
+	inline front_insert_iterator<Container> front_inserter(Container& cont)
+	{
+		return front_insert_iterator<Container>(cont);
 	}
 
 	/* Insert Iterator */
 	template <typename Container>
 	class insert_iterator : public iterator<output_iterator_tag, void, void, void, void>
 	{
+
 	protected:
+
 		Container* container;
 		typename Container::iterator iter;
 		
 	public:
+
 		typedef Container container_type;
 		
 	/* Ctor */
@@ -561,14 +371,14 @@ namespace ft
 	}
 
 	/* Assignment operator overload */
-	insert_iterator& operator=(typename Container::const_reference value)
+	insert_iterator& operator= (typename Container::const_reference value)
 	{
 		iter = container->insert(iter, value);
 		++iter;
 		return *this;
 	}
 
-	/* Access operators */
+	/* Trivial access operator */
 	insert_iterator& operator* (void)
 	{
 		return *this;
@@ -588,23 +398,25 @@ namespace ft
 
 	};
 
-	/* Returns an instance of back_insert_iterator for type Container */
+	/* Returns an instance of insert_iterator for type Container */
 	template <typename Container, typename Iterator>
 	inline insert_iterator<Container> inserter(Container& container, Iterator i)
 	{
 		return insert_iterator<Container>(container, typename Container::iterator(i));
 	}
 
-	/* Normal iterator */
-	/* Converts a pointer to an iterator */
-	
+	/* Normal iterator:
+	** Converts a pointer to an iterator. */
 	template <typename Iterator, typename Container>
 	class normal_iterator
 	{
+
 	protected:
-		Iterator base;
+
+		Iterator ptr;
 		
 	public:
+
 		typedef Iterator												iterator_type;
 		typedef typename ft::iterator_traits<Iterator>::value_type		value_type;
 		typedef typename ft::iterator_traits<Iterator>::difference_type difference_type;
@@ -612,33 +424,395 @@ namespace ft
 		typedef typename ft::iterator_traits<Iterator>::pointer			pointer;
 
 		/* Ctors */
-		normal_iterator() : base(Iterator())
+		normal_iterator() : ptr(Iterator())
 		{
 			
 		}
 
 		/* Copy ctor */
-		explicit normal_iterator(const Iterator& i) : base(i)
+		explicit normal_iterator(const Iterator& i) : ptr(i)
 		{
 			
 		}
 
 		/* iterator -> const_iterator */
-		/* Lord help us */ 
 		template<typename Iter>
 		normal_iterator(const normal_iterator<
 			Iter,
 			typename ft::enable_if<			
-				(ft::is_same<Iter, typename Container::pointer>::value),
-				Container
-				>::type>& i)
-		: base(i.base())
+				(ft::is_same<Iter, typename Container::pointer>::value), Container>::type>& i)
+		: ptr(i.ptr())
 		{
 			
 		}
 
+		const Iterator& base() const
+		{
+			return ptr;
+		}
+
+		reference			operator* () const
+		{
+			return *ptr;
+		}
+
+		pointer				operator->() const
+		{
+			return ptr;
+		}
+
+		normal_iterator&	operator++()
+		{
+			++ptr;
+			return *this;
+		}
+
+		normal_iterator		operator++(int)
+		{
+			return normal_iterator(ptr++);
+		}
+
+		normal_iterator&	operator--()
+		{
+			--ptr;
+			return *this;
+		}
+
+		normal_iterator		operator--(int)
+		{
+			return normal_iterator(ptr--);
+		}
+
+		reference			operator[] (const difference_type& i) const
+		{
+			return ptr[i];
+		}
+		
+		normal_iterator&	operator+= (const difference_type& i)
+		{
+			ptr += i;
+			return *this;
+		}
+
+		normal_iterator&	operator-= (const difference_type& i)
+		{
+			ptr -= i;
+			return *this;
+		}
+
+		normal_iterator		operator+ (const difference_type& i) const
+		{
+			return normal_iterator(ptr + i);
+		}
+
+		normal_iterator		operator- (const difference_type& i) const
+		{
+			return normal_iterator(ptr - i);
+		}
+
 	};
+
+	/* Normal iterator non-member functions */
+
+	/* Relational operators with different iterator types */
+	template <class IteratorL, class IteratorR, class Container>
+	inline bool operator== (const normal_iterator<IteratorL, Container>& lhs,
+							const normal_iterator<IteratorR, Container>& rhs)
+	{
+		return lhs.base() == rhs.base();
+	}
+
+	template <class IteratorL, class IteratorR, class Container>
+	inline bool operator!= (const normal_iterator<IteratorL, Container>& lhs,
+							const normal_iterator<IteratorR, Container>& rhs)
+	{
+		return !(lhs->base() == rhs->base());
+	}
+
+	template <class IteratorL, class IteratorR, class Container>
+	inline bool operator > (const normal_iterator<IteratorL, Container>& lhs,
+							const normal_iterator<IteratorR, Container>& rhs)
+	{
+		return lhs->base() > rhs->base();
+	}
+
+	template <class IteratorL, class IteratorR, class Container>
+	inline bool operator<= (const normal_iterator<IteratorL, Container>& lhs,
+							const normal_iterator<IteratorR, Container>& rhs)
+	{
+		return !(lhs->base() < rhs->base());
+	}
+
+	template <class IteratorL, class IteratorR, class Container>
+	inline bool operator < (const normal_iterator<IteratorL, Container>& lhs,
+							const normal_iterator<IteratorR, Container>& rhs)
+	{
+		return lhs->base() < rhs->base();
+	}
+
+	template <class IteratorL, class IteratorR, class Container>
+	inline bool operator>= (const normal_iterator<IteratorL, Container>& lhs,
+							const normal_iterator<IteratorR, Container>& rhs)
+	{
+		return !(lhs->base() > rhs->base());
+	}
 	
+	/* Relational operators with same iterator types */
+	template <class Iterator, class Container>
+	inline bool operator== (const normal_iterator<Iterator, Container>& lhs,
+							const normal_iterator<Iterator, Container>& rhs)
+	{
+		return lhs.base() == rhs.base();
+	}
+
+	template <class Iterator, class Container>
+	inline bool operator!= (const normal_iterator<Iterator, Container>& lhs,
+							const normal_iterator<Iterator, Container>& rhs)
+	{
+		return !(lhs->base() == rhs->base());
+	}
+
+	template <class Iterator, class Container>
+	inline bool operator > (const normal_iterator<Iterator, Container>& lhs,
+							const normal_iterator<Iterator, Container>& rhs)
+	{
+		return lhs->base() > rhs->base();
+	}
+
+	template <class Iterator, class Container>
+	inline bool operator<= (const normal_iterator<Iterator, Container>& lhs,
+							const normal_iterator<Iterator, Container>& rhs)
+	{
+		return !(lhs->base() < rhs->base());
+	}
+
+	template <class Iterator, class Container>
+	inline bool operator < (const normal_iterator<Iterator, Container>& lhs,
+							const normal_iterator<Iterator, Container>& rhs)
+	{
+		return lhs->base() < rhs->base();
+	}
+
+	template <class Iterator, class Container>
+	inline bool operator>= (const normal_iterator<Iterator, Container>& lhs,
+							const normal_iterator<Iterator, Container>& rhs)
+	{
+		return !(lhs->base() > rhs->base());
+	}
+
+	/* return the distance between iterators ( = right - left ) */
+	template <class IteratorL, class IteratorR, class Container>
+	inline typename normal_iterator<IteratorL, Container>::difference_type operator- (
+		const normal_iterator<IteratorL, Container>& lhs,
+		const normal_iterator<IteratorR, Container>& rhs)
+	{
+		return rhs.base() - lhs.base();
+	}
+
+	template <class Iterator, class Container>
+	inline typename normal_iterator<Iterator, Container>::difference_type operator- (
+		const normal_iterator<Iterator, Container>& lhs,
+		const normal_iterator<Iterator, Container>& rhs)
+	{
+		return rhs.base() - lhs.base();
+	}
+
+	template <class Iterator, class Container>
+	inline normal_iterator<Iterator, Container> operator+ (
+		typename normal_iterator<Iterator, Container>::difference_type d,
+		const normal_iterator<Iterator, Container>& i)
+	{
+		return normal_iterator<Iterator, Container>(i.base() + d);
+	}
+	
+	/* Random access iterator */
+//	template <typename T>
+//	class random_access_iterator
+//	{
+//		typedef T								value_type;
+//		typedef ptrdiff_t						difference_type;
+//		typedef random_access_iterator_tag		iterator_category;
+//		typedef T*								pointer;
+//		typedef T&								reference;
+//		typedef random_access_iterator<T>		iterator;
+//		typedef random_access_iterator<const T>	const_iterator;
+//
+//	protected:
+//
+//		pointer		ptr;
+//	
+//		/* Getter & Setter */
+//		pointer		getPointer()
+//		{
+//			return this->ptr;
+//		}
+//
+//		void		setPointer(pointer obj)
+//		{
+//			this->ptr = obj->getPointer();
+//		}
+//	
+//	public:
+//
+//		/* Constructors */
+//		random_access_iterator(void)
+//		: ptr(NULL)
+//		{
+//			//std::cout << "A random access iterator has been constructed\n";
+//		}
+//
+//		explicit random_access_iterator(pointer other)
+//		: ptr(other)
+//		{
+//			//std::cout << "A random access iterator has been constructed using another random access iterator\n";
+//		}
+//
+//		/* Destructors */
+//		~random_access_iterator(void)
+//		{
+//			//std::cout << "A random access iterator has been destructed\n";
+//		}
+//
+//		/* Copy constructors */
+//		random_access_iterator(const random_access_iterator& obj)
+//		{
+//			//std::cout << "A copy constructor for the template class random access iterator has been called\n";
+//			*this = obj;
+//		}
+//
+//		/* Assignment operator overload */
+//		random_access_iterator& operator= (const random_access_iterator& obj)
+//		{
+//			if (this != &obj)
+//				this->setPointer(obj);
+//			return *this;
+//		}
+//
+//		/* Member access operators */
+//		reference operator[] (const difference_type d) const
+//		{
+//			return this->getPointer()[d];
+//		}
+//
+//		reference operator* ()
+//		{
+//			return *this->getPointer();
+//		}
+//
+//		reference operator-> ()
+//		{
+//			return this->getPointer();
+//		}
+//
+//		pointer operator& ()
+//		{
+//			return &this->getPointer();
+//		}
+//
+//		/* Relational operators */
+//		bool operator== (const iterator& obj) const
+//		{
+//			return this->getPointer() == obj.getPointer();
+//		}
+//
+//		bool operator!= (const iterator& obj) const
+//		{
+//			return this->getPointer() != obj.getPointer();
+//		}
+//
+//		bool operator<= (const iterator& obj) const
+//		{
+//			return this->getPointer() <= obj.getPointer();
+//		}
+//
+//		bool operator>= (const iterator& obj) const
+//		{
+//			return this->getPointer() >= obj.getPointer();
+//		}
+//
+//		bool operator< (const iterator& obj) const
+//		{
+//			return this->getPointer() < obj.getPointer();
+//		}
+//
+//		bool operator> (const iterator& obj) const
+//		{
+//			return this->getPointer() > obj.getPointer();
+//		}
+//
+//		/* Increment/decrement operators */
+//		iterator& operator++ ()
+//		{
+//			++this->getPointer();
+//			return *this;
+//		}
+//
+//		iterator operator++ (int)
+//		{
+//			iterator tmp = *this;
+//			++this->getPointer();
+//			return tmp;
+//		}
+//		
+//		iterator& operator-- ()
+//		{
+//			--this->getPointer();
+//			return *this;
+//		}
+//
+//		iterator operator-- (int)
+//		{
+//			iterator tmp = *this;
+//			--this->getPointer();
+//			return tmp;
+//		}
+//
+//		/* Pointer Arithmetic operators */
+//		friend iterator operator+ (int d, iterator obj)
+//		{
+//			return iterator(obj.getPointer() + d);
+//		}
+//		
+//		iterator operator+ (const int d) const
+//		{
+//			return iterator(this->getPointer() + d);
+//		}
+//		
+//		difference_type operator+ (const iterator& obj)
+//		{
+//			return this->getPointer() + obj.getPointer();
+//		}
+//		
+//		friend iterator operator- (int d, iterator obj)
+//		{
+//			return iterator(obj.getPointer() - d);
+//		}
+//		
+//		iterator operator- (const int d) const
+//		{
+//			return iterator(this->getPointer() - d);
+//		}
+//		
+//		difference_type operator- (const iterator& obj)
+//		{
+//			return getPointer() - obj.getPointer();
+//		}
+//		
+//		/* Increment/decrement assignment operators */
+//		iterator& operator += (int d)
+//		{
+//			this->setPointer(this->getPointer() + d);
+//			return *this;
+//		}
+//
+//		iterator& operator -= (int d)
+//		{
+//			this->setPointer(this->getPointer() - d);
+//			return *this;
+//		}
+//
+//	};
+
 }
 
 #pragma endregion

@@ -6,7 +6,7 @@
 /*   By: mbarut <mbarut@student.42wolfsburg.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/26 14:09:36 by mbarut            #+#    #+#             */
-/*   Updated: 2021/12/29 18:37:52 by mbarut           ###   ########.fr       */
+/*   Updated: 2022/01/30 11:37:34 by mbarut           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,10 @@
 
 namespace ft
 {
-	/* ft::is_same */
+	/* ft::is_same
+	** Sets its member constant 'value' to true if the given types are the same,
+	** otherwise to false.
+	*/
 
 	template <typename T, typename U>
 	struct is_same
@@ -28,7 +31,10 @@ namespace ft
 		static const bool value = true;
 	};
 
-	/* ft::enable_if */
+	/* ft::enable_if
+	** Forms its member constant 'type' if the given condition is true,
+	** otherwise 'type' is not formed.
+	*/
 
 	template <bool condition, class T = void>
 	struct enable_if
@@ -60,7 +66,10 @@ namespace ft
 	typedef integral_constant<bool, true>  true_type;
 	typedef integral_constant<bool, false> false_type;
 
-	/* ft::is_integral */
+	/* ft::is_integral
+	** Sets its member constant 'value' to true if the given type is an integral,
+	** if not to false.
+	*/
 	template <class T> struct is_integral : false_type { };
 
 	template <> struct is_integral<bool> : true_type { };
@@ -75,8 +84,8 @@ namespace ft
 	template <> struct is_integral<unsigned long long> : true_type { };
 	
 	/* lexicographical compare:
-	** return true if the first sequence is lexicographically smaller than the second sequence,
-	** else return false 
+	** Returns true if the first sequence is lexicographically smaller than the second sequence,
+	** otherwise returns false. 
 	*/
 	template <class InputIterator1, class InputIterator2>
 	bool lexicographical_compare (InputIterator1 begin1, InputIterator1 end1, InputIterator2 begin2, InputIterator2 end2)
