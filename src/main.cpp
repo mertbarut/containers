@@ -6,7 +6,7 @@
 /*   By: mbarut <mbarut@student.42wolfsburg.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/23 15:19:31 by mbarut            #+#    #+#             */
-/*   Updated: 2022/01/30 18:39:51 by mbarut           ###   ########.fr       */
+/*   Updated: 2022/01/31 17:57:16 by mbarut           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@
 #include <utility>
 #include <string>
 
-#include "Vector.hpp"
+#include "../ft/Vector.hpp"
 #include "Stack.hpp"
 #include "Map.hpp"
 #include "../ft/ft_iterator.hpp"
@@ -118,4 +118,7 @@ int main()
 
 	std::cout << person02.first << std::endl;
 	std::cout << (person02 < person01) << std::endl;
+
+	ft::vector<int> v1;
+
 }
