@@ -6,21 +6,20 @@
 /*   By: mbarut <mbarut@student.42wolfsburg.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/23 15:19:31 by mbarut            #+#    #+#             */
-/*   Updated: 2022/01/31 17:57:16 by mbarut           ###   ########.fr       */
+/*   Updated: 2022/02/01 00:39:27 by mbarut           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <iostream>
 #include <algorithm>
+#include <ostream>
 #include <vector>
 #include <iterator>
 #include <iostream>
 #include <utility>
 #include <string>
 
-#include "../ft/Vector.hpp"
-#include "Stack.hpp"
-#include "Map.hpp"
+#include "../ft/ft_vector.hpp"
 #include "../ft/ft_iterator.hpp"
 #include "../ft/ft_pair.hpp"
 
@@ -119,6 +118,19 @@ int main()
 	std::cout << person02.first << std::endl;
 	std::cout << (person02 < person01) << std::endl;
 
-	ft::vector<int> v1;
+	std::cout << ft::factorial<20>::value << std::endl;
 
+	ft::vector<int> v1;
+	v1.reserve(12);
+	v1.push_back(0);
+	v1.push_back(1);
+	v1.push_back(2);
+	v1.push_back(3);
+	v1.push_back(4);
+	v1.push_back(5);
+	v1.push_back(6);
+	v1.push_back(7);
+	v1.push_back(8);
+	v1.push_back(9);
+	std::cout << v1.at(2) << std::endl;
 }

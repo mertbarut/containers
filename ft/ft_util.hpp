@@ -6,7 +6,7 @@
 /*   By: mbarut <mbarut@student.42wolfsburg.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/26 14:09:36 by mbarut            #+#    #+#             */
-/*   Updated: 2022/01/31 11:03:56 by mbarut           ###   ########.fr       */
+/*   Updated: 2022/01/31 21:15:54 by mbarut           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,36 +70,27 @@ namespace ft
 	** Sets its member constant 'value' to true if the given type is an integral,
 	** if not to false.
 	*/
-	template <class T> struct is_integral : false_type { };
+	template <class T> struct is_integral : public false_type { };
 
-	template <> struct is_integral<bool> : true_type { };
-	template <> struct is_integral<char> : true_type { };
-	template <> struct is_integral<unsigned char> : true_type { };
-	template <> struct is_integral<signed char> : true_type { };
-	template <> struct is_integral<short> : true_type { };
-	template <> struct is_integral<unsigned short> : true_type { };
-	template <> struct is_integral<int> : true_type { };
-	template <> struct is_integral<unsigned int> : true_type { };
-	template <> struct is_integral<long long> : true_type { };
-	template <> struct is_integral<unsigned long long> : true_type { };
+	template <> struct is_integral<bool> : public true_type { };
+	template <> struct is_integral<char> : public true_type { };
+	template <> struct is_integral<unsigned char> : public true_type { };
+	template <> struct is_integral<signed char> : public true_type { };
+	template <> struct is_integral<short> : public true_type { };
+	template <> struct is_integral<unsigned short> : public true_type { };
+	template <> struct is_integral<int> : public true_type { };
+	template <> struct is_integral<unsigned int> : public true_type { };
+	template <> struct is_integral<long long> : public true_type { };
+	template <> struct is_integral<unsigned long long> : public true_type { };
+
+	/* c00l factorial trick, no calculation made during runtime */
 	
-	/* lexicographical compare:
-	** Returns true if the first sequence is lexicographically smaller than the second sequence,
-	** otherwise returns false. 
-	*/
-	template <class InputIterator1, class InputIterator2>
-	bool lexicographical_compare (InputIterator1 begin1, InputIterator1 end1, InputIterator2 begin2, InputIterator2 end2)
-	{
-		while (begin1 != end1)
-		{
-			if (begin2 == end2 || *begin2 < *end1)
-				return false;
-			else if (*begin1 < *begin2)
-				return true;
-			++begin1; ++begin2;
-		}
-		return (begin2 != end2);
-	}
+	template <unsigned n>
+	struct factorial : ft::integral_constant<long long, n * factorial<n - 1>::value> { };
+	
+	template <>
+	struct factorial<0> : ft::integral_constant<long long, 1> { };
+
 }
 
 #pragma endregion
