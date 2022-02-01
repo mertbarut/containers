@@ -6,7 +6,7 @@
 /*   By: mbarut <mbarut@student.42wolfsburg.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/26 14:09:36 by mbarut            #+#    #+#             */
-/*   Updated: 2022/01/31 21:15:54 by mbarut           ###   ########.fr       */
+/*   Updated: 2022/02/01 11:18:15 by mbarut           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,9 +87,9 @@ namespace ft
 	
 	template <unsigned n>
 	struct factorial : ft::integral_constant<long long, n * factorial<n - 1>::value> { };
-	
+
 	template <>
-	struct factorial<0> : ft::integral_constant<long long, 1> { };
+	struct factorial<0> : ft::integral_constant<long long, 1> { }; 
 
 }
 

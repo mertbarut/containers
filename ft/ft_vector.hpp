@@ -6,7 +6,7 @@
 /*   By: mbarut <mbarut@student.42wolfsburg.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/23 14:44:38 by mbarut            #+#    #+#             */
-/*   Updated: 2022/02/01 00:38:49 by mbarut           ###   ########.fr       */
+/*   Updated: 2022/02/01 17:18:07 by mbarut           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,12 +15,109 @@
 #include <exception>
 #include <memory>
 #include <sstream>
+#include "ft_iterator_base_types.hpp"
 #include "ft_iterator.hpp"
 #include "ft_util.hpp"
 #include "ft_algorithm.hpp"
 
 namespace ft
 {
+	template<typename ptr1, typename ptr2>
+	class random_access_iterator
+	{
+
+	private:
+
+		typedef typename ft::iterator_traits<ptr1>		type_traits;
+		ptr1											_base;
+
+	public:
+
+		typedef typename type_traits::value_type		value_type;
+		typedef typename type_traits::difference_type	difference_type;
+		typedef typename type_traits::iterator_category	iterator_category;
+		typedef typename type_traits::pointer			pointer;
+		typedef typename type_traits::reference			reference;
+
+		/* ctor 1 */
+		random_access_iterator() : _base(ptr1()) { }
+		/* ctor 2 */
+		random_access_iterator(const ptr1& other) : _base(other) { }
+		/* copy ctor */
+		random_access_iterator(const random_access_iterator& other) : _base(other._base) { } 
+		/* dtor */
+		~random_access_iterator() { }
+
+		/* assignment operator overload */
+		random_access_iterator&		operator= (const random_access_iterator& other)
+		{
+			if (this == &other)
+				return *this;
+			this->_base = other._base;
+			return *this;
+		}
+
+		/* friends */
+
+		friend bool						operator==(const random_access_iterator& i1, const random_access_iterator& i2)
+		{
+			return i1._base == i2._base;
+		}
+
+		friend bool						operator!=(const random_access_iterator& i1, const random_access_iterator& i2)
+		{
+			return i1._base != i2._base;
+		}
+
+		friend bool						operator< (const random_access_iterator& i1, const random_access_iterator& i2)
+		{
+			return i1._base < i2._base;
+		}
+
+		friend bool						operator> (const random_access_iterator& i1, const random_access_iterator& i2)
+		{
+			return i1._base > i2._base;
+		}
+
+		friend bool						operator<=(const random_access_iterator& i1, const random_access_iterator& i2)
+		{
+			return i1._base < i2._base;
+		}
+
+		friend bool						operator>=(const random_access_iterator& i1, const random_access_iterator& i2)
+		{
+			return i1._base > i2._base;
+		}
+
+		friend random_access_iterator	operator+ (difference_type d, const random_access_iterator& other)
+		{
+			return other + d;
+		}
+		
+		friend difference_type			operator- (const random_access_iterator& i1, const random_access_iterator& i2)
+		{
+			return i1._base - i2._base;
+		}
+
+		/* member operators overloads */
+
+		reference						operator* ()	const	{ return *_base; }
+		pointer							operator->()	const	{ return _base; }
+		reference						operator[](difference_type d) const { return _base[d]; }
+
+		random_access_iterator& 		operator++()				{ ++_base; return *this; }
+		random_access_iterator& 		operator--()				{ --_base; return *this; }
+		random_access_iterator	 		operator++(int)				{ random_access_iterator r(*this); ++_base ; return r; }
+		random_access_iterator	 		operator--(int)				{ random_access_iterator r(*this); --_base ; return r; }
+			
+		random_access_iterator&	 		operator+=(difference_type d)		{ _base += d; return *this; }
+		random_access_iterator&	 		operator-=(difference_type d)		{ _base -= d; return *this; }
+	
+		random_access_iterator	 		operator+ (difference_type d) const { return random_access_iterator(_base + d); }		
+		random_access_iterator	 		operator- (difference_type d) const { return random_access_iterator(_base - d); }
+
+	};
+	
 	template <class _Tp, class _Allocator >
 	class _vector_base
 	{
@@ -272,20 +369,23 @@ namespace ft
 		class Allocator = std::allocator<T>
 	> class vector : protected _vector_base<T, Allocator>
 	{
+	
+	public:
 
-		typedef T										value_type;
-		typedef Allocator								allocator_type;
-		typedef typename Allocator::reference			reference;
-		typedef typename Allocator::const_reference		const_reference;
-		typedef typename Allocator::pointer				pointer;
-		typedef typename Allocator::const_pointer		const_pointer;
-		typedef typename Allocator::difference_type		difference_type;
-		typedef typename Allocator::size_type			size_type;
-		typedef ft::iterator<pointer, pointer>			iterator;
-		typedef ft::iterator<const_pointer, pointer>	const_iterator;
-		typedef ft::reverse_iterator<iterator>			reverse_iterator;
-		typedef ft::reverse_iterator<const_iterator>	const_reverse_iterator;
-		typedef _vector_base<T, Allocator>				base;
+		typedef T													value_type;
+		typedef Allocator											allocator_type;
+		typedef typename Allocator::reference						reference;
+		typedef typename Allocator::const_reference					const_reference;
+		typedef typename Allocator::pointer							pointer;
+		typedef typename Allocator::const_pointer					const_pointer;
+		typedef typename Allocator::difference_type					difference_type;
+		typedef typename Allocator::size_type						size_type;
+		typedef random_access_iterator<pointer, pointer>			iterator;
+		typedef random_access_iterator<const_pointer, pointer>		const_iterator;
+		typedef ft::reverse_iterator<iterator>						reverse_iterator;
+		typedef ft::reverse_iterator<const_iterator>				const_reverse_iterator;
+		typedef _vector_base<T, Allocator>							base;	
+		typedef random_access_iterator_tag							iterator_catogory;
 
 	protected:
 

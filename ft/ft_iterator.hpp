@@ -6,7 +6,7 @@
 /*   By: mbarut <mbarut@student.42wolfsburg.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/23 23:13:25 by mbarut            #+#    #+#             */
-/*   Updated: 2022/01/30 18:37:05 by mbarut           ###   ########.fr       */
+/*   Updated: 2022/02/01 15:55:16 by mbarut           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ namespace ft
 		Iterator	_base;
 	
 		/* Trivial Getter & Setter */
-		iterator_type	getBase()
+		iterator_type	getBase() const
 		{
 			return this->_base;
 		}
@@ -624,194 +624,6 @@ namespace ft
 	{
 		return normal_iterator<Iterator, Container>(i.base() + d);
 	}
-	
-	/* Random access iterator */
-//	template <typename T>
-//	class random_access_iterator
-//	{
-//		typedef T								value_type;
-//		typedef ptrdiff_t						difference_type;
-//		typedef random_access_iterator_tag		iterator_category;
-//		typedef T*								pointer;
-//		typedef T&								reference;
-//		typedef random_access_iterator<T>		iterator;
-//		typedef random_access_iterator<const T>	const_iterator;
-//
-//	protected:
-//
-//		pointer		ptr;
-//	
-//		/* Getter & Setter */
-//		pointer		getPointer()
-//		{
-//			return this->ptr;
-//		}
-//
-//		void		setPointer(pointer obj)
-//		{
-//			this->ptr = obj->getPointer();
-//		}
-//	
-//	public:
-//
-//		/* Constructors */
-//		random_access_iterator(void)
-//		: ptr(NULL)
-//		{
-//			//std::cout << "A random access iterator has been constructed\n";
-//		}
-//
-//		explicit random_access_iterator(pointer other)
-//		: ptr(other)
-//		{
-//			//std::cout << "A random access iterator has been constructed using another random access iterator\n";
-//		}
-//
-//		/* Destructors */
-//		~random_access_iterator(void)
-//		{
-//			//std::cout << "A random access iterator has been destructed\n";
-//		}
-//
-//		/* Copy constructors */
-//		random_access_iterator(const random_access_iterator& obj)
-//		{
-//			//std::cout << "A copy constructor for the template class random access iterator has been called\n";
-//			*this = obj;
-//		}
-//
-//		/* Assignment operator overload */
-//		random_access_iterator& operator= (const random_access_iterator& obj)
-//		{
-//			if (this != &obj)
-//				this->setPointer(obj);
-//			return *this;
-//		}
-//
-//		/* Member access operators */
-//		reference operator[] (const difference_type d) const
-//		{
-//			return this->getPointer()[d];
-//		}
-//
-//		reference operator* ()
-//		{
-//			return *this->getPointer();
-//		}
-//
-//		reference operator-> ()
-//		{
-//			return this->getPointer();
-//		}
-//
-//		pointer operator& ()
-//		{
-//			return &this->getPointer();
-//		}
-//
-//		/* Relational operators */
-//		bool operator== (const iterator& obj) const
-//		{
-//			return this->getPointer() == obj.getPointer();
-//		}
-//
-//		bool operator!= (const iterator& obj) const
-//		{
-//			return this->getPointer() != obj.getPointer();
-//		}
-//
-//		bool operator<= (const iterator& obj) const
-//		{
-//			return this->getPointer() <= obj.getPointer();
-//		}
-//
-//		bool operator>= (const iterator& obj) const
-//		{
-//			return this->getPointer() >= obj.getPointer();
-//		}
-//
-//		bool operator< (const iterator& obj) const
-//		{
-//			return this->getPointer() < obj.getPointer();
-//		}
-//
-//		bool operator> (const iterator& obj) const
-//		{
-//			return this->getPointer() > obj.getPointer();
-//		}
-//
-//		/* Increment/decrement operators */
-//		iterator& operator++ ()
-//		{
-//			++this->getPointer();
-//			return *this;
-//		}
-//
-//		iterator operator++ (int)
-//		{
-//			iterator tmp = *this;
-//			++this->getPointer();
-//			return tmp;
-//		}
-//		
-//		iterator& operator-- ()
-//		{
-//			--this->getPointer();
-//			return *this;
-//		}
-//
-//		iterator operator-- (int)
-//		{
-//			iterator tmp = *this;
-//			--this->getPointer();
-//			return tmp;
-//		}
-//
-//		/* Pointer Arithmetic operators */
-//		friend iterator operator+ (int d, iterator obj)
-//		{
-//			return iterator(obj.getPointer() + d);
-//		}
-//		
-//		iterator operator+ (const int d) const
-//		{
-//			return iterator(this->getPointer() + d);
-//		}
-//		
-//		difference_type operator+ (const iterator& obj)
-//		{
-//			return this->getPointer() + obj.getPointer();
-//		}
-//		
-//		friend iterator operator- (int d, iterator obj)
-//		{
-//			return iterator(obj.getPointer() - d);
-//		}
-//		
-//		iterator operator- (const int d) const
-//		{
-//			return iterator(this->getPointer() - d);
-//		}
-//		
-//		difference_type operator- (const iterator& obj)
-//		{
-//			return getPointer() - obj.getPointer();
-//		}
-//		
-//		/* Increment/decrement assignment operators */
-//		iterator& operator += (int d)
-//		{
-//			this->setPointer(this->getPointer() + d);
-//			return *this;
-//		}
-//
-//		iterator& operator -= (int d)
-//		{
-//			this->setPointer(this->getPointer() - d);
-//			return *this;
-//		}
-//
-//	};
 
 }
 
