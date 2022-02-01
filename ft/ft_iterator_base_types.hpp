@@ -6,7 +6,7 @@
 /*   By: mbarut <mbarut@student.42wolfsburg.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/28 16:02:53 by mbarut            #+#    #+#             */
-/*   Updated: 2022/01/31 20:38:59 by mbarut           ###   ########.fr       */
+/*   Updated: 2022/02/01 22:21:48 by mbarut           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ namespace ft
 		typedef Reference	reference;
 	};
 
-	/* Forwarding the Nested Typedefs from any Iterator or Pointer */
+	/* type_traits */
 	template <typename Iterator>
 	struct iterator_traits
 	{

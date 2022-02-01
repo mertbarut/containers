@@ -6,7 +6,7 @@
 /*   By: mbarut <mbarut@student.42wolfsburg.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/28 17:06:05 by mbarut            #+#    #+#             */
-/*   Updated: 2022/01/30 16:01:46 by mbarut           ###   ########.fr       */
+/*   Updated: 2022/02/01 22:08:25 by mbarut           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,6 @@ namespace ft
 	static inline typename iterator_traits<InputIterator>::difference_type
 	_distance (InputIterator first, InputIterator last, ft::input_iterator_tag)
 	{
-		//std::cout << "Compiler has decided: Input Iterator\n";
 		typename iterator_traits<InputIterator>::difference_type n = 0;
 		while (first != last)
 		{
@@ -36,7 +35,6 @@ namespace ft
 	static inline typename iterator_traits<RandomAccessIterator>::difference_type
 	_distance (RandomAccessIterator first, RandomAccessIterator last, ft::random_access_iterator_tag)
 	{
-		//std::cout << "Compiler has decided: Random Access Iterator\n";
 		return last - first;
 	}
 
@@ -44,7 +42,6 @@ namespace ft
 	inline typename iterator_traits<InputIterator>::difference_type
 	distance(InputIterator first, InputIterator last)
 	{
-		//std::cout << "Compiler is looking for a suitable iterator template for given iterator's trait in distance()\n";
 		return ft::_distance(first, last, ft::iterator_category(first));
 	}
 
@@ -54,7 +51,6 @@ namespace ft
 	static inline void
 	_advance(InputIterator& i, Distance n, ft::input_iterator_tag)
 	{
-		//std::cout << "Compiler has decided: Input Iterator\n";
 		while (n--)
 			++i;
 	}
@@ -63,7 +59,6 @@ namespace ft
 	static inline void
 	_advance(BidirectionalIterator& i, Distance n, ft::bidirectional_iterator_tag)
 	{
-		//std::cout << "Compiler has decided: Bidirectional Iterator\n";
 		if (n > 0)
 			while (n--)
 				++i;
@@ -76,7 +71,6 @@ namespace ft
 	static inline void
 	_advance(RandomAccessIterator& i, Distance n, ft::random_access_iterator_tag)
 	{
-		// std::cout << "Compiler has decided: Random Access Iterator\n";
 		i += n;
 	}
 
@@ -84,7 +78,6 @@ namespace ft
 	inline void
 	advance (InputIterator& i, Distance n)
 	{
-		//std::cout << "Compiler is looking for a suitable iterator template for given iterator's trait in advance()\n";
 		typename iterator_traits<InputIterator>::difference_type d = n;
 		ft::_advance(i, d, ft::iterator_category(i));
 	}

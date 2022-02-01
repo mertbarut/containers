@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.cpp                                           :+:      :+:    :+:   */
+/*   std_main.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mbarut <mbarut@student.42wolfsburg.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/23 15:19:31 by mbarut            #+#    #+#             */
-/*   Updated: 2022/02/01 14:47:18 by mbarut           ###   ########.fr       */
+/*   Updated: 2022/02/01 21:36:47 by mbarut           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,15 +27,17 @@
 
 int main()
 {
-	ft::vector<int> v1;
-	ft::vector<int> v2;
+	/* ft::vector */
 
-	ft::vector<int>::iterator it1;
-	ft::vector<int>::iterator it2;
-	ft::vector<int>::iterator it3;
-	ft::vector<int>::const_iterator it_const;
-	ft::vector<int>::reverse_iterator it_r;
-	ft::vector<int>::const_reverse_iterator it_rconst;
+	std::vector<int> v1;
+	std::vector<int> v2;
+
+	std::vector<int>::iterator it1;
+	std::vector<int>::iterator it2;
+	std::vector<int>::iterator it3;
+	std::vector<int>::const_iterator it_const;
+	std::vector<int>::reverse_iterator it_r;
+	std::vector<int>::const_reverse_iterator it_rconst;
 	
 	v1.reserve(12);
 	v1.push_back( 0 );
@@ -94,8 +96,8 @@ int main()
 
 	/* Reverse iterator */
 
-	ft::reverse_iterator<ft::vector<int>::iterator> it4( v1.rbegin() + 6 );
-	ft::reverse_iterator<ft::vector<int>::iterator> it5( v1.rbegin() );
+	std::reverse_iterator<std::vector<int>::iterator> it4( v1.rbegin() + 6 );
+	std::reverse_iterator<std::vector<int>::iterator> it5( v1.rbegin() );
 	std::cout << "*(it4): " << *(it4) << std::endl;
 	
 	std::cout << "*(it4++): " << *(it4++) << " -> " << *it4 << std::endl;
