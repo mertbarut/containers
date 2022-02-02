@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.cpp                                           :+:      :+:    :+:   */
+/*   ft_main.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mbarut <mbarut@student.42wolfsburg.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/23 15:19:31 by mbarut            #+#    #+#             */
-/*   Updated: 2022/02/01 21:35:41 by mbarut           ###   ########.fr       */
+/*   Updated: 2022/02/02 18:02:30 by mbarut           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,15 +22,36 @@
 #include "../ft/ft_vector.hpp"
 #include "../ft/ft_iterator.hpp"
 #include "../ft/ft_pair.hpp"
+#include "../ft/ft_util.hpp"
 
 /* vectors & its iterators */
+
+template<typename T>
+void	print_vector(ft::vector<T> v, size_t id = 0, const std::string& delimiter = " ")
+{
+	std::cout << "vector" << id << ": " << "[ ";
+	for (typename ft::vector<T>::iterator it1 = v.begin(); it1 != v.end(); ++it1)
+		std::cout << *it1 << delimiter;
+	std::cout << "]" << std::endl;
+}
 
 int main()
 {
 	/* ft::vector */
 
 	ft::vector<int> v1;
-	ft::vector<int> v2;
+	print_vector(v1, 1);
+	
+	ft::vector<int> v2(8, 42);
+	print_vector(v2, 2);
+
+	ft::vector<int>::iterator it_tmp1 = v2.begin() + 1;
+	ft::vector<int>::iterator it_tmp2 = v2.end() - 2;
+	ft::vector<int> v3(it_tmp1, it_tmp2);
+	print_vector(v3, 3);
+
+	ft::vector<int> v4(v3);
+	print_vector(v4, 4);
 
 	ft::vector<int>::iterator it1;
 	ft::vector<int>::iterator it2;

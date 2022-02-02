@@ -6,7 +6,7 @@
 /*   By: mbarut <mbarut@student.42wolfsburg.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/23 15:19:31 by mbarut            #+#    #+#             */
-/*   Updated: 2022/02/01 21:36:47 by mbarut           ###   ########.fr       */
+/*   Updated: 2022/02/02 17:43:30 by mbarut           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,12 +25,32 @@
 
 /* vectors & its iterators */
 
+template<typename T>
+void	print_vector(std::vector<T> v, size_t id = 0, const std::string& delimiter = " ")
+{
+	std::cout << "vector" << id << ": " << "[ ";
+	for (typename std::vector<T>::iterator it1 = v.begin(); it1 != v.end(); ++it1)
+		std::cout << *it1 << delimiter;
+	std::cout << "]" << std::endl;
+}
+
 int main()
 {
-	/* ft::vector */
+	/* std::vector */
 
 	std::vector<int> v1;
-	std::vector<int> v2;
+	print_vector(v1, 1);
+	
+	std::vector<int> v2(8, 42);
+	print_vector(v2, 2);
+
+	std::vector<int>::iterator it_tmp1 = v2.begin() + 1;
+	std::vector<int>::iterator it_tmp2 = v2.end() - 2;
+	std::vector<int> v3(it_tmp1, it_tmp2);
+	print_vector(v3, 3);
+
+	std::vector<int> v4(v3);
+	print_vector(v4, 4);
 
 	std::vector<int>::iterator it1;
 	std::vector<int>::iterator it2;

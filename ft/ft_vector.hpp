@@ -6,7 +6,7 @@
 /*   By: mbarut <mbarut@student.42wolfsburg.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/23 14:44:38 by mbarut            #+#    #+#             */
-/*   Updated: 2022/02/01 19:39:54 by mbarut           ###   ########.fr       */
+/*   Updated: 2022/02/02 18:08:29 by mbarut           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,7 +67,6 @@ namespace ft
 		
 		void		_M_allocate(size_type capacity = 0)
 		{
-			_size = 0;
 			_capacity = capacity;
 			_p = _allocator.allocate(_capacity);
 		}
@@ -116,7 +115,7 @@ namespace ft
 					_M_reserve(_capacity * 2);
 			}
 			_allocator.construct(_p + _size, val);
-			++_size;
+			++this->_size;
 		}
 
 		void		_M_destroy()
@@ -173,7 +172,7 @@ namespace ft
 		void		_M_range_assign(InputIterator first, InputIterator last, ft::false_type)
 		{
 			_M_destroy();
-			size_t	dist = _iter_range_dist(first, last);
+			size_t	dist = _M_iter_range_dist(first, last);
 			if (dist > _capacity)
 			{
 				_M_deallocate();
@@ -181,6 +180,15 @@ namespace ft
 			}
 			for (InputIterator it = first; it != last; it++)
 				_M_expand(*it);
+		}
+
+		template <class InputIterator>
+		size_type	_M_range_dist(InputIterator first, InputIterator last)
+		{
+			size_type distance = 0;
+			for (InputIterator it = first; it != last; ++it)
+				distance++;
+			return distance;
 		}
 
 		void		_M_copy_assign(const _vector_base& v)
@@ -193,8 +201,15 @@ namespace ft
 			}
 			for (size_type i = 0; i < v._size; i++)
 			{
-				_M_range_check(i, "at: n");
-				_M_expand(v._p[i]);
+				if (_size == _capacity)
+				{
+					if (_capacity == 0)
+						_M_reserve(1);
+					else
+						_M_reserve(_capacity * 2);
+				}
+				_allocator.construct(_p + _size, v._p[i]);
+				++_size;
 			}				
 		}
 
@@ -268,7 +283,7 @@ namespace ft
 		}
 	};
 
-	template <class T, class Allocator = std::allocator<T> >
+	template <typename T, class Allocator = std::allocator<T> >
 	class vector : protected _vector_base<T, Allocator>
 	{
 	
@@ -304,12 +319,12 @@ namespace ft
 
 	public:
 
-		/* ctor 1*/
+		/* ctor 1 */
 		explicit vector(const allocator_type& alloc = allocator_type()) : base(alloc) { }
 
 		/* ctor 2 */
 		explicit vector(size_type n, const value_type& val = value_type(),
-			const allocator_type& alloc = allocator_type()) : base(alloc, n, val) { }
+			const allocator_type& alloc = allocator_type()) : base(n, val, alloc) { }
 
 		/* ctor 3 */
 		template <class InputIterator>
