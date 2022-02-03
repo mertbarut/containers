@@ -6,7 +6,7 @@
 /*   By: mbarut <mbarut@student.42wolfsburg.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/23 23:13:25 by mbarut            #+#    #+#             */
-/*   Updated: 2022/02/01 22:19:33 by mbarut           ###   ########.fr       */
+/*   Updated: 2022/02/03 18:06:02 by mbarut           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -473,7 +473,7 @@ namespace ft
 		~random_access_iterator() { }
 
 		/* expose _base */
-		pointer			base() const { return (this->_node); }
+		pointer			base() const { return (this->_base); }
 
 		/* assignment operator overload */
 		random_access_iterator&		operator= (const random_access_iterator& other)

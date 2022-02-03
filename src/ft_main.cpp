@@ -6,7 +6,7 @@
 /*   By: mbarut <mbarut@student.42wolfsburg.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/23 15:19:31 by mbarut            #+#    #+#             */
-/*   Updated: 2022/02/02 18:02:30 by mbarut           ###   ########.fr       */
+/*   Updated: 2022/02/03 17:44:11 by mbarut           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,8 +41,8 @@ int main()
 
 	ft::vector<int> v1;
 	print_vector(v1, 1);
-	
-	ft::vector<int> v2(8, 42);
+
+	ft::vector<int> v2(size_t(8), int(42));
 	print_vector(v2, 2);
 
 	ft::vector<int>::iterator it_tmp1 = v2.begin() + 1;
@@ -129,6 +129,10 @@ int main()
 	std::cout << "*(it4 + 3): " << *(it4 + 3) << std::endl;
 	std::cout << "*(it4 - 3): " << *(it4 - 3) << std::endl;
 	std::cout << "it4 - it5: " << it4 - it5 << std::endl;
+
+	/* insert */
+	v1.insert(it2, 42);
+	print_vector(v1, 1);
 
 	return 0;
 }

@@ -6,7 +6,7 @@
 /*   By: mbarut <mbarut@student.42wolfsburg.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/23 14:44:38 by mbarut            #+#    #+#             */
-/*   Updated: 2022/02/02 18:08:29 by mbarut           ###   ########.fr       */
+/*   Updated: 2022/02/03 18:10:28 by mbarut           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@ namespace ft
 			_M_allocate();
 		}
 
-		_vector_base(size_type n, const value_type& val = value_type(),
+		explicit _vector_base(size_type n, const value_type& val = value_type(),
 			const allocator_type& alloc = allocator_type()) : _allocator(alloc), _capacity(0), _size(0)
 		{
 			_M_allocate(n);
@@ -56,7 +56,7 @@ namespace ft
 			const allocator_type& alloc = allocator_type()) : _allocator(alloc), _capacity(0), _size(0)
 		{
 			_M_allocate();
-			_M_range_assign(first, last, ft::is_integral<InputIterator>());
+			_M_range_assign(first, last, typename ft::is_integral<InputIterator>::type());
 		}
 
 		_vector_base(const _vector_base& b) : _allocator(b._allocator), _capacity(0), _size(0)
@@ -127,15 +127,6 @@ namespace ft
 			}
 		}
 
-		template <class InputIterator>
-		size_type	_M_iter_range_dist(InputIterator first, InputIterator last) const
-		{
-			size_type	dist = 0;
-			for (InputIterator it = first; it != last; it++)
-				dist++;
-			return (dist);
-		}
-
 		void		_M_range_check(size_type n, const std::string &message = "") const
 		{
 			if (n >= _size)
@@ -172,7 +163,7 @@ namespace ft
 		void		_M_range_assign(InputIterator first, InputIterator last, ft::false_type)
 		{
 			_M_destroy();
-			size_t	dist = _M_iter_range_dist(first, last);
+			size_type	dist = static_cast<size_type>(ft::distance<InputIterator>(first, last));
 			if (dist > _capacity)
 			{
 				_M_deallocate();
@@ -180,15 +171,6 @@ namespace ft
 			}
 			for (InputIterator it = first; it != last; it++)
 				_M_expand(*it);
-		}
-
-		template <class InputIterator>
-		size_type	_M_range_dist(InputIterator first, InputIterator last)
-		{
-			size_type distance = 0;
-			for (InputIterator it = first; it != last; ++it)
-				distance++;
-			return distance;
 		}
 
 		void		_M_copy_assign(const _vector_base& v)
@@ -213,36 +195,37 @@ namespace ft
 			}				
 		}
 
-		iterator	_M_fill_insert(iterator pos, size_type n, const value_type& val)
+		template <class InputIterator>
+		InputIterator	_M_fill_insert(InputIterator pos, size_type n, const value_type& val)
 		{
 			if (n == 0)
 				return (pos);
 
-			iterator	res = pos;
-			if (_size + n > _capacity)
+			InputIterator	res = pos;
+			if (n > _capacity - _size)
 			{
 				_vector_base	tmp;
-				if (_size + n <= _capacity * 2)
+				if (n <= _capacity * 2 - _size)
 					tmp._M_reserve(_capacity * 2);
 				else
 					tmp._M_reserve(_size + n);
 
-				iterator	it = this->begin();
+				InputIterator	it = InputIterator(_p);
 				while (it != pos)
 					tmp._M_expand(*it++);
 
-				res = iterator(_p + _size);
+				res = InputIterator(_p + _size);
 				for (size_type i = 0; i < n; i++)
 					tmp._M_expand(val);
 
-				while (it != iterator(_p + _size))
+				while (it != InputIterator(_p + _size))
 					tmp._M_expand(*it++);
 
 				_M_swap(tmp);
 			}
 			else
 			{
-				iterator	it = iterator(_p + _size);
+				InputIterator	it = InputIterator(_p + _size);
 				while (it != pos)
 				{
 					--it;
@@ -256,7 +239,6 @@ namespace ft
 					++_size;
 				}
 			}
-
 			return (res);
 		}
 
