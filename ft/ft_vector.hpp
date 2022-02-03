@@ -6,7 +6,7 @@
 /*   By: mbarut <mbarut@student.42wolfsburg.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/23 14:44:38 by mbarut            #+#    #+#             */
-/*   Updated: 2022/02/03 18:10:28 by mbarut           ###   ########.fr       */
+/*   Updated: 2022/02/03 20:22:17 by mbarut           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 #include <exception>
 #include <memory>
 #include <sstream>
+#include "ft_iterator_base_funcs.hpp"
 #include "ft_iterator_base_types.hpp"
 #include "ft_iterator.hpp"
 #include "ft_util.hpp"
@@ -134,7 +135,7 @@ namespace ft
 				std::ostringstream	oss;
 				oss << "vector::";
 				if (message.empty())
-					oss << "_vector_check_range: n";
+					oss << "_M_check_range: n";
 				oss << message << " (which is " << n <<
 					") >= this->size() (which is " << this->_size << ")";
 				throw (std::out_of_range(oss.str()));
@@ -292,6 +293,7 @@ namespace ft
 		using	base::_M_deallocate;
 		using	base::_M_copy_assign;
 		using	base::_M_range_check;
+		using	base::_M_range_assign;
 		using	base::_M_fill_assign;
 		using	base::_M_fill_insert;
 		using	base::_p;
@@ -411,7 +413,6 @@ namespace ft
 			if (n > this->_capacity)
 			{
 				vector	tmp;
-				tmp._M_deallocate();
 				tmp._M_allocate(n);
 				tmp._M_copy_assign(*this);
 				swap(tmp);
@@ -431,13 +432,13 @@ namespace ft
 
 		reference			at(size_type n)
 		{
-			_M_range_check(n, "at: n");
+			_M_range_check(n, "_M_range_check: __n");
 			return (this->_p[n]);
 		}
 
 		const_reference		at(size_type n) const
 		{
-			_M_range_check(n, "at: n");
+			_M_range_check(n, "_M_range_check: __n");
 			return (this->_p[n]);
 		}
 
@@ -465,7 +466,7 @@ namespace ft
 		template <class InputIterator>
 		void		assign(InputIterator first, InputIterator last)
 		{
-			base::_M_range_assign(first, last, ft::is_integral<InputIterator>());
+			_M_range_assign(first, last, ft::is_integral<InputIterator>());
 		}
 
 		void		assign(size_type n, const value_type& val)
@@ -526,10 +527,9 @@ namespace ft
 
 		iterator	erase(iterator first, iterator last)
 		{
-			difference_type	diff = last - first;
+			difference_type	diff = ft::distance(first, last);
 			if (diff <= 0)
 				return (first);
-
 			iterator	it = first;
 			while (it != last)
 				_allocator.destroy((it++).base());

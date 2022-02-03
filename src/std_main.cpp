@@ -6,7 +6,7 @@
 /*   By: mbarut <mbarut@student.42wolfsburg.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/23 15:19:31 by mbarut            #+#    #+#             */
-/*   Updated: 2022/02/02 17:43:30 by mbarut           ###   ########.fr       */
+/*   Updated: 2022/02/03 21:46:10 by mbarut           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,6 +51,9 @@ int main()
 
 	std::vector<int> v4(v3);
 	print_vector(v4, 4);
+	std::cout << v4.at(v4.size()) << std::endl;
+
+	
 
 	std::vector<int>::iterator it1;
 	std::vector<int>::iterator it2;
