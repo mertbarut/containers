@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_main.cpp                                        :+:      :+:    :+:   */
+/*   ft_vector_main.cpp                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mbarut <mbarut@student.42wolfsburg.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/23 15:19:31 by mbarut            #+#    #+#             */
-/*   Updated: 2022/02/03 21:48:34 by mbarut           ###   ########.fr       */
+/*   Updated: 2022/02/04 19:04:36 by mbarut           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,8 +27,9 @@
 /* vectors & its iterators */
 
 template<typename T>
-void	print_vector(ft::vector<T> v, size_t id = 0, const std::string& delimiter = " ")
+void	print_vector(ft::vector<T> v, size_t id = 0, const std::string& delimiter = " ", std::string comment = "")
 {
+	std::cout << comment ;
 	std::cout << "vector" << id << ": " << "[ ";
 	for (typename ft::vector<T>::iterator it1 = v.begin(); it1 != v.end(); ++it1)
 		std::cout << *it1 << delimiter;

@@ -6,45 +6,44 @@
 #    By: mbarut <mbarut@student.42wolfsburg.de>     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/11/21 15:55:20 by mbarut            #+#    #+#              #
-#    Updated: 2022/02/01 22:26:05 by mbarut           ###   ########.fr        #
+#    Updated: 2022/02/04 19:55:28 by mbarut           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-NAME=ft_containers
+NAME_VECTOR=ft_vector
+NAME_MAP=ft_map
 
-STDNAME=std_containers
+DRIVER_STD_VECTOR=drivers/std_vector_main.cpp
+DRIVER_STD_MAP=drivers/std_map_main.cpp
 
-DRIVER=driver/main.cpp
-
-STD=src/std_main.cpp
-
-FT=src/ft_main.cpp
+DRIVER_FT_VECTOR=drivers/ft_vector_main.cpp
+DRIVER_FT_MAP=drivers/ft_map_main.cpp
 
 CC=clang++
 
-CFLAGS_11= -Wall -Werror -Wextra -std=c++11 -g -o
+CFLAGS= -Wall -Werror -Wextra -std=c++98 -g -o
 
-CFLAGS_98= -Wall -Werror -Wextra -std=c++98 -g -o
+all: $(NAME_VECTOR) $(NAME_MAP)
 
-all: $(NAME)
+$(NAME_VECTOR):
+	$(CC) $(DRIVER_FT_VECTOR) $(CFLAGS) ft_vector
+	$(CC) $(DRIVER_STD_VECTOR) $(CFLAGS) std_vector
 
-$(NAME):
-	$(CC) $(FT) $(CFLAGS_98) $(NAME)
-	$(CC) $(STD) $(CFLAGS_98) $(STDNAME)
-
-c11:
-	$(CC) $(STD) $(CFLAGS_11) $(NAME)
-
-c98:
-	$(CC) $(STD) $(CFLAGS_98) $(NAME)
+$(NAME_MAP):
+	$(CC) $(DRIVER_FT_MAP) $(CFLAGS) ft_map
+	$(CC) $(DRIVER_STD_MAP) $(CFLAGS) std_map
 
 clean:
-	@rm -rf ./*.o ./ft_containers.dSYM
-	@rm -rf ./*.o ./std_containers.dSYM
+	@rm -rf ./ft_vector.dSYM
+	@rm -rf ./ft_map.dSYM
+	@rm -rf ./std_vector.dSYM
+	@rm -rf ./std_map.dSYM
 
 fclean: clean
-	@rm -f $(NAME)
-	@rm -f $(STDNAME)
+	@rm -f ft_vector
+	@rm -f std_vector
+	@rm -f ft_map
+	@rm -f std_map
 
 re: fclean all
 

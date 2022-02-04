@@ -6,7 +6,7 @@
 /*   By: mbarut <mbarut@student.42wolfsburg.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/26 14:09:36 by mbarut            #+#    #+#             */
-/*   Updated: 2022/02/02 16:58:15 by mbarut           ###   ########.fr       */
+/*   Updated: 2022/02/04 21:46:08 by mbarut           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,13 +83,36 @@ namespace ft
 	template <> struct is_integral<long long> : public true_type { };
 	template <> struct is_integral<unsigned long long> : public true_type { };
 
+	/* ft::less
+	** Used to express that you want to use operator< to perform comparisons.
+	*/
+	template<typename T>
+	struct less
+	{
+	    bool operator()(T const& lhs, T const& rhs) { return lhs < rhs; }
+	};
+
+	/* ft::find_if
+	** Searches for an element for which predicate p returns true.
+	*/
+	template<class InputIt, class UnaryPredicate>
+	InputIt find_if(InputIt first, InputIt last, UnaryPredicate p)
+	{
+		for (; first != last; ++first)
+		{
+			if (p(*first))
+				return first;
+		}
+		return last;
+	}
+
 	/* c00l factorial trick, no calculation made during runtime */
 	
 	template <unsigned n>
 	struct factorial : ft::integral_constant<long long, n * factorial<n - 1>::value> { };
 
 	template <>
-	struct factorial<0> : ft::integral_constant<long long, 1> { }; 
+	struct factorial<0> : ft::integral_constant<long long, 1> { };
 
 }
 
