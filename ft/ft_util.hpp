@@ -6,7 +6,7 @@
 /*   By: mbarut <mbarut@student.42wolfsburg.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/26 14:09:36 by mbarut            #+#    #+#             */
-/*   Updated: 2022/02/04 21:46:08 by mbarut           ###   ########.fr       */
+/*   Updated: 2022/02/06 18:17:07 by mbarut           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,6 +105,23 @@ namespace ft
 		}
 		return last;
 	}
+
+	/* ft::binary_function */
+	template <typename Arg1, typename Arg2, typename Result>
+	struct binary_function
+	{
+		typedef Arg1		first_argument_type;
+		typedef Arg2		second_argument_type;
+		typedef Result		result_type;
+	};
+
+	/* ft::unary_function */
+	template <class Arg, class Result>
+	struct unary_function
+	{
+		typedef Arg argument_type;
+		typedef Result result_type;
+	};
 
 	/* c00l factorial trick, no calculation made during runtime */
 	

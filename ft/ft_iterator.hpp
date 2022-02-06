@@ -6,7 +6,7 @@
 /*   By: mbarut <mbarut@student.42wolfsburg.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/23 23:13:25 by mbarut            #+#    #+#             */
-/*   Updated: 2022/02/03 18:06:02 by mbarut           ###   ########.fr       */
+/*   Updated: 2022/02/05 17:40:06 by mbarut           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -208,252 +208,15 @@ namespace ft
 
 	};
 
-
-	/* Back insert iterator */
-	
-	template <typename Container>
-	class back_insert_iterator : public iterator<output_iterator_tag, void, void, void, void>
+	template<typename Node>
+	class bidirectional_iterator
 	{
-
 	protected:
-
-		Container* container;
-
-	public:
-
-		typedef Container	container_type;
 		
-		/* Ctor */
-		explicit back_insert_iterator(Container& cont) : container(&cont)
-		{
-			
-		}
-
-		/* Assignment overload operator */
-		back_insert_iterator& operator= (typename Container::const_reference value)
-		{
-			container->push_back(value);
-			return *this;
-		}
-
-		/* Trivial access operator */
-		back_insert_iterator& operator* (void)
-		{
-			return *this;
-		}
-	
-		/* Trivial Increment operators */
-
-		back_insert_iterator& operator++ ()
-		{
-			return *this;
-		}
-	
-		back_insert_iterator operator++ (int)
-		{
-			return *this;
-		}
-	};
-
-	/* Returns an instance of back_insert_iterator for type Container */
-	template <typename Container>
-	inline back_insert_iterator<Container> back_inserter(Container& cont)
-	{
-		return back_insert_iterator<Container>(cont);
-	}
-
-	/* Front insert iterator */
-	
-	template <typename Container>
-	class front_insert_iterator : public iterator <output_iterator_tag, void, void, void, void>
-	{
-	
-	protected:
-
-		Container* container;
-
-	public:
-
-		typedef Container	container_type;
-		
-		/* Ctor */
-		explicit front_insert_iterator(Container& cont) : container(&cont)
-		{
-			
-		}
-
-		/* Assignment overload operator */
-		front_insert_iterator& operator= (typename Container::const_reference value)
-		{
-			container->push_front(value);
-			return *this;
-		}
-
-		/* Trivial access operator */
-		front_insert_iterator& operator* (void)
-		{
-			return *this;
-		}
-	
-		/* Trivial Increment operators */
-
-		front_insert_iterator& operator++ ()
-		{
-			return *this;
-		}
-	
-		front_insert_iterator operator++ (int)
-		{
-			return *this;
-		}
-	};
-
-	/* Returns an instance of front_insert_iterator for type Container */
-	template <typename Container>
-	inline front_insert_iterator<Container> front_inserter(Container& cont)
-	{
-		return front_insert_iterator<Container>(cont);
-	}
-
-	/* Insert Iterator */
-	template <typename Container>
-	class insert_iterator : public iterator<output_iterator_tag, void, void, void, void>
-	{
-
-	protected:
-
-		Container* container;
-		typename Container::iterator iter;
-		
-	public:
-
-		typedef Container container_type;
-		
-	/* Ctor */
-	insert_iterator(Container& cont, typename Container::iterator i) : container(&cont), iter(i)
-	{
-		
-	}
-
-	/* Assignment operator overload */
-	insert_iterator& operator= (typename Container::const_reference value)
-	{
-		iter = container->insert(iter, value);
-		++iter;
-		return *this;
-	}
-
-	/* Trivial access operator */
-	insert_iterator& operator* (void)
-	{
-		return *this;
-	}
-	
-	/* Trivial Increment operators */
-
-	insert_iterator& operator++ (void)
-	{
-		return *this;
-	}
-	
-	insert_iterator operator++ (int)
-	{
-		return *this;
-	}
-
-	};
-
-	/* Returns an instance of insert_iterator for type Container */
-	template <typename Container, typename Iterator>
-	inline insert_iterator<Container> inserter(Container& container, Iterator i)
-	{
-		return insert_iterator<Container>(container, typename Container::iterator(i));
-	}
-
-	/* Any iterator inline functions */
-
-	/* Relational operators with different iterator types */
-	//template <class IteratorL, class IteratorR, class Container>
-	//inline bool operator== (const base_iterator<IteratorL, Container>& lhs,
-	//						const base_iterator<IteratorR, Container>& rhs)
-	//{ return lhs.base() == rhs.base(); }
-	//
-	//template <class IteratorL, class IteratorR, class Container>
-	//inline bool operator!= (const base_iterator<IteratorL, Container>& lhs,
-	//						const base_iterator<IteratorR, Container>& rhs)
-	//{ return !(lhs->base() == rhs->base()); }
-	//
-	//template <class IteratorL, class IteratorR, class Container>
-	//inline bool operator > (const base_iterator<IteratorL, Container>& lhs,
-	//						const base_iterator<IteratorR, Container>& rhs)
-	//{ return lhs->base() > rhs->base(); }
-	//
-	//template <class IteratorL, class IteratorR, class Container>
-	//inline bool operator<= (const base_iterator<IteratorL, Container>& lhs,
-	//						const base_iterator<IteratorR, Container>& rhs)
-	//{ return !(lhs->base() < rhs->base()); }
-	//template <class IteratorL, class IteratorR, class Container>
-	//inline bool operator < (const base_iterator<IteratorL, Container>& lhs,
-	//						const base_iterator<IteratorR, Container>& rhs)
-	//{ return lhs->base() < rhs->base(); }
-	//template <class IteratorL, class IteratorR, class Container>
-	//inline bool operator>= (const base_iterator<IteratorL, Container>& lhs,
-	//						const base_iterator<IteratorR, Container>& rhs)
-	//{ return !(lhs->base() > rhs->base()); }
-	//
-	///* Relational operators with same iterator types */
-	//template <class Iterator, class Container>
-	//inline bool operator== (const base_iterator<Iterator, Container>& lhs,
-	//						const base_iterator<Iterator, Container>& rhs)
-	//{ return lhs.base() == rhs.base(); }
-	//template <class Iterator, class Container>
-	//inline bool operator!= (const base_iterator<Iterator, Container>& lhs,
-	//						const base_iterator<Iterator, Container>& rhs)
-	//{ return !(lhs->base() == rhs->base()); }
-	//template <class Iterator, class Container>
-	//inline bool operator > (const base_iterator<Iterator, Container>& lhs,
-	//						const base_iterator<Iterator, Container>& rhs)
-	//{ return lhs->base() > rhs->base(); }
-	//template <class Iterator, class Container>
-	//inline bool operator<= (const base_iterator<Iterator, Container>& lhs,
-	//						const base_iterator<Iterator, Container>& rhs)
-	//{ return !(lhs->base() < rhs->base()); }
-	//template <class Iterator, class Container>
-	//inline bool operator < (const base_iterator<Iterator, Container>& lhs,
-	//						const base_iterator<Iterator, Container>& rhs)
-	//{ return lhs->base() < rhs->base(); }
-	//template <class Iterator, class Container>
-	//inline bool operator>= (const base_iterator<Iterator, Container>& lhs,
-	//						const base_iterator<Iterator, Container>& rhs)
-	//{ return !(lhs->base() > rhs->base()); }
-
-	///* return the distance between iterators ( = right - left ) */
-	//template <class IteratorL, class IteratorR, class Container>
-	//inline typename base_iterator<IteratorL, Container>::difference_type operator- (
-	//	const base_iterator<IteratorL, Container>& lhs,
-	//	const base_iterator<IteratorR, Container>& rhs)
-	//{ return rhs.base() - lhs.base(); }
-
-	//template <class Iterator, class Container>
-	//inline typename base_iterator<Iterator, Container>::difference_type operator- (
-	//	const base_iterator<Iterator, Container>& lhs,
-	//	const base_iterator<Iterator, Container>& rhs)
-	//{ return rhs.base() - lhs.base(); }
-
-	//template <class Iterator, class Container>
-	//inline base_iterator<Iterator, Container> operator+ (
-	//	typename base_iterator<Iterator, Container>::difference_type d,
-	//	const base_iterator<Iterator, Container>& i)
-	//{ return base_iterator<Iterator, Container>(i.base() + d); }
-
-	template<typename Iterator, typename Container>
-	class random_access_iterator
-	{
-
-	private:
-
-		typedef typename ft::iterator_traits<Iterator>		trait_type;
-		Iterator											_base;
+		Node											_base;
+		Node*											_node;
+		Node*											_end;
+		typedef typename ft::iterator_traits<Node>		trait_type;
 
 	public:
 
@@ -464,16 +227,84 @@ namespace ft
 		typedef typename trait_type::reference			reference;
 
 		/* ctor 1 */
-		random_access_iterator() : _base(Iterator()) { }
+		bidirectional_iterator() : _base(Node()), _node(&_base), _end(NULL) { }
 		/* ctor 2 */
-		random_access_iterator(const Iterator& other) : _base(other) { }
+		explicit bidirectional_iterator(Node* node, const Node* end) : _node(node), _end(end) { }
 		/* copy ctor */
-		random_access_iterator(const random_access_iterator& other) : _base(other._base) { } 
+		bidirectional_iterator(const bidirectional_iterator& other) : _base(other._base), _node(&other._base), _end(NULL) { } 
 		/* dtor */
-		~random_access_iterator() { }
+		~bidirectional_iterator() { }
 
 		/* expose _base */
 		pointer			base() const { return (this->_base); }
+
+		/* assignment operator overload */
+		bidirectional_iterator&		operator= (const bidirectional_iterator& other)
+		{
+			if (this == &other)
+				return *this;
+			this->_base = other._base;
+			this->_node = other._node;
+			this->_end = other._end;
+			return *this;
+		}
+
+		/* iterator -> const_iterator */
+		//template <typename Iter>
+		//bidirectional_iterator(const bidirectional_iterator<Iter, Container>& v,
+		//	typename ft::is_same<Iter, Container>::_type* _tmp = NULL)
+		//: _base(v._base()) { (void)_tmp; }
+
+		/* friends */
+
+		friend bool						operator==(const bidirectional_iterator& i1, const bidirectional_iterator& i2)
+		{
+			return i1._node == i2._node && i1._end = i2._end;
+		}
+
+		friend bool						operator!=(const bidirectional_iterator& i1, const bidirectional_iterator& i2)
+		{
+			return i1._base != i2._base || i1._end != i2._end;
+		}
+
+		/* member operators overloads */
+
+		reference						operator* ()	const	{ return *_node; }
+		pointer							operator->()	const	{ return _node; }
+
+		bidirectional_iterator& 		operator++()				{ Node::next(_node, _end); return *this; }
+		bidirectional_iterator& 		operator--()				{ Node::prev(_node, _end); return *this; }
+		bidirectional_iterator	 		operator++(int)				{ bidirectional_iterator i = *this; ++(*this) ; return i; }
+		bidirectional_iterator	 		operator--(int)				{ bidirectional_iterator i = *this; --(*this) ; return i; }
+
+	};
+
+	template<typename Iterator, typename Container>
+	class random_access_iterator : public bidirectional_iterator<Iterator>
+	{
+
+	private:
+
+		typedef typename ft::iterator_traits<Iterator>	trait_type;
+
+	public:
+
+		typedef typename trait_type::value_type			value_type;
+		typedef typename trait_type::difference_type	difference_type;
+		typedef typename trait_type::iterator_category	iterator_category;
+		typedef typename trait_type::pointer			pointer;
+		typedef typename trait_type::reference			reference;
+
+		using											bidirectional_iterator<Iterator>::base;
+
+		/* ctor 1 */
+		random_access_iterator() { this->_base = Iterator(); }
+		/* ctor 2 */
+		random_access_iterator(const Iterator& other) { this->_base = other; }
+		/* copy ctor */
+		random_access_iterator(const random_access_iterator& other) { this->_base = other._base; } 
+		/* dtor */
+		~random_access_iterator() { }
 
 		/* assignment operator overload */
 		random_access_iterator&		operator= (const random_access_iterator& other)
@@ -488,7 +319,7 @@ namespace ft
 		template <typename Iter>
 		random_access_iterator(const random_access_iterator<Iter, Container>& v,
 			typename ft::is_same<Iter, Container>::_type* _tmp = NULL)
-		: _base(v._base()) { (void)_tmp; }
+		: bidirectional_iterator<Iterator>(v.base()) { (void)_tmp; }
 
 		/* friends */
 
@@ -534,20 +365,20 @@ namespace ft
 
 		/* member operators overloads */
 
-		reference						operator* ()	const	{ return *_base; }
-		pointer							operator->()	const	{ return _base; }
-		reference						operator[](difference_type d) const { return _base[d]; }
+		reference						operator* ()	const	{ return *this->_base; }
+		pointer							operator->()	const	{ return this->_base; }
+		reference						operator[](difference_type d) const { return this->_base[d]; }
 
-		random_access_iterator& 		operator++()				{ ++_base; return *this; }
-		random_access_iterator& 		operator--()				{ --_base; return *this; }
-		random_access_iterator	 		operator++(int)				{ random_access_iterator r(*this); ++_base ; return r; }
-		random_access_iterator	 		operator--(int)				{ random_access_iterator r(*this); --_base ; return r; }
+		random_access_iterator& 		operator++()				{ ++this->_base; return *this; }
+		random_access_iterator& 		operator--()				{ --this->_base; return *this; }
+		random_access_iterator	 		operator++(int)				{ random_access_iterator i(*this); ++this->_base ; return i; }
+		random_access_iterator	 		operator--(int)				{ random_access_iterator i(*this); --this->_base ; return i; }
 			
-		random_access_iterator&	 		operator+=(difference_type d)		{ _base += d; return *this; }
-		random_access_iterator&	 		operator-=(difference_type d)		{ _base -= d; return *this; }
+		random_access_iterator&	 		operator+=(difference_type d)		{ this->_base += d; return *this; }
+		random_access_iterator&	 		operator-=(difference_type d)		{ this->_base -= d; return *this; }
 	
-		random_access_iterator	 		operator+ (difference_type d) const { return random_access_iterator(_base + d); }		
-		random_access_iterator	 		operator- (difference_type d) const { return random_access_iterator(_base - d); }
+		random_access_iterator	 		operator+ (difference_type d) const { return random_access_iterator(this->_base + d); }		
+		random_access_iterator	 		operator- (difference_type d) const { return random_access_iterator(this->_base - d); }
 
 	};
 

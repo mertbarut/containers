@@ -6,7 +6,7 @@
 /*   By: mbarut <mbarut@student.42wolfsburg.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/23 14:44:38 by mbarut            #+#    #+#             */
-/*   Updated: 2022/02/03 20:22:17 by mbarut           ###   ########.fr       */
+/*   Updated: 2022/02/05 15:06:08 by mbarut           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -326,11 +326,11 @@ namespace ft
  		}
 
 		/* assignment operator overload */
-		vector&		operator=(const vector& v)
+		vector&		operator=(const vector& rhs)
 		{
-			if (this == &v)
+			if (this == &rhs)
 				return (*this);
-			_M_copy_assign(v);
+			_M_copy_assign(rhs);
  			return (*this);
 		}
 
@@ -417,6 +417,11 @@ namespace ft
 				tmp._M_copy_assign(*this);
 				swap(tmp);
 			}
+		}
+
+		allocator_type get_allocator() const
+		{
+			return this->Allocator();
 		}
 
 		/* access operators */
