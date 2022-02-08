@@ -6,7 +6,7 @@
 /*   By: mbarut <mbarut@student.42wolfsburg.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/23 23:13:25 by mbarut            #+#    #+#             */
-/*   Updated: 2022/02/08 12:16:45 by mbarut           ###   ########.fr       */
+/*   Updated: 2022/02/09 00:23:44 by mbarut           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 #include "ft_iterator_base_funcs.hpp"
 #include "ft_iterator_base_types.hpp"
 #include "ft_util.hpp"
-#include "ft_base.hpp"
+//#include "ft_base.hpp"
 
 namespace ft
 {
@@ -209,84 +209,242 @@ namespace ft
 
 	};
 
-	template<class Allocator>
-	class bidirectional_iterator
+	template <typename T, class Compare>
+	class _RBT_iterator : ft::iterator<ft::bidirectional_iterator_tag, T>
 	{
-	private:
-		typedef const _RBTree<Allocator>					map_node;
-			
-	protected:
-		map_node*										_node;
-		const map_node*										_end;
-		typedef typename ft::iterator_traits<Allocator>		trait_type;
-
+	
+	public:
+		T*			_node;
+		T*			_nil;
+		Compare     _compare;
+		
 	public:
 
-		typedef typename trait_type::value_type			value_type;
-		typedef typename trait_type::difference_type	difference_type;
-		typedef typename trait_type::pointer			pointer;
-		typedef typename trait_type::reference			reference;
-		typedef ft::bidirectional_iterator_tag			iterator_category;
-		
-		/* ctor 1 */
-		bidirectional_iterator() : _node(NULL), _end(NULL) { }
-		/* ctor 2 */
-		explicit bidirectional_iterator(map_node* node, const map_node* end) : _node(node), _end(end) { }
-		/* copy ctor */
-		bidirectional_iterator(const bidirectional_iterator& other) : _node(other._node), _end(other._end) { } 
-		/* dtor */
-		~bidirectional_iterator() { }
+		typedef typename T::value_type    value_type;
+		typedef typename ft::iterator<ft::bidirectional_iterator_tag, value_type>::iterator_category iterator_category;
+		typedef typename ft::iterator<ft::bidirectional_iterator_tag, value_type>::difference_type   difference_type;
+		typedef typename ft::iterator<ft::bidirectional_iterator_tag, value_type>::pointer   pointer;
+		typedef typename ft::iterator<ft::bidirectional_iterator_tag, value_type>::reference reference;
 
-		/* assignment operator overload */
-		bidirectional_iterator&		operator= (const bidirectional_iterator& other)
+		_RBT_iterator(const Compare& comp = Compare()) : _node(), _nil(), _compare(comp) {}
+		_RBT_iterator(T* node, T* nil, const Compare& comp = Compare()) : _node(node), _nil(nil), _compare(comp) {}
+		_RBT_iterator(const _RBT_iterator& i) : _node(i._node), _nil(i._nil), _compare() {}
+		virtual ~_RBT_iterator() { }
+
+		_RBT_iterator& operator= (const _RBT_iterator& rhs)
 		{
-			if (this == &other)
+			if (*this == rhs)
 				return *this;
-			this->_node = other._node;
-			this->_end = other._end;
+			this->_node = rhs._node;
+			this->_nil = rhs._nil;
+			this->_comp = rhs._comp;
 			return *this;
 		}
 
-		map_node*		base() const { return (this->_node); }
-		const map_node*		null() const { return (this->_null); }
+		T*			base() const { return this->_node; }
+		T*			nil() const { return this->_nil; }
+		Compare		compare() const { return this->_compare; }
 
-		/* iterator -> const_iterator */
-		//template <typename Iter>
-		//bidirectional_iterator(const bidirectional_iterator<Iter, Container>& v,
-		//	typename ft::is_same<Iter, Container>::_type* _tmp = NULL)
-		//: _base(v._base()) { (void)_tmp; }
+		bool		operator==(const _RBT_iterator& i) { return this->_node == i._node; }
+		bool		operator!=(const _RBT_iterator& i) { return this->_node != i._node; }
+		reference	operator*() const { return this->_node->value; }
+		pointer		operator->() const { return &this->_node->value; }
 
-		/* friends */
-
-		friend bool						operator==(const bidirectional_iterator& i1, const bidirectional_iterator& i2)
+		_RBT_iterator& operator++(void)
 		{
-			return i1._node == i2._node && i1._end = i2._end;
+			T* ptr = _node;
+
+			if (ptr == _nil)
+				_node = _nil->right;
+			else if (_node->right == _nil)
+			{
+				ptr = _node->parent;
+				while (ptr != _nil && _compare(ptr->value.first, _node->value.first))
+					ptr = ptr->parent;
+				_node = ptr;
+			}
+			else
+			{
+				ptr = _node->right;
+				if (ptr == _nil->parent && ptr->right == _nil)
+					_node = ptr;
+				else
+					while (ptr->left != _nil)
+						ptr = ptr->left;
+				_node = ptr;
+			}
+			return *this;
 		}
 
-		friend bool						operator!=(const bidirectional_iterator& i1, const bidirectional_iterator& i2)
+		_RBT_iterator operator++(int)
 		{
-			return i1._node != i2._node || i1._end != i2._end;
+			_RBT_iterator tmp(*this);
+			operator++();
+			return (tmp);
 		}
 
-		/* member operators overloads */
+		_RBT_iterator& operator--(void)
+		{
+			T* ptr = _node;
 
-		reference						operator* ()	const	{ return _node->_value; }
-		pointer							operator->()	const	{ return &(_node->_value); }
+			if (ptr == _nil)
+				_node = _nil->right;
+			else if (_node->left == _nil)
+			{
+				ptr = _node->parent;
+				while (ptr != _nil && !_compare(ptr->value.first, _node->value.first))
+					ptr = ptr->parent;
+				_node = ptr;
+			}
+			else
+			{
+				ptr = _node->left;
+				if (ptr == _nil->parent && ptr->left == _nil)
+					_node = ptr;
+				else
+					while (ptr->right != _nil)
+						ptr = ptr->right;
+				_node = ptr;
+			}
+			return *this;
+		}
 
-		bidirectional_iterator& 		operator++()				{ map_node::next(_node, _end); return *this; }
-		bidirectional_iterator& 		operator--()				{ map_node::prev(_node, _end); return *this; }
-		bidirectional_iterator	 		operator++(int)				{ bidirectional_iterator i = *this; ++(*this) ; return i; }
-		bidirectional_iterator	 		operator--(int)				{ bidirectional_iterator i = *this; --(*this) ; return i; }
+		_RBT_iterator operator--(int)
+		{
+			_RBT_iterator tmp(*this);
+			operator--();
+			return (tmp);
+		}
+
+	};
+
+	template <typename T, class Compare >
+	class _RBT_const_iterator : ft::iterator<ft::bidirectional_iterator_tag, T>
+	{
+	
+	private:
+		T*			_node;
+		T*			_nil;
+		Compare		_compare;
+		
+	public:
+
+		typedef typename T::value_type    value_type;
+		typedef typename ft::iterator<ft::bidirectional_iterator_tag, value_type>::iterator_category iterator_category;
+		typedef typename ft::iterator<ft::bidirectional_iterator_tag, value_type>::difference_type   difference_type;
+		typedef typename ft::iterator<ft::bidirectional_iterator_tag, value_type>::pointer   pointer;
+		typedef typename ft::iterator<ft::bidirectional_iterator_tag, value_type>::reference reference;
+
+		_RBT_const_iterator(const Compare& comp = Compare()) : _node(), _nil(), _compare(comp) {}
+		_RBT_const_iterator(T* node_p, T* last_node, const Compare& comp = Compare()) : _node(node_p), _nil(last_node), _compare(comp) {}
+		_RBT_const_iterator(const _RBT_const_iterator& i) : _node(i._node), _nil(i._nil), _compare(i._compare) {}
+		_RBT_const_iterator(const _RBT_iterator<T, Compare>& i) : _node(i._node), _nil(i._nil), _compare(i._compare) {}
+		virtual ~_RBT_const_iterator() { }
+
+		_RBT_const_iterator& operator= (const _RBT_const_iterator& rhs)
+		{
+			if (*this == rhs)
+				return (*this);
+			this->_node = rhs._node;
+			this->_nil = rhs._nil;
+			this->_comp = rhs._comp;
+			return *this;
+		}
+
+		//_RBT_const_iterator& operator= (const _RBT_iterator<T, Compare>& rhs)
+		//{
+		//	if (*this == rhs)
+		//		return (*this);
+		//	this->_node = rhs._node;
+		//	this->_nil = rhs._nil;
+		//	this->_comp = rhs._comp;
+		//	return *this;
+		//}
+
+		T*			base() const { return this->_node; }
+		T*			nil() const { return this->_nil; }
+		Compare		compare() const { return this->_compare; }
+
+		bool		operator==(const _RBT_const_iterator& i) { return this->_node == i._node; }
+		bool		operator!=(const _RBT_const_iterator& i) { return this->_node != i._node; }
+		reference	operator*() const { return this->_node->value; }
+		pointer		operator->() const { return &this->_node->value; }
+
+		_RBT_const_iterator& operator++(void)
+		{
+			T* ptr = _node;
+
+			if (ptr == _nil)
+				_node = _nil->right;
+			else if (_node->right == _nil)
+			{
+				ptr = _node->parent;
+				while (ptr != _nil && _compare(ptr->value.first, _node->value.first))
+					ptr = ptr->parent;
+				_node = ptr;
+			}
+			else
+			{
+				ptr = _node->right;
+				if (ptr == _nil->parent && ptr->right == _nil)
+					_node = ptr;
+				else
+					while (ptr->left != _nil)
+						ptr = ptr->left;
+				_node = ptr;
+			}
+			return *this;
+		}
+
+		_RBT_const_iterator operator++(int)
+		{
+			_RBT_const_iterator tmp(*this);
+			operator++();
+			return (tmp);
+		}
+
+		_RBT_const_iterator& operator--(void)
+		{
+			T* ptr = _node;
+
+			if (ptr == _nil)
+				_node = _nil->right;
+			else if (_node->left == _nil)
+			{
+				ptr = _node->parent;
+				while (ptr != _nil && !_compare(ptr->value.first, _node->value.first))
+					ptr = ptr->parent;
+				_node = ptr;
+			}
+			else
+			{
+				ptr = _node->left;
+				if (ptr == _nil->parent && ptr->left == _nil)
+					_node = ptr;
+				else
+					while (ptr->right != _nil)
+						ptr = ptr->right;
+				_node = ptr;
+			}
+			return *this;
+		}
+
+		_RBT_const_iterator operator--(int)
+		{
+			_RBT_const_iterator tmp(*this);
+			operator--();
+			return (tmp);
+		}
 
 	};
 
 	template<typename Allocator, typename Container>
-	class random_access_iterator : public bidirectional_iterator<Allocator>
+	class random_access_iterator
 	{
 
 	private:
 
-		Allocator											_base;
+		Allocator										_base;
 		typedef typename ft::iterator_traits<Allocator>	trait_type;
 
 	public:
@@ -318,10 +476,10 @@ namespace ft
 		}
 
 		/* iterator -> const_iterator */
-		template <typename Iter>
-		random_access_iterator(const random_access_iterator<Iter, Container>& v,
-			typename ft::is_same<Iter, Container>::_type* _tmp = NULL)
-		: bidirectional_iterator<Allocator>(v.base()) { (void)_tmp; }
+		//template <typename Iter>
+		//random_access_iterator(const random_access_iterator<Iter, Container>& v,
+		//	typename ft::is_same<Iter, Container>::_type* _tmp = NULL)
+		//: bidirectional_iterator<Allocator>(v.base()) { (void)_tmp; }
 
 		Allocator		base() const { return (this->_base); }
 
@@ -387,5 +545,3 @@ namespace ft
 	};
 
 }
-
-#pragma endregion

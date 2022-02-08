@@ -6,7 +6,7 @@
 /*   By: mbarut <mbarut@student.42wolfsburg.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/28 16:02:53 by mbarut            #+#    #+#             */
-/*   Updated: 2022/02/01 22:21:48 by mbarut           ###   ########.fr       */
+/*   Updated: 2022/02/09 00:23:35 by mbarut           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,19 @@ namespace ft
 		typedef	Distance	difference_type;
 		typedef	Pointer		pointer;
 		typedef Reference	reference;
+	};
+
+	template <class T>
+	class bidirectional_iterator : ft::iterator<ft::bidirectional_iterator_tag, T>
+	{  
+		typedef typename ft::iterator<ft::bidirectional_iterator_tag, T>::iterator_category     iterator_category;
+		typedef typename ft::iterator<ft::bidirectional_iterator_tag, T>::value_type            value_type;
+		typedef typename ft::iterator<ft::bidirectional_iterator_tag, T>::difference_type       difference_type;
+		typedef typename ft::iterator<ft::bidirectional_iterator_tag, T>::pointer               pointer;
+		typedef typename ft::iterator<ft::bidirectional_iterator_tag, T>::reference             reference;
+
+		private:
+		    pointer _p;
 	};
 
 	/* type_traits */
@@ -79,5 +92,3 @@ namespace ft
 		return typename iterator_traits<Iterator>::iterator_category();
 	}
 }
-
-#pragma endregion

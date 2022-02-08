@@ -6,7 +6,7 @@
 /*   By: mbarut <mbarut@student.42wolfsburg.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/28 13:34:24 by mbarut            #+#    #+#             */
-/*   Updated: 2022/02/08 00:15:30 by mbarut           ###   ########.fr       */
+/*   Updated: 2022/02/09 00:24:24 by mbarut           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,5 +82,3 @@ namespace ft
 		return ft::pair<T1, T2>(obj1, obj2);
 	}
 }
-
-#pragma endregion

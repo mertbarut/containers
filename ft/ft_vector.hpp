@@ -6,7 +6,7 @@
 /*   By: mbarut <mbarut@student.42wolfsburg.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/23 14:44:38 by mbarut            #+#    #+#             */
-/*   Updated: 2022/02/05 15:06:08 by mbarut           ###   ########.fr       */
+/*   Updated: 2022/02/09 00:24:38 by mbarut           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -285,7 +285,7 @@ namespace ft
 		typedef ft::reverse_iterator<iterator>						reverse_iterator;
 		typedef ft::reverse_iterator<const_iterator>				const_reverse_iterator;
 		typedef _vector_base<T, Allocator>							base;	
-		typedef ft::random_access_iterator_tag						iterator_catogory;
+		typedef ft::random_access_iterator_tag						iterator_category;
 
 	protected:
 
@@ -615,5 +615,3 @@ namespace ft
 		v1.swap(v2);
 	}
 }
-
-#pragma endregion

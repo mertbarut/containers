@@ -6,11 +6,13 @@
 /*   By: mbarut <mbarut@student.42wolfsburg.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/26 14:09:36 by mbarut            #+#    #+#             */
-/*   Updated: 2022/02/06 18:17:07 by mbarut           ###   ########.fr       */
+/*   Updated: 2022/02/09 00:46:26 by mbarut           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
+
+#include <sstream>
 
 namespace ft
 {
@@ -123,6 +125,31 @@ namespace ft
 		typedef Result result_type;
 	};
 
+	static class nullptr_t
+	{
+
+    public:
+
+        template <class T>
+        operator T*() const { return (0); }
+
+        template<class C, class T>
+        operator T C::*() const { return (0); }
+
+    private:
+
+        void operator&() const;
+
+	} u_nullptr = {};
+
+	template <typename T>
+    std::string to_string(T n)
+    {
+    	std::ostringstream ss;
+        ss << n;
+        return (ss.str());
+    }
+
 	/* c00l factorial trick, no calculation made during runtime */
 	
 	template <unsigned n>
@@ -132,5 +159,3 @@ namespace ft
 	struct factorial<0> : ft::integral_constant<long long, 1> { };
 
 }
-
-#pragma endregion

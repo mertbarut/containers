@@ -6,7 +6,7 @@
 /*   By: mbarut <mbarut@student.42wolfsburg.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/28 17:06:05 by mbarut            #+#    #+#             */
-/*   Updated: 2022/02/01 22:08:25 by mbarut           ###   ########.fr       */
+/*   Updated: 2022/02/09 00:23:59 by mbarut           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,5 +82,3 @@ namespace ft
 		ft::_advance(i, d, ft::iterator_category(i));
 	}
 }
-
-#pragma endregion
