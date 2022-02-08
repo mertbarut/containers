@@ -6,137 +6,24 @@
 /*   By: mbarut <mbarut@student.42wolfsburg.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/23 14:44:43 by mbarut            #+#    #+#             */
-/*   Updated: 2022/02/08 01:39:58 by mbarut           ###   ########.fr       */
+/*   Updated: 2022/02/08 12:09:36 by mbarut           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_iterator_base_types.hpp"
 #include "ft_pair.hpp"
 #include "ft_util.hpp"
+#include "ft_base.hpp"
 #include "ft_iterator.hpp"
 #include "ft_vector.hpp"
 #include <memory>
 
 namespace ft
 {
-	template <class _Allocator>
-	struct	_map_node
-	{
-
-	public:
-
-		typedef _map_node<_Allocator>							map_node;
-		typedef typename _Allocator::value_type					value_type;
-		typedef typename _Allocator::difference_type			difference_type;
-		typedef typename _Allocator::pointer					pointer;
-		typedef typename _Allocator::reference					reference;
-	//public:
-
-		value_type				_value;
-		map_node*				_parent;
-		map_node*				_left;
-		map_node*				_right;
-		size_t					_level;
-		size_t					_index;
-		bool					_is_red;
-
-		/* ctor 1 */
-		_map_node() : _value( 0 ), _parent(NULL), _left(NULL), _right(NULL), _level(0), _index(0), _is_red(false)
-		{
-			
-		}
-
-		/* ctor 2 */
-		_map_node(map_node* tree, const value_type& value) : _value(value), _parent(tree), _left(tree), _right(tree), _level(0), _index(0), _is_red(false)
-		{
-			
-		}
-
-		/* copy ctor */
-
-		_map_node(const _map_node& node) : _value(node._value), _parent(node._parent), _left(node._left), _right(node._right), _level(node._level), _index(node._index), _is_red(node._is_red)
-		{
-			
-		}
-
-		/* assignment operator overload */
-		_map_node&		operator=(const _map_node& rhs)
-		{
-			if (this == &rhs)
-				return *this;
-			this->_value = rhs._value;
-			this->_parent = rhs._parent;
-			this->_left = rhs._left;
-			this->_right = rhs._right;
-			this->_is_red = rhs._is_red;
-			return *this;
-		}
-		
-		/* dtor */
-		~_map_node()
-		{
-			
-		}
-
-		/* getters */
-		value_type get_value() const { return this->_value; }
-
-		value_type* get_left() const { return this->_left; }
-
-		value_type* get_right() const { return this->_right; }
-		
-		size_t	get_level() const { return this->_level; }
-		
-		size_t	get_index() const { return this->_index; }
-
-		template <typename Node>
-		static Node	get_min(Node node, const map_node* nil)
-		{
-			if (node == nil)
-				return node;
-			for (; node->_left != nil; node = node->_left) {}
-				return node;
-		}
-
-		template <typename Node>
-		static Node	get_max(Node node, const map_node* nil)
-		{
-			if (node == nil)
-				return node;
-			for (; node->_left != nil; node = node->_left) {}
-				return node;
-		}
-
-		template <typename Node>
-		static void	next(Node& node, const map_node* nil)
-		{
-			if (node->right != nil)
-				node = get_min(node->_right, nil);
-			else if (node == nil || nil->_left == node)
-				node = node->_right;
-			else
-				for (; node->_parent != nil && node == node->_parent->_right; node = node->_parent) {}
-				node = node->_parent;
-		}
-
-		template <typename Node>
-		static void	prev(Node& node, const map_node* nil)
-		{
-			if (node->_left != nil)
-				node = get_max(node->_left, nil);
-			else if (node == nil || nil->_right == node)
-				node = node->_left;
-			else
-				for (; node->_parent != nil && node == node->_parent->_left; node = node->_parent) {}
-				node = node->_parent;
-		}
-
-	};
-
 	template <
 		class Key,
 		class T,
-		class Compare = ft::less<Key>,
+		class Compare = std::less<Key>,
 		class Allocator = std::allocator< ft::pair<const Key, T> >
 		>
 	class map
@@ -144,7 +31,7 @@ namespace ft
 
 	public:
 
-		typedef _map_node<Allocator> 									map_node;
+		typedef _RBTree<Allocator> 										tree_node;
 		typedef map<Key, T, Compare, Allocator>							map_type;
 		typedef Key														key_type;
 		typedef T														mapped_type;
@@ -186,19 +73,19 @@ namespace ft
 
 	private:
 
-		typedef typename Allocator::template rebind<map_node>::other	node_allocator_type;
+		typedef typename Allocator::template rebind<tree_node>::other	node_allocator_type;
 		typedef ft::bidirectional_iterator_tag							iterator_catogory;
 
 		node_allocator_type												_allocator;
 		value_compare													_compare;
-		map_node*														_root;
-		map_node*														_nil;
+		tree_node*														_root;
+		tree_node*														_nil;
 		size_type														_n;
 
-		map_node*	_M_create(const value_type& val)
+		tree_node*	_M_create(const value_type& val)
 		{
 			allocator_type	data_alloc(_allocator);
-			map_node*	node = _allocator.allocate(1);
+			tree_node*	node = _allocator.allocate(1);
 			node->_is_red = true;
 			node->_parent = NULL;
 			node->_right = NULL;
@@ -207,7 +94,7 @@ namespace ft
 			return (node);
 		}
 
-		void		_M_destroy(map_node* node)
+		void		_M_destroy(tree_node* node)
 		{
 			_allocator.destroy(node);
 			_allocator.deallocate(node, 1);
@@ -223,11 +110,11 @@ namespace ft
 			_root = _nil;
 		}
 
-		void		_M_lrotate(map_node* node)
+		void		_M_lrotate(tree_node* node)
 		{
 			if (node == _nil || node->right == _nil)
 				return ;
-			map_node*	tmp = node->_right;
+			tree_node*	tmp = node->_right;
 			if ((node->_right = tmp->_left) != _nil)
 				node->_right->_parent = node;
 			if ((tmp->parent = node->_parent) == _nil)
@@ -240,11 +127,11 @@ namespace ft
 			node->_parent = tmp;
 		}
 
-		void		_M_rrotate(map_node* node)
+		void		_M_rrotate(tree_node* node)
 		{
 			if (node == _nil || node->left == _nil)
 				return ;
-			map_node*	tmp = node->_left;
+			tree_node*	tmp = node->_left;
 			if ((node->_left = tmp->_right) != _nil)
 				node->_left->_parent = node;
 			if ((tmp->parent = node->_parent) == _nil)
@@ -257,17 +144,17 @@ namespace ft
 			node->_parent = tmp;
 		}
 
-		map_node*	_M_get_value_by_key(const key_type& key) const
+		tree_node*	_M_get_value_by_key(const key_type& key) const
 		{
-			map_node* i = _root;
+			tree_node* i = _root;
 			for (; i != _nil && i->_value.first != key;
 				_compare.comp(key, i->_value.first) ? i = i->_left : i = i->right) { }
 			return i;
 		}
 
-		map_node*		_M_find_whose_child(const value_type& value)
+		tree_node*		_M_find_whose_child(const value_type& value)
 		{
-			map_node* i = _root;
+			tree_node* i = _root;
 			for (; i != _nil && i->_value.first != value.first;)
 			{
 				if (_compare(value, i->_value))
@@ -286,7 +173,7 @@ namespace ft
 			return i;
 		}
 
-		//void		_M_make_related(map_node *node1, map_node *node2)
+		//void		_M_make_related(tree_node *node1, tree_node *node2)
 		//{
 		//	if (node1->_parent == _nil)
 		//		_root = node2;
@@ -305,18 +192,18 @@ namespace ft
 				_M_insert(*begin++);
 		}
 
-		void						_M_check_if_next(map_node*&	found, const value_type& value, iterator i)
+		void						_M_check_if_next(tree_node*&	found, const value_type& value, iterator i)
 		{
 			if (i.base() && i.base() != _nil && _compare(*i, value))
 			{
 				iterator	next = i;
 				++next;
-				if ((i.base() == _nil->_left || (next.base() != _nil && _compare(value, *next))) && i.base()->right == _nil)
+				if ((i.base() == _nil->_left || (next.base() != _nil && _compare(value, *next))) && i.base()->_right == _nil)
 					found = i.base(); 
 			}
 		}
 
-		void		_M_flip_color(map_node*& node, map_node* aunt)
+		void		_M_flip_color(tree_node*& node, tree_node* aunt)
 		{
 			aunt->_is_red = false;
 			node->_parent->_is_red = false;
@@ -324,9 +211,9 @@ namespace ft
 			node = node->_parent->_parent;
 		}
 
-		void		_M_fix_violations(map_node* node)
+		void		_M_fix_violations(tree_node* node)
 		{
-			map_node*	aunt;
+			tree_node*	aunt;
 			
 			while (node != _root && node->_parent->_is_red)
 				if (node->_parent == node->parent->parent->left)
@@ -368,7 +255,7 @@ namespace ft
 
 		ft::pair<iterator, bool>	_M_insert(const value_type& value, iterator i = iterator())
 		{
-			map_node*	found = NULL;
+			tree_node*	found = NULL;
 			ft::pair<iterator, bool> result;
 			
 			_M_check_if_next(found, value, i);
@@ -381,7 +268,7 @@ namespace ft
 			}
 			else
 			{
-				map_node*	newnode = _M_create(value);
+				tree_node*	newnode = _M_create(value);
 				if (found == _nil)
 				{
 					_root = newnode;

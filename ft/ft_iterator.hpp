@@ -6,7 +6,7 @@
 /*   By: mbarut <mbarut@student.42wolfsburg.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/23 23:13:25 by mbarut            #+#    #+#             */
-/*   Updated: 2022/02/08 01:40:53 by mbarut           ###   ########.fr       */
+/*   Updated: 2022/02/08 12:16:45 by mbarut           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 #include "ft_iterator_base_funcs.hpp"
 #include "ft_iterator_base_types.hpp"
 #include "ft_util.hpp"
+#include "ft_base.hpp"
 
 namespace ft
 {
@@ -208,14 +209,16 @@ namespace ft
 
 	};
 
-	template<class Node>
+	template<class Allocator>
 	class bidirectional_iterator
 	{
+	private:
+		typedef const _RBTree<Allocator>					map_node;
+			
 	protected:
-		Node											_base;
-		Node*											_node;
-		Node*											_end;
-		typedef typename ft::iterator_traits<Node>		trait_type;
+		map_node*										_node;
+		const map_node*										_end;
+		typedef typename ft::iterator_traits<Allocator>		trait_type;
 
 	public:
 
@@ -226,27 +229,26 @@ namespace ft
 		typedef ft::bidirectional_iterator_tag			iterator_category;
 		
 		/* ctor 1 */
-		bidirectional_iterator() : _base(Node()), _node(&_base), _end(NULL) { }
+		bidirectional_iterator() : _node(NULL), _end(NULL) { }
 		/* ctor 2 */
-		explicit bidirectional_iterator(Node* node, const Node* end) : _node(node), _end(end) { }
+		explicit bidirectional_iterator(map_node* node, const map_node* end) : _node(node), _end(end) { }
 		/* copy ctor */
-		bidirectional_iterator(const bidirectional_iterator& other) : _base(other._base), _node(&other._base), _end(NULL) { } 
+		bidirectional_iterator(const bidirectional_iterator& other) : _node(other._node), _end(other._end) { } 
 		/* dtor */
 		~bidirectional_iterator() { }
-
-		/* expose _base */
-		pointer			base() const { return (this->_base); }
 
 		/* assignment operator overload */
 		bidirectional_iterator&		operator= (const bidirectional_iterator& other)
 		{
 			if (this == &other)
 				return *this;
-			this->_base = other._base;
 			this->_node = other._node;
 			this->_end = other._end;
 			return *this;
 		}
+
+		map_node*		base() const { return (this->_node); }
+		const map_node*		null() const { return (this->_null); }
 
 		/* iterator -> const_iterator */
 		//template <typename Iter>
@@ -263,28 +265,29 @@ namespace ft
 
 		friend bool						operator!=(const bidirectional_iterator& i1, const bidirectional_iterator& i2)
 		{
-			return i1._base != i2._base || i1._end != i2._end;
+			return i1._node != i2._node || i1._end != i2._end;
 		}
 
 		/* member operators overloads */
 
-		reference						operator* ()	const	{ return *_node; }
-		pointer							operator->()	const	{ return _node; }
+		reference						operator* ()	const	{ return _node->_value; }
+		pointer							operator->()	const	{ return &(_node->_value); }
 
-		bidirectional_iterator& 		operator++()				{ Node::next(_node, _end); return *this; }
-		bidirectional_iterator& 		operator--()				{ Node::prev(_node, _end); return *this; }
+		bidirectional_iterator& 		operator++()				{ map_node::next(_node, _end); return *this; }
+		bidirectional_iterator& 		operator--()				{ map_node::prev(_node, _end); return *this; }
 		bidirectional_iterator	 		operator++(int)				{ bidirectional_iterator i = *this; ++(*this) ; return i; }
 		bidirectional_iterator	 		operator--(int)				{ bidirectional_iterator i = *this; --(*this) ; return i; }
 
 	};
 
-	template<typename Iterator, typename Container>
-	class random_access_iterator : public bidirectional_iterator<Iterator>
+	template<typename Allocator, typename Container>
+	class random_access_iterator : public bidirectional_iterator<Allocator>
 	{
 
 	private:
 
-		typedef typename ft::iterator_traits<Iterator>	trait_type;
+		Allocator											_base;
+		typedef typename ft::iterator_traits<Allocator>	trait_type;
 
 	public:
 
@@ -294,12 +297,12 @@ namespace ft
 		typedef typename trait_type::pointer			pointer;
 		typedef typename trait_type::reference			reference;
 
-		using											bidirectional_iterator<Iterator>::base;
+		//using											bidirectional_iterator<Allocator>::base;
 
 		/* ctor 1 */
-		random_access_iterator() { this->_base = Iterator(); }
+		random_access_iterator() { this->_base = Allocator(); }
 		/* ctor 2 */
-		random_access_iterator(const Iterator& other) { this->_base = other; }
+		random_access_iterator(const Allocator& other) { this->_base = other; }
 		/* copy ctor */
 		random_access_iterator(const random_access_iterator& other) { this->_base = other._base; } 
 		/* dtor */
@@ -318,7 +321,9 @@ namespace ft
 		template <typename Iter>
 		random_access_iterator(const random_access_iterator<Iter, Container>& v,
 			typename ft::is_same<Iter, Container>::_type* _tmp = NULL)
-		: bidirectional_iterator<Iterator>(v.base()) { (void)_tmp; }
+		: bidirectional_iterator<Allocator>(v.base()) { (void)_tmp; }
+
+		Allocator		base() const { return (this->_base); }
 
 		/* friends */
 
