@@ -6,10 +6,11 @@
 /*   By: mbarut <mbarut@student.42wolfsburg.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/23 14:44:43 by mbarut            #+#    #+#             */
-/*   Updated: 2022/02/06 20:58:04 by mbarut           ###   ########.fr       */
+/*   Updated: 2022/02/08 01:34:40 by mbarut           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "ft_iterator_base_types.hpp"
 #include "ft_pair.hpp"
 #include "ft_util.hpp"
 #include "ft_iterator.hpp"
@@ -18,118 +19,6 @@
 
 namespace ft
 {
-	template <class _Allocator>
-	struct	_map_node
-	{
-
-	private:
-
-		typedef typename _Allocator::value_type					value_type;
-		typedef _map_node<_Allocator>							map_node;
-
-	public:
-
-		value_type				_value;
-		map_node*				_parent;
-		map_node*				_left;
-		map_node*				_right;
-		size_t					_level;
-		size_t					_index;
-		bool					_is_red;
-
-		/* ctor 1 */
-		_map_node() : _value( 0 ), _parent(nullptr), _left(nullptr), _right(nullptr), _level(0), _index(0), _is_red(false)
-		{
-			
-		}
-
-		/* ctor 2 */
-		_map_node(map_node* tree, const value_type& value) : _value(value), _parent(tree), _left(tree), _right(tree), _level(0), _index(0), _is_red(false)
-		{
-			
-		}
-
-		/* copy ctor */
-
-		_map_node(const _map_node& node) : _value(node._value), _parent(node._parent), _left(node._left), _right(node._right), _level(node._level), _index(node._index), _is_red(node._is_red)
-		{
-			
-		}
-
-		/* assignment operator overload */
-		_map_node&		operator=(const _map_node& rhs)
-		{
-			if (this == &rhs)
-				return *this;
-			this->_value = rhs._value;
-			this->_parent = rhs._parent;
-			this->_left = rhs._left;
-			this->_right = rhs._right;
-			this->_is_red = rhs._is_red;
-			return *this;
-		}
-		
-		/* dtor */
-		~_map_node()
-		{
-			
-		}
-
-		/* getters */
-		value_type get_value() const { return this->_value; }
-
-		value_type* get_left() const { return this->_left; }
-
-		value_type* get_right() const { return this->_right; }
-		
-		size_t	get_level() const { return this->_level; }
-		
-		size_t	get_index() const { return this->_index; }
-
-		template <typename Node>
-		static Node	get_min(Node node, const map_node* nil)
-		{
-			if (node == nil)
-				return node;
-			for (; node->left != nil; node = node->left) {}
-				return node;
-		}
-
-		template <typename Node>
-		static Node	get_max(Node node, const map_node* nil)
-		{
-			if (node == nil)
-				return node;
-			for (; node->left != nil; node = node->left) {}
-				return node;
-		}
-
-		template <typename Node>
-		static void	next(Node& node, const map_node* nil)
-		{
-			if (node->right != nil)
-				node = get_min(node->right, nil);
-			else if (node == nil || nil->_left == node)
-				node = node->right;
-			else
-				for (; node->parent != nil && node == node->parent->right; node = node->parent) {}
-				node = node->parent;
-		}
-
-		template <typename Node>
-		static void	prev(Node& node, const map_node* nil)
-		{
-			if (node->left != nil)
-				node = get_max(node->left, nil);
-			else if (node == nil || nil->_right == node)
-				node = node->left;
-			else
-				for (; node->parent != nil && node == node->parent->left; node = node->parent) {}
-				node = node->parent;
-		}
-
-	};
-
 	template <
 		class Key,
 		class T,
@@ -152,13 +41,18 @@ namespace ft
 		typedef typename Allocator::const_reference						const_reference;
 		typedef typename Allocator::pointer								pointer;
 		typedef typename Allocator::const_pointer						const_pointer;
-		typedef ft::bidirectional_iterator<pointer>						iterator;
-		typedef ft::bidirectional_iterator<const pointer>				const_iterator;
 		typedef typename Allocator::difference_type						difference_type;
-		typedef typename Allocator::size_type							size_type;
+		typedef typename Allocator::size_type							size_type;	
+		typedef ft::bidirectional_iterator<Allocator>					iterator;
+		typedef ft::bidirectional_iterator<Allocator>					const_iterator;
+		typedef ft::reverse_iterator<iterator>							reverse_iterator;
+		typedef ft::reverse_iterator<const_iterator>					const_reverse_iterator;
 
 		class value_compare : public binary_function<value_type, value_type, bool>
 		{
+		private:
+
+		friend class map;
 		
 		protected:
 
@@ -179,23 +73,22 @@ namespace ft
 	private:
 
 		typedef typename Allocator::template rebind<map_node>::other	node_allocator_type;
-		typedef ft::pair<iterator, bool>								map_insres;
 		typedef ft::bidirectional_iterator_tag							iterator_catogory;
 
 		node_allocator_type												_allocator;
 		value_compare													_compare;
 		map_node*														_root;
 		map_node*														_nil;
-		size_type														_size;
+		size_type														_n;
 
 		map_node*	_M_create(const value_type& val)
 		{
 			allocator_type	data_alloc(_allocator);
 			map_node*	node = _allocator.allocate(1);
 			node->_is_red = true;
-			node->_parent = nullptr;
-			node->_right = nullptr;
-			node->_left = nullptr;
+			node->_parent = NULL;
+			node->_right = NULL;
+			node->_left = NULL;
 			_allocator.construct(&(node->data), val);
 			return (node);
 		}
@@ -206,7 +99,7 @@ namespace ft
 			_allocator.deallocate(node, 1);
 		}
 
-		void		_M_init(void)
+		void		_M_init()
 		{
 			_nil = _allocator.allocate(1);
 			_nil->_is_red = false;
@@ -216,17 +109,41 @@ namespace ft
 			_root = _nil;
 		}
 
-		void		_M_lrotate()
+		void		_M_lrotate(map_node* node)
 		{
-			
+			if (node == _nil || node->right == _nil)
+				return ;
+			map_node*	tmp = node->_right;
+			if ((node->_right = tmp->_left) != _nil)
+				node->_right->_parent = node;
+			if ((tmp->parent = node->_parent) == _nil)
+				_root = tmp;
+			else if (tmp->_parent->_left == node)
+				tmp->_parent->_left = tmp;
+			else
+				tmp->_parent->_right = tmp;
+			tmp->_left = node;
+			node->_parent = tmp;
 		}
 
-		void		_M_rrotate()
+		void		_M_rrotate(map_node* node)
 		{
-			
+			if (node == _nil || node->left == _nil)
+				return ;
+			map_node*	tmp = node->_left;
+			if ((node->_left = tmp->_right) != _nil)
+				node->_left->_parent = node;
+			if ((tmp->parent = node->_parent) == _nil)
+				_root = tmp;
+			else if (tmp->_parent->_right == node)
+				tmp->_parent->_right = tmp;
+			else
+				tmp->_parent->_left = tmp;
+			tmp->_right = node;
+			node->_parent = tmp;
 		}
 
-		void		_M_search(const key_type& key) const
+		map_node*	_M_get_value_by_key(const key_type& key) const
 		{
 			map_node* i = _root;
 			for (; i != _nil && i->_value.first != key;
@@ -234,145 +151,353 @@ namespace ft
 			return i;
 		}
 
-		void		_M_find(const value_type& value)
+		map_node*		_M_find_whose_child(const value_type& value)
 		{
 			map_node* i = _root;
 			for (; i != _nil && i->_value.first != value.first;)
 			{
-				if (_compare.comp(value, i->_value))
+				if (_compare(value, i->_value))
 				{
-					if (i->left == _nil)
+					if (i->_left == _nil)
 						return (i);
-					i = i->left;
+					i = i->_left;
 				}
 				else
 				{
-					if (i->right == _nil)
+					if (i->_right == _nil)
 						return (i);
-					i = i->right;
+					i = i->_right;
 				}
 			}
 			return i;
 		}
 
+		//void		_M_make_related(map_node *node1, map_node *node2)
+		//{
+		//	if (node1->_parent == _nil)
+		//		_root = node2;
+		//	else if (node1->_parent->_left == node1)
+		//		node1->_parent->_left = node2;
+		//	else
+		//		node1->_parent->_left = node2;
+		//	node2->_parent = node1->_parent;
+		//}
+
+		template<class InputIterator>
+		void	_M_range_init(InputIterator begin, InputIterator end)
+		{
+			_M_init();
+			while (begin != end)
+				_M_insert(*begin++);
+		}
+
+		void						_M_check_if_next(map_node*&	found, const value_type& value, iterator i)
+		{
+			if (i.base() && i.base() != _nil && _compare(*i, value))
+			{
+				iterator	next = i;
+				++next;
+				if ((i.base() == _nil->_left || (next.base() != _nil && _compare(value, *next))) && i.base()->right == _nil)
+					found = i.base(); 
+			}
+		}
+
+		void		_M_flip_color(map_node*& node, map_node* aunt)
+		{
+			aunt->_is_red = false;
+			node->_parent->_is_red = false;
+			node->_parent->_parent->_is_red = true;
+			node = node->_parent->_parent;
+		}
+
+		void		_M_fix_violations(map_node* node)
+		{
+			map_node*	aunt;
+			
+			while (node != _root && node->_parent->_is_red)
+				if (node->_parent == node->parent->parent->left)
+				{
+					aunt = node->parent->parent->right;
+					if (aunt->_is_red)
+						_map_insert_fix_recolor(node, aunt);
+					else
+					{
+						if (node == node->_parent->_right)
+						{
+							node = node->_parent;
+							_M_lrotate(node);
+						}
+						node->_parent->_is_red = false;
+						node->_parent->_parent->_is_red = true;
+						_M_rrotate(node->_parent->_parent);
+					}
+				}
+				else
+				{
+					aunt = node->parent->parent->left;
+					if (aunt->_is_red)
+						_map_insert_fix_recolor(node, aunt);
+					else
+					{
+						if (node == node->_parent->_left)
+						{
+							node = node->_parent;
+							_M_rright(node);
+						}
+						node->_parent->_is_red = false;
+						node->_parent->_parent->_is_red = true;
+						_M_lrotate(node->_parent->_parent);
+					}
+				}
+			_root->_is_red = false;
+		}
+
+		ft::pair<iterator, bool>	_M_insert(const value_type& value, iterator i = iterator())
+		{
+			map_node*	found = NULL;
+			ft::pair<iterator, bool> result;
+			
+			_M_check_if_next(found, value, i);
+			if (found == NULL)
+				found = _M_find_whose_child(value);
+			if (found->_value.first == value.first)
+			{
+				result.first = iterator(found, _nil);
+				result.second = false;
+			}
+			else
+			{
+				map_node*	newnode = _M_create(value);
+				if (found == _nil)
+				{
+					_root = newnode;
+					_nil->_right = newnode;
+					_nil->_left = newnode;
+				}
+				else if (_compare(value, found->_value))
+				{
+					found->_left = newnode;
+					if (_nil->_right == found)
+						_nil->_right = newnode;
+				}
+				else
+				{
+					found->_right = newnode;
+					if (_nil->_left == found)
+						_nil->_left = newnode;
+				}
+				newnode->_parent = found;
+				result.first = iterator(newnode, _nil);
+				result.second = true;
+				++_n;
+
+				_M_fix_violations(newnode);
+				_nil->_parent = _nil;
+			}
+			return result;
+		}
+
 	public:
 
 		/* ctor 1 */
-		//map() : _size(0), _capacity(0), _p(allocator_type().allocate())
-		//{
-		//	
-		//}
+		explicit map(const key_compare& compare = key_compare(), const allocator_type& allocator = allocator_type()) : _allocator(allocator), _compare(compare),  _n(0) 
+		{
+			_M_init();
+		}
+
+		/* ctor 2 */
+		template<class InputIterator>
+		map(InputIterator begin, InputIterator end, const key_compare& compare = key_compare(), const allocator_type& allocator = allocator_type()) : _allocator(allocator), _compare(compare), _n(0)
+		{
+			_M_range_init(begin, end);
+		}
 
 		/* copy ctor */
-		//map(const map_type& rhs) : _size(rhs._size), _capacity(rhs._capacity), _p(allocator_type().allocate(rhs._size))
-		//{
-		//	int count = 0;
-		//	for (const_iterator i = &rhs.begin(); i != &rhs.end(); ++i, ++count)
-		//	{
-		//		allocator_type().construct(&_p[count], *i);
-		//	}
-		//}
+		map(const map_type& rhs) : _allocator(rhs._allocator), _compare(rhs._compare), _n(rhs._n)
+		{
+			_M_range_init(rhs.begin(), rhs.end());
+		}
 
-		//~map()
-		//{
-		//	if (!empty())
-		//	{
-		//		for (const_iterator i = begin(); i != end(); ++i)
-		//			allocator_type().destroy(i);
-		//		allocator_type().deallocate(_p, _capacity);
-		//	}
-		//}
+		/* assignment operator overload */
+		map&	operator= (const map& rhs)
+		{
+			if (this == &rhs)
+				return (*this);
+			clear();
+			insert(rhs.begin(), rhs.end());
+			return *this;
+		}
+
+		~map()
+		{
+			//clear();
+			//_allocator.deallocate(_nil, 1);
+		}
+
+		bool					empty() const
+		{
+			return (this->_n == 0);
+		}
+
+		size_type				size() const
+		{
+			return (this->_n);
+		}
+
+		size_type				max_size() const
+		{
+			return (this->_allocator.max_size());
+		}
+
+		ft::pair<iterator, bool>	insert(const value_type& value)
+		{
+			return _M_insert(value);
+		}
+
+		iterator					insert(iterator i, const value_compare& value)
+		{
+			ft::pair<iterator, bool> result = _M_insert(value, i);
+		}
+
+		mapped_type&		operator[](const key_type& key)
+		{
+			return (*(this->insert(value_type(key, mapped_type())).first)).second;
+		}
+
+		/* iterators */
+		iterator			begin() { return iterator(this->_nil->_right, this->_nil); }
+		const_iterator		begin() const { return const_iterator(this->_nil->_right, this->_nil); }
+		iterator			end() { return iterator(this->_nil, this->_nil); }
+		const_iterator		end() const { return const_iterator(this->_nil, this->_nil); }
+		iterator			rbegin() { return reverse_iterator(end()); }
+		const_iterator		rbegin() const { return const_reverse_iterator(end()); }
+		iterator			rend() { return reverse_iterator(begin()); }
+		const_iterator		rend() const { return const_reverse_iterator(begin()); }
+
+		void	clear()
+		{
+			//
+		}
 
 		allocator_type get_allocator() const
 		{
-			return this->Allocator();
+			return this->_allocator();
 		}
 
-		//map_type& insert(const mapped_type& value)
-		//{
-		//	if (++_size >= _capacity)
-		//		reserve(_capacity * 2);
-		//	Allocator().construct(_p.end() - 1, value);
-		//	return *this;
-		//}
+		void		swap(map_type& other)
+		{
+			size_type	n = this->_n;
+			pointer		nil = this->_nil;
+			pointer		root = this->_root;
 
-		//void		swap(map_type& other)
-		//{
-		//	//size_type	capacity = this->_capacity;
-		//	//size_type	size = this->_size;
-		//	pointer		p = this->_p;
-//
-		//	//this->_capacity = other._capacity;
-		//	//this->_size = other._size;
-		//	this->_p = other._p;
-//
-		//	//other._capacity = capacity;
-		//	//other._size = size;
-		//	other._p = p;
-		//}
+			this->_n = other._n;
+			this->_nil = other._nil;
+			this->_root = other._root;
 
-		//mapped_type&	operator[] (const key_type& key)
-		//{
-		//	iterator i = find_if(begin(), end(), key);
-		//	if (i == end())
-		//	{
-		//		size_type op = _size;
-		//		insert(pair_type(key, mapped_type()));
-		//		return _p[op].second;
-		//	}
-		//	else
-		//		return &_p[i];
-		//}
+			other._n = n;
+			other._nil = nil;
+			other._root = root;
+		}
 
-		//map_type& reserve(size_type given_capacity)
-		//{
-		//	int count = 0;
-		//	if (given_capacity < this->_capacity)
-		//		return *this;
-		//	pointer tmp = allocator_type().allocate(_capacity);
-		//	for (const_iterator i = this->begin(); i != end(); ++i, ++count)
-		//		allocator_type().construct(&tmp[count], *i);
-		//	swap(_p, tmp);
-		//	for (iterator i = tmp.begin(); i != tmp.end(); ++i)
-		//		Allocator().destroy();
-		//	Allocator().deallocate(tmp, _capacity);
-		//	_capacity = given_capacity;
-		//	return *this;
-		//}
+		key_compare		key_comp() const
+		{
+			return (this->_compare.comp);
+		}
 
-		//map_node* _M_find_by_key(const key_type& key) const
-		//{
-		//	if (!root)
-		//		return nullptr;
-		//	else
-		//	{
-		//		if (root->getData() == item)
-		//			return root;
-		//		else if (root->getData() < item)
-		//			return find(root->getRightNode(), item);
-		//		else if (root->getData() > item)
-		//			return find(root->getLeftNode(), item);
-		//	}
-		//	return nullptr;
-		//}
+		value_compare	value_comp() const
+		{
+			return (this->_compare);
+		}
 
-		//BST_node *insert(BST_node *root, T item)
-		//{
-		//	if (!root)
-		//	{
-		//		BST_node<T>	*node = new BST_node<T>(item);
-		//		return node;
-		//	}
-		//	else
-		//	{
-		//		if (root->getData() < item)
-		//			root->setRightNode( insert(root->getRightNode(), item) );
-		//		else if (root->getData() > item)
-		//			root->setLeftNode( insert(root->getLeftNode(), item) );
-		//	}
-		//	return root;
-		//}
-		//
+		iterator			find(const key_type& key)
+		{
+			return iterator(_M_get_value_by_key(key), _nil);
+		}
+
+		const_iterator		find(const key_type& key) const
+		{
+			return const_iterator(_M_get_value_by_key(key), _nil);
+		}
+
+		size_type			count(const key_type& key) const
+		{
+			if (find(key) != end())
+				return 1;
+			return 0;
+		}
+
+		iterator		lower_bound(const key_type& key)
+		{
+			iterator		i;
+			for (i = begin(); i != end(); ++i)
+				if (!(_compare.comp(i->first, key)))
+					break ;
+			return i;
+		}
+
+		const_iterator	lower_bound(const key_type& key) const
+		{
+			const_iterator	i;
+			for (i = begin(); i != end(); ++i)
+				if (!(_compare.comp(i->first, key)))
+					break ;
+			return i;
+		}
+
+		iterator		upper_bound(const key_type& key)
+		{
+			iterator		i;
+			for (i = begin(); i != end(); ++i)
+				if (_compare.comp(key, i->first))
+					break ;
+			return i;
+		}
+
+		const_iterator	upper_bound(const key_type& k) const
+		{
+			const_iterator	i;
+			for (i = begin(); i != end(); ++i)
+				if (_compare.comp(k, i->first))
+					break ;
+			return (i);
+		}
+
+		ft::pair<iterator, iterator>				equal_range(const key_type& key)
+		{
+			return ft::pair<iterator, iterator>(lower_bound(key), upper_bound(key));
+		}
+
+		ft::pair<const_iterator, const_iterator>	equal_range(const key_type& key) const
+		{
+			return ft::pair<const_iterator, const_iterator>(lower_bound(key), upper_bound(key));
+		}
+
+		friend bool	operator==(const map& lhs, const map& rhs)
+		{
+			if (lhs.size() != rhs.size())
+				return (false);
+			return (ft::equal(lhs.begin(), lhs.end(), rhs.begin()));
+		}
+
+		friend bool	operator!=(const map& lhs, const map& rhs) { return !(lhs == rhs); }
+
+		friend bool	operator< (const map& lhs, const map& rhs)
+		{
+			return (ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end()));
+		}
+
+		friend bool	operator> (const map& lhs, const map& rhs)
+		{	return (rhs < lhs);		}
+
+		friend bool	operator<=(const map& lhs, const map& rhs)
+		{ return !(rhs < lhs); }
+		
+		friend bool	operator>=(const map& lhs, const map& rhs)
+		{ return !(lhs < rhs); }
+
+		void	swap(map& map1, map& map2)
+		{ map1.swap(map2); }
+		
 		//void traverseLNR(BST_node *root)
 		//{
 		//	if (!root)
@@ -398,40 +523,6 @@ namespace ft
 		//	traverseLRN(root->getLeftNode());
 		//	traverseLRN(root->getRightNode());
 		//	std::cout << root->getData() << " ";
-		//}
-		//
-		//void clear(BST_node *root)
-		//{
-		//	if (!root)
-		//		return ;
-		//	clear(root->getLeftNode());
-		//	clear(root->getRightNode());
-		//	delete root;
-		//}
-//
-		//bool empty() const
-		//{
-		//	return _size == 0;
-		//}
-//
-		//iterator begin() const
-		//{
-		//	return &_p[0];
-		//}
-//
-		//iterator end() const
-		//{
-		//	return &_p[_size];
-		//}
-//
-		//const_iterator cbegin() const
-		//{
-		//	return &_p[0];
-		//}
-//
-		//const_iterator cend() const
-		//{
-		//	return &_p[_size];
 		//}
 
 	};
