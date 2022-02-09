@@ -6,7 +6,7 @@
 /*   By: mbarut <mbarut@student.42wolfsburg.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/23 15:19:31 by mbarut            #+#    #+#             */
-/*   Updated: 2022/02/09 00:54:18 by mbarut           ###   ########.fr       */
+/*   Updated: 2022/02/09 23:58:09 by mbarut           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,11 +39,13 @@ int main()
 {
     // Create a map of three (strings, int) pairs
     ft::map<std::string, int> m;
-	//m["CPU"] = 10;
-	//m["GPU"] = 15;
-	//m["RAM"] = 20;
+	m["CPU"] = 10;
+	m["GPU"] = 15;
+	m["RAM"] = 20;
 
-    //print_map(m, "1) Initial map: ");
+	std::cout << m.empty() << std::endl;
+
+    print_map(m, "1) Initial map: ");
 
     //m["CPU"] = 25;  // update an existing value
     //m["SSD"] = 30;  // insert a new value

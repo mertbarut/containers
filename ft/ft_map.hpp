@@ -6,7 +6,7 @@
 /*   By: mbarut <mbarut@student.42wolfsburg.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/23 14:44:43 by mbarut            #+#    #+#             */
-/*   Updated: 2022/02/09 00:55:43 by mbarut           ###   ########.fr       */
+/*   Updated: 2022/02/10 00:12:17 by mbarut           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,17 +15,20 @@
 #include "ft_iterator_base_types.hpp"
 #include "ft_pair.hpp"
 #include "ft_util.hpp"
-#include "ft_base.hpp"
+#include "ft_rbt.hpp"
 #include "ft_iterator.hpp"
 #include "ft_vector.hpp"
+
 #include <memory>
+
+#include <string>
 
 namespace ft
 {
 	template <
 		class Key, class T,
 		class Compare = std::less<Key>,
-		class Allocator = std::allocator< std::pair<const Key, T> >
+		class Allocator = std::allocator< ft::pair<const Key, T> >
 		>
 	class map
 	{
@@ -37,7 +40,7 @@ namespace ft
 		typedef T															mapped_type;
 		typedef Compare														key_compare;
 		typedef Allocator													allocator_type;
-		typedef std::pair<key_type, mapped_type>							value_type;
+		typedef ft::pair<const key_type, mapped_type>						value_type;
 		typedef typename allocator_type::reference							reference;
 		typedef typename allocator_type::const_reference					const_reference;
 		typedef typename allocator_type::pointer							pointer;
@@ -74,21 +77,259 @@ namespace ft
 	private:
 
 		typedef _RBT<value_type, key_compare> 							tree_type;
-		typedef typename Allocator::template rebind<tree_type>::other	node_allocator_type;
+		typedef _RBT_Node<value_type>									node_type;
+		typedef typename Allocator::template rebind<node_type>::other	node_allocator_type;
+		typedef node_type*												node_pointer;
 
 		tree_type														_rbt;
 		allocator_type													_allocator;
+		node_allocator_type												_node_allocator;
 		key_compare														_compare;
+
+		#ifndef _PARENT_IS_LEFT_CHILD
+		# define _PARENT_IS_LEFT_CHILD									node->parent == node->parent->parent->left
+		#endif
+
+		#ifndef _IS_LEFT_CHILD
+		# define _IS_LEFT_CHILD											node->parent == node->parent->parent->left
+		#endif
+
+		#ifndef _IS_RIGHT_CHILD
+		# define _IS_RIGHT_CHILD										node->parent == node->parent->parent->left
+		#endif
+
+		node_pointer	_RBT_create_node(const value_type& value)
+		{
+			allocator_type	map_allocator(_node_allocator);
+			node_type*		node = _node_allocator.allocate(1);
+			node->color = _S_red;
+			node->parent = _rbt._nil;
+			node->right = _rbt._nil;
+			node->left = _rbt._nil;
+			map_allocator.construct(&(node->value), value);
+			return node;
+		}
+
+		void		_RBT_destroy_node(node_pointer node)
+		{
+			_node_allocator.destroy(node);
+			_node_allocator.deallocate(node, 1);
+		}
+
+		//void		_RBT_init_nil()
+		//{
+		//	_rbt._nil = _node_allocator.allocate(1);
+		//	_rbt._nil->color = _S_red;
+		//	_rbt._nil->parent = _rbt._nil;
+		//	_rbt._nil->right = _rbt._nil;
+		//	_rbt._nil->left = _rbt._nil;
+		//	_rbt.ROOT = _rbt._nil;
+		//}
+
+		void		_RBT_lrotate(node_pointer node)
+		{
+			if (node == _rbt._nil || node->right == _rbt._nil)
+				return ;
+			node_pointer	tmp = node->right;
+			if ((node->right = tmp->left) != _rbt._nil)
+				node->right->parent = node;
+			if ((tmp->parent = node->parent) == _rbt._nil)
+				_rbt.ROOT = tmp;
+			else if (tmp->parent->left == node)
+				tmp->parent->left = tmp;
+			else
+				tmp->parent->right = tmp;
+			tmp->left = node;
+			node->parent = tmp;
+		}
+
+		void		_RBT_rrotate(node_pointer node)
+		{
+			if (node == _rbt._nil || node->left == _rbt._nil)
+				return ;
+			node_pointer	tmp = node->left;
+			if ((node->left = tmp->right) != _rbt._nil)
+				node->left->parent = node;
+			if ((tmp->parent = node->parent) == _rbt._nil)
+				_rbt.ROOT = tmp;
+			else if (tmp->parent->right == node)
+				tmp->parent->right = tmp;
+			else
+				tmp->parent->left = tmp;
+			tmp->right = node;
+			node->parent = tmp;
+		}
+
+		node_pointer	_RBT_search_for(const value_type& value) const
+		{
+			node_pointer i = _rbt.ROOT;
+			for (; i != _rbt._nil && i->value.first != value.first;
+				_compare(value.first, i->_value.first) ? i = i->left : i = i->right) { }
+			return i;
+		}
+
+		void			_RBT_flip_color(node_pointer& node, node_pointer aunt)
+		{
+			aunt->color = _S_black;
+			node->parent->color = _S_black;
+			node->parent->parent->color = _S_red;
+			node = node->parent->parent;
+		}
+
+		void			_RBT_insert_rebalance(node_pointer node)
+		{
+			node_pointer	aunt;
+			
+			while (node != _rbt.ROOT && node->parent->color == _S_red)
+			{
+				if (_PARENT_IS_LEFT_CHILD)
+				{
+					aunt = node->parent->parent->right;
+					if (aunt->color == _S_red)
+						_RBT_flip_color(node, aunt);
+					else
+					{
+						if (_IS_RIGHT_CHILD)
+						{
+							node = node->parent;
+							_RBT_lrotate(node);
+						}
+						node->parent->color = _S_black;
+						node->parent->parent->color = _S_red;
+						_RBT_rrotate(node->parent->parent);
+					}
+				}
+				else
+				{
+					aunt = node->parent->parent->left;
+					if (aunt->color == _S_red)
+						_RBT_flip_color(node, aunt);
+					else
+					{
+						if (_IS_LEFT_CHILD)
+						{
+							node = node->parent;
+							_RBT_rrotate(node);
+						}
+						node->parent->color = _S_black;
+						node->parent->parent->color = _S_red;
+						_RBT_lrotate(node->parent->parent);
+					}
+				}
+			}
+			_rbt.ROOT->color = _S_black;
+		}
+
+		void			_RBT_check_if_next(node_pointer& found, const  value_type& value, iterator i)
+		{
+			if (i.base() && i.base() != _rbt._nil && _compare(i.base()->value.first, value.first))
+			{
+				iterator	next = i;
+				++next;
+				if ((i.base() == _rbt._nil->left || (next.base() != _rbt._nil && _compare(value.first, next.base()->value.first))) && i.base()->right == _rbt._nil)
+					found = i.base(); 
+			}
+		}
+
+		node_pointer	_RBT_find_whose_child(const value_type& value)
+		{
+			node_pointer p = _rbt.ROOT;
+
+			for (; p != _rbt._nil && p->value.first != value.first;)
+			{
+				if (_compare(value.first, p->value.first))
+				{
+					if (p->left == _rbt._nil)
+						return p;
+					p = p->left;
+				}
+				else
+				{
+					if (p->right == _rbt._nil)
+						return p;
+					p = p->right;
+				}
+			}
+			return p;
+		}
+
+		ft::pair<iterator, bool>	_RBT_insert(const value_type& value, iterator i = iterator())
+		{
+			node_pointer	found = NULL;
+			ft::pair<iterator, bool> result;
+			
+			_RBT_check_if_next(found, value, i);
+			if (found == NULL)
+				found = _RBT_find_whose_child(value);
+			if (found->value.first == value.first)
+			{
+				result.first = iterator(found, _rbt._nil);
+				result.second = false;
+			}
+			else
+			{
+				node_pointer	newnode = _RBT_create_node(value);
+				if (found == _rbt._nil)
+				{
+					_rbt.ROOT = newnode;
+					_rbt._nil->right = newnode;
+					_rbt._nil->left = newnode;
+				}
+				else if (_compare(value.first, found->value.first))
+				{
+					found->left = newnode;
+					if (_rbt._nil->right == found)
+						_rbt._nil->right = newnode;
+				}
+				else
+				{
+					found->right = newnode;
+					if (_rbt._nil->left == found)
+						_rbt._nil->left = newnode;
+				}
+				newnode->parent = found;
+				result.first = iterator(newnode, _rbt._nil);
+				result.second = true;
+				++_rbt._n;
+
+				_RBT_insert_rebalance(newnode);
+				_rbt._nil->parent = _rbt._nil;
+			}
+			if (result.second == true)
+				++this->_rbt._n;
+			return result;
+		}
+
+		template<class InputIterator>
+		void	_RBT_range_init(InputIterator begin, InputIterator end)
+		{
+			//_RBT_init_nil();
+			while (begin != end)
+				_RBT_insert(*begin++);
+		}
 
 	public:
 
 		/* ctor 1 */
-		explicit map (const key_compare& compare = key_compare(), const allocator_type& allocator = allocator_type())
-		:  _rbt(), _allocator(allocator), _compare(compare) {}
+		explicit map(const key_compare& compare = key_compare(), const allocator_type& allocator = allocator_type())
+		: _rbt(), _allocator(allocator), _compare(compare)
+		{
+			//ft::pair<const std::string, int> pair1("one", 1);
+			//_RBT_create_node(pair1);
+		}
 
 		/* ctor 2 */
+		template <typename InputIterator>
+		map(InputIterator begin, InputIterator end, const key_compare& compare = key_compare(), const allocator_type& allocator = allocator_type()) : _rbt(), _allocator(allocator), _compare(compare)
+		{
+			_RBT_range_init(begin, end);
+		}
 
 		/* copy ctor */
+		map(const map& other) : _rbt(), _allocator(other._allocator), _compare(other._compare)
+		{
+			_RBT_range_init(other.begin(), other.end());
+		}
 
 		/* assignment operator overload */
 
@@ -111,22 +352,22 @@ namespace ft
 
 		ft::pair<iterator, bool>	insert(const value_type& value)
 		{
-			return _rbt._insert(value);
+			return _RBT_insert(value);
 		}
 
-		iterator					insert(iterator i, const value_type& value)
+		iterator					insert(const value_type& value, iterator i)
 		{
-			ft::pair<iterator, bool> result = _insert(value, i);
+			ft::pair<iterator, bool> result = _RBT_insert(value, i);
 		}
 
-		//mapped_type&		operator[](const key_type& key)
-		//{
-		//	return (*(this->insert(value_type(key, mapped_type())).first)).second;
-		//}
+		mapped_type&		operator[](const key_type& key)
+		{
+			return (*((this->insert(value_type(key, mapped_type()))).first)).second;
+		}
 
 		/* iterators */
-		iterator			begin() { return iterator(this->_rbt._nil->left, this->_rbt._nil); }
-		const_iterator		begin() const { return const_iterator(this->_rbt._nil->left, this->_rbt._nil); }
+		iterator			begin() { return iterator(this->_rbt.FIRSTNODE, this->_rbt._nil); }
+		const_iterator		begin() const { return const_iterator(this->_rbt.FIRSTNODE, this->_rbt._nil); }
 		iterator			end() { return iterator(this->_rbt._nil, this->_rbt._nil); }
 		const_iterator		end() const { return const_iterator(this->_rbt._nil, this->_rbt._nil); }
 		iterator			rbegin() { return reverse_iterator(end()); }

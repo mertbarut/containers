@@ -6,7 +6,7 @@
 /*   By: mbarut <mbarut@student.42wolfsburg.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/23 23:13:25 by mbarut            #+#    #+#             */
-/*   Updated: 2022/02/09 18:59:07 by mbarut           ###   ########.fr       */
+/*   Updated: 2022/02/10 00:01:02 by mbarut           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -212,7 +212,22 @@ namespace ft
 	template <typename T, class Compare>
 	class _RBT_iterator : ft::iterator<ft::bidirectional_iterator_tag, T>
 	{
-	
+		#ifndef ROOT
+		# define ROOT									_nil->parent
+		#endif
+
+		#ifndef FIRSTNODE
+		# define FIRSTNODE								_nil->left
+		#endif
+
+		#ifndef NILNODE
+		# define NILNODE								_nil->right
+		#endif
+
+		#ifndef LASTNODE
+		# define LASTNODE								_nil
+		#endif
+
 	public:
 		T*			_node;
 		T*			_nil;
@@ -238,7 +253,7 @@ namespace ft
 				return *this;
 			this->_node = rhs._node;
 			this->_nil = rhs._nil;
-			this->_comp = rhs._comp;
+			this->_compare = rhs._compare;
 			return *this;
 		}
 
@@ -253,26 +268,26 @@ namespace ft
 
 		_RBT_iterator& operator++(void)
 		{
-			T* ptr = _node;
+			T* ptr = this->_node;
 
 			if (ptr == _nil)
-				_node = _nil->right;
-			else if (_node->right == _nil)
+				this->_node = NILNODE;
+			else if (this->_node->right == _nil)
 			{
-				ptr = _node->parent;
-				while (ptr != _nil && _compare(ptr->value.first, _node->value.first))
+				ptr = this->_node->parent;
+				while (ptr != _nil && _compare(ptr->value.first, this->_node->value.first))
 					ptr = ptr->parent;
-				_node = ptr;
+				this->_node = ptr;
 			}
 			else
 			{
-				ptr = _node->right;
+				ptr = this->_node->right;
 				if (ptr == _nil->parent && ptr->right == _nil)
-					_node = ptr;
+					this->_node = ptr;
 				else
 					while (ptr->left != _nil)
 						ptr = ptr->left;
-				_node = ptr;
+				this->_node = ptr;
 			}
 			return *this;
 		}
@@ -286,26 +301,26 @@ namespace ft
 
 		_RBT_iterator& operator--(void)
 		{
-			T* ptr = _node;
+			T* ptr = this->_node;
 
-			if (ptr == _nil)
-				_node = _nil->right;
-			else if (_node->left == _nil)
+			if (this->ptr == _nil)
+				this->_node = NILNODE;
+			else if (this->_node->left == _nil)
 			{
-				ptr = _node->parent;
-				while (ptr != _nil && !_compare(ptr->value.first, _node->value.first))
+				ptr = this->_node->parent;
+				while (ptr != _nil && !_compare(ptr->value.first, this->_node->value.first))
 					ptr = ptr->parent;
-				_node = ptr;
+				this->_node = ptr;
 			}
 			else
 			{
-				ptr = _node->left;
+				ptr = this->_node->left;
 				if (ptr == _nil->parent && ptr->left == _nil)
-					_node = ptr;
+					this->_node = ptr;
 				else
 					while (ptr->right != _nil)
 						ptr = ptr->right;
-				_node = ptr;
+				this->_node = ptr;
 			}
 			return *this;
 		}
@@ -345,10 +360,10 @@ namespace ft
 		_RBT_const_iterator& operator= (const _RBT_const_iterator& rhs)
 		{
 			if (*this == rhs)
-				return (*this);
+				return *this;
 			this->_node = rhs._node;
 			this->_nil = rhs._nil;
-			this->_comp = rhs._comp;
+			this->_compare = rhs._compare;
 			return *this;
 		}
 
@@ -373,26 +388,26 @@ namespace ft
 
 		_RBT_const_iterator& operator++(void)
 		{
-			T* ptr = _node;
+			T* ptr = this->_node;
 
 			if (ptr == _nil)
-				_node = _nil->right;
-			else if (_node->right == _nil)
+				this->_node = NILNODE;
+			else if (this->_node->right == _nil)
 			{
-				ptr = _node->parent;
+				ptr = this->_node->parent;
 				while (ptr != _nil && _compare(ptr->value.first, _node->value.first))
 					ptr = ptr->parent;
-				_node = ptr;
+				this->_node = ptr;
 			}
 			else
 			{
-				ptr = _node->right;
+				ptr = this->_node->right;
 				if (ptr == _nil->parent && ptr->right == _nil)
-					_node = ptr;
+					this->_node = ptr;
 				else
 					while (ptr->left != _nil)
 						ptr = ptr->left;
-				_node = ptr;
+				this->_node = ptr;
 			}
 			return *this;
 		}
@@ -406,26 +421,26 @@ namespace ft
 
 		_RBT_const_iterator& operator--(void)
 		{
-			T* ptr = _node;
+			T* ptr = this->_node;
 
 			if (ptr == _nil)
-				_node = _nil->right;
-			else if (_node->left == _nil)
+				this->_node = NILNODE;
+			else if (this->_node->left == _nil)
 			{
-				ptr = _node->parent;
+				ptr = this->_node->parent;
 				while (ptr != _nil && !_compare(ptr->value.first, _node->value.first))
 					ptr = ptr->parent;
-				_node = ptr;
+				this->_node = ptr;
 			}
 			else
 			{
-				ptr = _node->left;
+				ptr = this->_node->left;
 				if (ptr == _nil->parent && ptr->left == _nil)
-					_node = ptr;
+					this->_node = ptr;
 				else
 					while (ptr->right != _nil)
 						ptr = ptr->right;
-				_node = ptr;
+				this->_node = ptr;
 			}
 			return *this;
 		}
