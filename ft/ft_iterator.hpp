@@ -6,7 +6,7 @@
 /*   By: mbarut <mbarut@student.42wolfsburg.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/23 23:13:25 by mbarut            #+#    #+#             */
-/*   Updated: 2022/02/09 00:23:44 by mbarut           ###   ########.fr       */
+/*   Updated: 2022/02/09 18:59:07 by mbarut           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -225,6 +225,7 @@ namespace ft
 		typedef typename ft::iterator<ft::bidirectional_iterator_tag, value_type>::difference_type   difference_type;
 		typedef typename ft::iterator<ft::bidirectional_iterator_tag, value_type>::pointer   pointer;
 		typedef typename ft::iterator<ft::bidirectional_iterator_tag, value_type>::reference reference;
+		typedef _RBT_iterator<T, Compare>	self_type;
 
 		_RBT_iterator(const Compare& comp = Compare()) : _node(), _nil(), _compare(comp) {}
 		_RBT_iterator(T* node, T* nil, const Compare& comp = Compare()) : _node(node), _nil(nil), _compare(comp) {}
