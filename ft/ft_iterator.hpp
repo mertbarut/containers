@@ -6,19 +6,150 @@
 /*   By: mbarut <mbarut@student.42wolfsburg.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/23 23:13:25 by mbarut            #+#    #+#             */
-/*   Updated: 2022/02/10 00:01:02 by mbarut           ###   ########.fr       */
+/*   Updated: 2022/02/10 12:14:12 by mbarut           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
-#include "ft_iterator_base_funcs.hpp"
-#include "ft_iterator_base_types.hpp"
+//#include "ft_iterator_base_funcs.hpp"
+//#include "ft_iterator_base_types.hpp"
 #include "ft_util.hpp"
 //#include "ft_base.hpp"
 
+#include <cstddef>
+
 namespace ft
 {
+	/* Iterator Tags */
+
+	struct input_iterator_tag {};
+	struct output_iterator_tag {};
+	struct forward_iterator_tag : public input_iterator_tag {} ;
+	struct bidirectional_iterator_tag : public forward_iterator_tag {} ;
+	struct random_access_iterator_tag : public bidirectional_iterator_tag {} ;
+
+	/* Typedefs for any iterator */ 
+	template <
+		typename Category,
+		typename T,
+		typename Distance = ptrdiff_t,
+		typename Pointer = T*,
+		typename Reference = T&
+		>
+	struct iterator
+	{
+		typedef Category	iterator_category;
+		typedef T			value_type;
+		typedef	Distance	difference_type;
+		typedef	Pointer		pointer;
+		typedef Reference	reference;
+	};
+
+	/* type_traits */
+	template <typename Iterator>
+	struct iterator_traits
+	{
+		typedef typename Iterator::value_type			value_type;
+		typedef typename Iterator::difference_type		difference_type;
+		typedef typename Iterator::iterator_category	iterator_category;
+		typedef typename Iterator::pointer				pointer;
+		typedef typename Iterator::reference			reference;
+	};
+
+	template <typename T>
+	struct iterator_traits <T*>
+	{
+		typedef random_access_iterator_tag	iterator_category;
+		typedef T							value_type;
+		typedef ptrdiff_t					difference_type;
+		typedef T*							pointer;
+		typedef T&							reference;
+	};
+
+	template <typename T>
+	struct iterator_traits <const T*>
+	{
+		typedef random_access_iterator_tag	iterator_category;
+		typedef T							value_type;
+		typedef ptrdiff_t					difference_type;
+		typedef T*							pointer;
+		typedef T&							reference;
+	};
+	
+	/* Get the iterator category of any iterator type */
+	template <typename Iterator>
+	inline typename iterator_traits<Iterator>::iterator_category iterator_category(const Iterator&)
+	{
+		return typename iterator_traits<Iterator>::iterator_category();
+	}
+
+		/* Distance: get the distance between two iterators */
+	
+	template <typename InputIterator>
+	static inline typename iterator_traits<InputIterator>::difference_type
+	_distance (InputIterator first, InputIterator last, ft::input_iterator_tag)
+	{
+		typename iterator_traits<InputIterator>::difference_type n = 0;
+		while (first != last)
+		{
+			++first;
+			++n;
+		}
+		return n;
+	}
+
+	template <typename RandomAccessIterator>
+	static inline typename iterator_traits<RandomAccessIterator>::difference_type
+	_distance (RandomAccessIterator first, RandomAccessIterator last, ft::random_access_iterator_tag)
+	{
+		return last - first;
+	}
+
+	template <typename InputIterator>
+	inline typename iterator_traits<InputIterator>::difference_type
+	distance(InputIterator first, InputIterator last)
+	{
+		return ft::_distance(first, last, ft::iterator_category(first));
+	}
+
+	/* Advance: advance some iterator by some position */
+
+	template <typename InputIterator, typename Distance>
+	static inline void
+	_advance(InputIterator& i, Distance n, ft::input_iterator_tag)
+	{
+		while (n--)
+			++i;
+	}
+
+	template <typename BidirectionalIterator, typename Distance>
+	static inline void
+	_advance(BidirectionalIterator& i, Distance n, ft::bidirectional_iterator_tag)
+	{
+		if (n > 0)
+			while (n--)
+				++i;
+		else
+			while (n++)
+				--i;
+	}
+
+	template <typename RandomAccessIterator, typename Distance>
+	static inline void
+	_advance(RandomAccessIterator& i, Distance n, ft::random_access_iterator_tag)
+	{
+		i += n;
+	}
+
+	template <typename InputIterator, typename Distance>
+	inline void
+	advance (InputIterator& i, Distance n)
+	{
+		typename iterator_traits<InputIterator>::difference_type d = n;
+		ft::_advance(i, d, ft::iterator_category(i));
+	}
+
 	template <typename Iterator>
 	class reverse_iterator
 	{
@@ -199,7 +330,7 @@ namespace ft
 			return reverse_iterator(obj.base() - d);
 		}
 		
-		/* return the distance between iterators ( = right - left ) */
+		/* return the distance between iterators ( = __right - __left ) */
 		friend typename reverse_iterator::difference_type operator- (
 			const reverse_iterator& lhs,
 			const reverse_iterator& rhs)
@@ -213,15 +344,15 @@ namespace ft
 	class _RBT_iterator : ft::iterator<ft::bidirectional_iterator_tag, T>
 	{
 		#ifndef ROOT
-		# define ROOT									_nil->parent
+		# define ROOT									_nil->__parent
 		#endif
 
 		#ifndef FIRSTNODE
-		# define FIRSTNODE								_nil->left
+		# define FIRSTNODE								_nil->__left
 		#endif
 
 		#ifndef NILNODE
-		# define NILNODE								_nil->right
+		# define NILNODE								_nil->__right
 		#endif
 
 		#ifndef LASTNODE
@@ -263,8 +394,8 @@ namespace ft
 
 		bool		operator==(const _RBT_iterator& i) { return this->_node == i._node; }
 		bool		operator!=(const _RBT_iterator& i) { return this->_node != i._node; }
-		reference	operator*() const { return this->_node->value; }
-		pointer		operator->() const { return &this->_node->value; }
+		reference	operator*() const { return this->_node->__value; }
+		pointer		operator->() const { return &this->_node->__value; }
 
 		_RBT_iterator& operator++(void)
 		{
@@ -272,21 +403,21 @@ namespace ft
 
 			if (ptr == _nil)
 				this->_node = NILNODE;
-			else if (this->_node->right == _nil)
+			else if (this->_node->__right == _nil)
 			{
-				ptr = this->_node->parent;
-				while (ptr != _nil && _compare(ptr->value.first, this->_node->value.first))
-					ptr = ptr->parent;
+				ptr = this->_node->__parent;
+				while (ptr != _nil && _compare(ptr->__value.first, this->_node->__value.first))
+					ptr = ptr->__parent;
 				this->_node = ptr;
 			}
 			else
 			{
-				ptr = this->_node->right;
-				if (ptr == _nil->parent && ptr->right == _nil)
+				ptr = this->_node->__right;
+				if (ptr == _nil->__parent && ptr->__right == _nil)
 					this->_node = ptr;
 				else
-					while (ptr->left != _nil)
-						ptr = ptr->left;
+					while (ptr->__left != _nil)
+						ptr = ptr->__left;
 				this->_node = ptr;
 			}
 			return *this;
@@ -305,21 +436,21 @@ namespace ft
 
 			if (this->ptr == _nil)
 				this->_node = NILNODE;
-			else if (this->_node->left == _nil)
+			else if (this->_node->__left == _nil)
 			{
-				ptr = this->_node->parent;
-				while (ptr != _nil && !_compare(ptr->value.first, this->_node->value.first))
-					ptr = ptr->parent;
+				ptr = this->_node->__parent;
+				while (ptr != _nil && !_compare(ptr->__value.first, this->_node->__value.first))
+					ptr = ptr->__parent;
 				this->_node = ptr;
 			}
 			else
 			{
-				ptr = this->_node->left;
-				if (ptr == _nil->parent && ptr->left == _nil)
+				ptr = this->_node->__left;
+				if (ptr == _nil->__parent && ptr->__left == _nil)
 					this->_node = ptr;
 				else
-					while (ptr->right != _nil)
-						ptr = ptr->right;
+					while (ptr->__right != _nil)
+						ptr = ptr->__right;
 				this->_node = ptr;
 			}
 			return *this;
@@ -383,8 +514,8 @@ namespace ft
 
 		bool		operator==(const _RBT_const_iterator& i) { return this->_node == i._node; }
 		bool		operator!=(const _RBT_const_iterator& i) { return this->_node != i._node; }
-		reference	operator*() const { return this->_node->value; }
-		pointer		operator->() const { return &this->_node->value; }
+		reference	operator*() const { return this->_node->__value; }
+		pointer		operator->() const { return &this->_node->__value; }
 
 		_RBT_const_iterator& operator++(void)
 		{
@@ -392,21 +523,21 @@ namespace ft
 
 			if (ptr == _nil)
 				this->_node = NILNODE;
-			else if (this->_node->right == _nil)
+			else if (this->_node->__right == _nil)
 			{
-				ptr = this->_node->parent;
-				while (ptr != _nil && _compare(ptr->value.first, _node->value.first))
-					ptr = ptr->parent;
+				ptr = this->_node->__parent;
+				while (ptr != _nil && _compare(ptr->__value.first, _node->__value.first))
+					ptr = ptr->__parent;
 				this->_node = ptr;
 			}
 			else
 			{
-				ptr = this->_node->right;
-				if (ptr == _nil->parent && ptr->right == _nil)
+				ptr = this->_node->__right;
+				if (ptr == _nil->__parent && ptr->__right == _nil)
 					this->_node = ptr;
 				else
-					while (ptr->left != _nil)
-						ptr = ptr->left;
+					while (ptr->__left != _nil)
+						ptr = ptr->__left;
 				this->_node = ptr;
 			}
 			return *this;
@@ -425,21 +556,21 @@ namespace ft
 
 			if (ptr == _nil)
 				this->_node = NILNODE;
-			else if (this->_node->left == _nil)
+			else if (this->_node->__left == _nil)
 			{
-				ptr = this->_node->parent;
-				while (ptr != _nil && !_compare(ptr->value.first, _node->value.first))
-					ptr = ptr->parent;
+				ptr = this->_node->__parent;
+				while (ptr != _nil && !_compare(ptr->__value.first, _node->__value.first))
+					ptr = ptr->__parent;
 				this->_node = ptr;
 			}
 			else
 			{
-				ptr = this->_node->left;
-				if (ptr == _nil->parent && ptr->left == _nil)
+				ptr = this->_node->__left;
+				if (ptr == _nil->__parent && ptr->__left == _nil)
 					this->_node = ptr;
 				else
-					while (ptr->right != _nil)
-						ptr = ptr->right;
+					while (ptr->__right != _nil)
+						ptr = ptr->__right;
 				this->_node = ptr;
 			}
 			return *this;
@@ -454,14 +585,24 @@ namespace ft
 
 	};
 
-	template<typename Allocator, typename Container>
-	class random_access_iterator
+	template <class T>
+	class bidirectional_iterator : ft::iterator<ft::bidirectional_iterator_tag, T>
+	{
+		typedef typename ft::iterator<ft::bidirectional_iterator_tag, T>::iterator_category     iterator_category;
+		typedef typename ft::iterator<ft::bidirectional_iterator_tag, T>::value_type            value_type;
+		typedef typename ft::iterator<ft::bidirectional_iterator_tag, T>::difference_type       difference_type;
+		typedef typename ft::iterator<ft::bidirectional_iterator_tag, T>::pointer               pointer;
+		typedef typename ft::iterator<ft::bidirectional_iterator_tag, T>::reference             reference;
+	};
+
+	template<typename T, typename Container>
+	class random_access_iterator : ft::iterator<ft::random_access_iterator_tag, T>
 	{
 
 	private:
 
-		Allocator										_base;
-		typedef typename ft::iterator_traits<Allocator>	trait_type;
+		T												_base;
+		typedef typename ft::iterator_traits<T>			trait_type;
 
 	public:
 
@@ -474,9 +615,9 @@ namespace ft
 		//using											bidirectional_iterator<Allocator>::base;
 
 		/* ctor 1 */
-		random_access_iterator() { this->_base = Allocator(); }
+		random_access_iterator() { this->_base = T(); }
 		/* ctor 2 */
-		random_access_iterator(const Allocator& other) { this->_base = other; }
+		random_access_iterator(const T& other) { this->_base = other; }
 		/* copy ctor */
 		random_access_iterator(const random_access_iterator& other) { this->_base = other._base; } 
 		/* dtor */
@@ -497,7 +638,7 @@ namespace ft
 		//	typename ft::is_same<Iter, Container>::_type* _tmp = NULL)
 		//: bidirectional_iterator<Allocator>(v.base()) { (void)_tmp; }
 
-		Allocator		base() const { return (this->_base); }
+		T		base() const { return (this->_base); }
 
 		/* friends */
 

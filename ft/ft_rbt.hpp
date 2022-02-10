@@ -6,15 +6,14 @@
 /*   By: mbarut <mbarut@student.42wolfsburg.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/08 11:16:46 by mbarut            #+#    #+#             */
-/*   Updated: 2022/02/09 23:49:55 by mbarut           ###   ########.fr       */
+/*   Updated: 2022/02/10 12:06:12 by mbarut           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
 #include "ft_iterator.hpp"
-#include "ft_iterator_base_types.hpp"
-#include "ft_pair.hpp"
+//#include "ft_pair.hpp"
 #include "ft_util.hpp"
 //#include "ft_iterator.hpp"
 //#include "ft_vector.hpp"
@@ -24,98 +23,98 @@
 namespace ft 
 {
 
-	enum _RBT_color
+	enum __RBT_Node_color
 	{
 		_S_black = false,
 		_S_red = true,
 	};
 
 	template <typename _T>
-	struct _RBT_Node
+	struct __RBT_Node
 	{
 
 	public:
 
 		typedef _T						value_type;
-		typedef _RBT_Node<value_type>	link_type;
+		typedef __RBT_Node<value_type>	link_type;
 
-		value_type	value;
-		_RBT_Node*	parent;
-		_RBT_Node*	left;
-		_RBT_Node*	right;
-		_RBT_color	color;
+		value_type			__value;
+		__RBT_Node*			__parent;
+		__RBT_Node*			__left;
+		__RBT_Node*			__right;
+		__RBT_Node_color	__color;
 
-		_RBT_Node () : value(), parent(u_nullptr), left(u_nullptr), right(u_nullptr), color(_S_red) {}
-		_RBT_Node (_RBT_Node* parent = u_nullptr, _RBT_Node* left = u_nullptr, _RBT_Node* right = u_nullptr, _RBT_color color = _S_red) : value(), parent(parent), left(left), right(right), color(color) {}
-		_RBT_Node (const value_type& value, _RBT_Node* parent = u_nullptr, _RBT_Node* left = u_nullptr, _RBT_Node* right = u_nullptr, _RBT_color color = _S_red) : value(value), parent(parent), left(left), right(right), color(color) {}
-		_RBT_Node (const _RBT_Node& node) : value(node.value), parent(node.parent), left(node.left), right(node.right), color(node.color) {}
-		virtual ~_RBT_Node() {}
+		__RBT_Node () : __value(), __parent(u_nullptr), __left(u_nullptr), __right(u_nullptr), __color(_S_red) {}
+		__RBT_Node (__RBT_Node* __parent = u_nullptr, __RBT_Node* __left = u_nullptr, __RBT_Node* __right = u_nullptr, __RBT_Node_color __color = _S_red) : __value(), __parent(__parent), __left(__left), __right(__right), __color(__color) {}
+		__RBT_Node (const value_type& __value, __RBT_Node* __parent = u_nullptr, __RBT_Node* __left = u_nullptr, __RBT_Node* __right = u_nullptr, __RBT_Node_color __color = _S_red) : __value(__value), __parent(__parent), __left(__left), __right(__right), __color(__color) {}
+		__RBT_Node (const __RBT_Node& node) : __value(node.__value), __parent(node.__parent), __left(node.__left), __right(node.__right), __color(node.__color) {}
+		virtual ~__RBT_Node() {}
 
-		_RBT_Node& operator= (const _RBT_Node& rhs)
+		__RBT_Node& operator= (const __RBT_Node& rhs)
 		{
 			if (rhs == *this)
 				return (*this);
-			this->value = rhs.value;
-			this->parent = rhs.parent;
-			this->left = rhs.left;
-			this->right = rhs.right;
-			this->color = rhs.color;
+			this->__value = rhs.__value;
+			this->__parent = rhs.__parent;
+			this->__left = rhs.__left;
+			this->__right = rhs.__right;
+			this->__color = rhs.__color;
 			return (*this);
 		}
 
-		bool operator==(const _RBT_Node& rhs)
+		bool operator==(const __RBT_Node& rhs)
 		{
-			if (value == rhs.value)
+			if (__value == rhs.__value)
 				return (true);
 			return (false);
 		}
 
-		static _RBT_Node* _get_min(_RBT_Node* node, const _RBT_Node* nil)
+		static __RBT_Node* _get_min(__RBT_Node* node, const __RBT_Node* nil)
 		{
-			for (; node->left != nil; node = node->left) {}
+			for (; node->__left != nil; node = node->__left) {}
 				return node;
 		}
 
-		static _RBT_Node* _get_max(_RBT_Node* node, const _RBT_Node* nil)
+		static __RBT_Node* _get_max(__RBT_Node* node, const __RBT_Node* nil)
 		{
-			for (; node->right != nil; node = node->right) {}
+			for (; node->__right != nil; node = node->__right) {}
 				return node;
 		}
 
-		static const _RBT_Node* _get_min(const _RBT_Node* node, const _RBT_Node* nil)
+		static const __RBT_Node* _get_min(const __RBT_Node* node, const __RBT_Node* nil)
 		{
-			for (; node->left != nil; node = node->left) {}
+			for (; node->__left != nil; node = node->__left) {}
 				return node;
 		}
 
-		static const _RBT_Node* _get_max(const _RBT_Node* node, const _RBT_Node* nil)
+		static const __RBT_Node* _get_max(const __RBT_Node* node, const __RBT_Node* nil)
 		{
-			for (; node->right != nil; node = node->right) {}
+			for (; node->__right != nil; node = node->__right) {}
 				return node;
 		}
 
 		template <typename Node>
-		static void	_increment(Node& node, const _RBT_Node* nil)
+		static void	_increment(Node& node, const __RBT_Node* nil)
 		{
-			if (node->right != nil)
-				node = _get_min(node->right, nil);
-			else if (node == nil || nil->left == node)
-				node = node->right;
+			if (node->__right != nil)
+				node = _get_min(node->__right, nil);
+			else if (node == nil || nil->__left == node)
+				node = node->__right;
 			else
-				for (; node->parent != nil && node == node->parent->right; node = node->parent) {}
-				node = node->parent;
+				for (; node->__parent != nil && node == node->__parent->__right; node = node->__parent) {}
+				node = node->__parent;
 		}
 
 		template <typename Node>
-		static void	_decrement(Node& node, const _RBT_Node* nil)
+		static void	_decrement(Node& node, const __RBT_Node* nil)
 		{
-			if (node->left != nil)
-				node = _get_max(node->left, nil);
-			else if (node == nil || nil->right == node)
-				node = node->left;
+			if (node->__left != nil)
+				node = _get_max(node->__left, nil);
+			else if (node == nil || nil->__right == node)
+				node = node->__left;
 			else
-				for (; node->parent != nil && node == node->parent->left; node = node->parent) {}
-				node = node->parent;
+				for (; node->__parent != nil && node == node->__parent->__left; node = node->__parent) {}
+				node = node->__parent;
 		}
 
     };
@@ -123,7 +122,7 @@ namespace ft
 	template <
 		class T,
 		class Compare = ft::less<T>,
-		class Node = ft::_RBT_Node<T>,
+		class Node = ft::__RBT_Node<T>,
 		class Allocator_T = std::allocator<T>,
 		class Allocator_Node = std::allocator<Node>
 	>
@@ -149,15 +148,15 @@ namespace ft
 		compare_type									_compare;
 
 		#ifndef ROOT
-		# define ROOT									_nil->parent
+		# define ROOT									_nil->__parent
 		#endif
 
 		#ifndef FIRSTNODE
-		# define FIRSTNODE								_nil->left
+		# define FIRSTNODE								_nil->__left
 		#endif
 
 		#ifndef NILNODE
-		# define NILNODE								_nil->right
+		# define NILNODE								_nil->__right
 		#endif
 
 		#ifndef LASTNODE
@@ -165,7 +164,7 @@ namespace ft
 		#endif
 
 		//#ifndef TREESIZE
-		//# define TREESIZE								_nil->value.first
+		//# define TREESIZE								_nil->__value.first
 		//#endif
 
 		/* ctor 1 */
@@ -185,13 +184,13 @@ namespace ft
 
 		//void		_make_related(node_pointer node1, node_pointer node2)
 		//{
-		//	if (node1->parent == _nil)
+		//	if (node1->__parent == _nil)
 		//		ROOT = node2;
-		//	else if (node1->parent->left == node1)
-		//		node1->parent->left = node2;
+		//	else if (node1->__parent->__left == node1)
+		//		node1->__parent->__left = node2;
 		//	else
-		//		node1->parent->left = node2;
-		//	node2->parent = node1->parent;
+		//		node1->__parent->__left = node2;
+		//	node2->__parent = node1->__parent;
 		//}
 
 		//template<class InputIterator>
@@ -208,12 +207,12 @@ namespace ft
 //
 		//	while (node != _nil)
 		//	{
-		//		if (node->value.first == to_find.first)
+		//		if (node->__value.first == to_find.first)
 		//			return (node);
-		//		if (node->value.first > to_find.first)
-		//			node = node->left;
+		//		if (node->__value.first > to_find.first)
+		//			node = node->__left;
 		//		else
-		//			node = node->right;
+		//			node = node->__right;
 		//	}
 		//	return node;
 		//}

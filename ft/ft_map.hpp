@@ -6,14 +6,13 @@
 /*   By: mbarut <mbarut@student.42wolfsburg.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/23 14:44:43 by mbarut            #+#    #+#             */
-/*   Updated: 2022/02/10 00:12:17 by mbarut           ###   ########.fr       */
+/*   Updated: 2022/02/10 12:08:58 by mbarut           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
-#include "ft_iterator_base_types.hpp"
-#include "ft_pair.hpp"
+//#include "ft_pair.hpp"
 #include "ft_util.hpp"
 #include "ft_rbt.hpp"
 #include "ft_iterator.hpp"
@@ -52,7 +51,7 @@ namespace ft
 		typedef ft::reverse_iterator<const_iterator>						const_reverse_iterator;
 		typedef typename ft::iterator_traits<iterator>::difference_type		difference_type;
 
-		class value_compare : public binary_function<value_type, value_type, bool>
+		class __value_compare : public binary_function<value_type, value_type, bool>
 		{
 		private:
 
@@ -61,7 +60,7 @@ namespace ft
 		protected:
 
 			key_compare		comp;
-			value_compare(key_compare c) : comp(c) {}
+			__value_compare(key_compare c) : comp(c) {}
 			
 		public:
 			
@@ -77,7 +76,7 @@ namespace ft
 	private:
 
 		typedef _RBT<value_type, key_compare> 							tree_type;
-		typedef _RBT_Node<value_type>									node_type;
+		typedef __RBT_Node<value_type>									node_type;
 		typedef typename Allocator::template rebind<node_type>::other	node_allocator_type;
 		typedef node_type*												node_pointer;
 
@@ -87,26 +86,26 @@ namespace ft
 		key_compare														_compare;
 
 		#ifndef _PARENT_IS_LEFT_CHILD
-		# define _PARENT_IS_LEFT_CHILD									node->parent == node->parent->parent->left
+		# define _PARENT_IS_LEFT_CHILD									node->__parent == node->__parent->__parent->__left
 		#endif
 
 		#ifndef _IS_LEFT_CHILD
-		# define _IS_LEFT_CHILD											node->parent == node->parent->parent->left
+		# define _IS_LEFT_CHILD											node->__parent == node->__parent->__parent->__left
 		#endif
 
 		#ifndef _IS_RIGHT_CHILD
-		# define _IS_RIGHT_CHILD										node->parent == node->parent->parent->left
+		# define _IS_RIGHT_CHILD										node->__parent == node->__parent->__parent->__left
 		#endif
 
-		node_pointer	_RBT_create_node(const value_type& value)
+		node_pointer	_RBT_create_node(const value_type& __value)
 		{
 			allocator_type	map_allocator(_node_allocator);
 			node_type*		node = _node_allocator.allocate(1);
-			node->color = _S_red;
-			node->parent = _rbt._nil;
-			node->right = _rbt._nil;
-			node->left = _rbt._nil;
-			map_allocator.construct(&(node->value), value);
+			node->__color = _S_red;
+			node->__parent = _rbt._nil;
+			node->__right = _rbt._nil;
+			node->__left = _rbt._nil;
+			map_allocator.construct(&(node->__value), __value);
 			return node;
 		}
 
@@ -119,181 +118,181 @@ namespace ft
 		//void		_RBT_init_nil()
 		//{
 		//	_rbt._nil = _node_allocator.allocate(1);
-		//	_rbt._nil->color = _S_red;
-		//	_rbt._nil->parent = _rbt._nil;
-		//	_rbt._nil->right = _rbt._nil;
-		//	_rbt._nil->left = _rbt._nil;
+		//	_rbt._nil->__color = _S_red;
+		//	_rbt._nil->__parent = _rbt._nil;
+		//	_rbt._nil->__right = _rbt._nil;
+		//	_rbt._nil->__left = _rbt._nil;
 		//	_rbt.ROOT = _rbt._nil;
 		//}
 
 		void		_RBT_lrotate(node_pointer node)
 		{
-			if (node == _rbt._nil || node->right == _rbt._nil)
+			if (node == _rbt._nil || node->__right == _rbt._nil)
 				return ;
-			node_pointer	tmp = node->right;
-			if ((node->right = tmp->left) != _rbt._nil)
-				node->right->parent = node;
-			if ((tmp->parent = node->parent) == _rbt._nil)
+			node_pointer	tmp = node->__right;
+			if ((node->__right = tmp->__left) != _rbt._nil)
+				node->__right->__parent = node;
+			if ((tmp->__parent = node->__parent) == _rbt._nil)
 				_rbt.ROOT = tmp;
-			else if (tmp->parent->left == node)
-				tmp->parent->left = tmp;
+			else if (tmp->__parent->__left == node)
+				tmp->__parent->__left = tmp;
 			else
-				tmp->parent->right = tmp;
-			tmp->left = node;
-			node->parent = tmp;
+				tmp->__parent->__right = tmp;
+			tmp->__left = node;
+			node->__parent = tmp;
 		}
 
 		void		_RBT_rrotate(node_pointer node)
 		{
-			if (node == _rbt._nil || node->left == _rbt._nil)
+			if (node == _rbt._nil || node->__left == _rbt._nil)
 				return ;
-			node_pointer	tmp = node->left;
-			if ((node->left = tmp->right) != _rbt._nil)
-				node->left->parent = node;
-			if ((tmp->parent = node->parent) == _rbt._nil)
+			node_pointer	tmp = node->__left;
+			if ((node->__left = tmp->__right) != _rbt._nil)
+				node->__left->__parent = node;
+			if ((tmp->__parent = node->__parent) == _rbt._nil)
 				_rbt.ROOT = tmp;
-			else if (tmp->parent->right == node)
-				tmp->parent->right = tmp;
+			else if (tmp->__parent->__right == node)
+				tmp->__parent->__right = tmp;
 			else
-				tmp->parent->left = tmp;
-			tmp->right = node;
-			node->parent = tmp;
+				tmp->__parent->__left = tmp;
+			tmp->__right = node;
+			node->__parent = tmp;
 		}
 
-		node_pointer	_RBT_search_for(const value_type& value) const
+		node_pointer	_RBT_search_for(const value_type& __value) const
 		{
 			node_pointer i = _rbt.ROOT;
-			for (; i != _rbt._nil && i->value.first != value.first;
-				_compare(value.first, i->_value.first) ? i = i->left : i = i->right) { }
+			for (; i != _rbt._nil && i->__value.first != __value.first;
+				_compare(__value.first, i->___value.first) ? i = i->__left : i = i->__right) { }
 			return i;
 		}
 
-		void			_RBT_flip_color(node_pointer& node, node_pointer aunt)
+		void			_RBT_flip___color(node_pointer& node, node_pointer aunt)
 		{
-			aunt->color = _S_black;
-			node->parent->color = _S_black;
-			node->parent->parent->color = _S_red;
-			node = node->parent->parent;
+			aunt->__color = _S_black;
+			node->__parent->__color = _S_black;
+			node->__parent->__parent->__color = _S_red;
+			node = node->__parent->__parent;
 		}
 
 		void			_RBT_insert_rebalance(node_pointer node)
 		{
 			node_pointer	aunt;
 			
-			while (node != _rbt.ROOT && node->parent->color == _S_red)
+			while (node != _rbt.ROOT && node->__parent->__color == _S_red)
 			{
 				if (_PARENT_IS_LEFT_CHILD)
 				{
-					aunt = node->parent->parent->right;
-					if (aunt->color == _S_red)
-						_RBT_flip_color(node, aunt);
+					aunt = node->__parent->__parent->__right;
+					if (aunt->__color == _S_red)
+						_RBT_flip___color(node, aunt);
 					else
 					{
 						if (_IS_RIGHT_CHILD)
 						{
-							node = node->parent;
+							node = node->__parent;
 							_RBT_lrotate(node);
 						}
-						node->parent->color = _S_black;
-						node->parent->parent->color = _S_red;
-						_RBT_rrotate(node->parent->parent);
+						node->__parent->__color = _S_black;
+						node->__parent->__parent->__color = _S_red;
+						_RBT_rrotate(node->__parent->__parent);
 					}
 				}
 				else
 				{
-					aunt = node->parent->parent->left;
-					if (aunt->color == _S_red)
-						_RBT_flip_color(node, aunt);
+					aunt = node->__parent->__parent->__left;
+					if (aunt->__color == _S_red)
+						_RBT_flip___color(node, aunt);
 					else
 					{
 						if (_IS_LEFT_CHILD)
 						{
-							node = node->parent;
+							node = node->__parent;
 							_RBT_rrotate(node);
 						}
-						node->parent->color = _S_black;
-						node->parent->parent->color = _S_red;
-						_RBT_lrotate(node->parent->parent);
+						node->__parent->__color = _S_black;
+						node->__parent->__parent->__color = _S_red;
+						_RBT_lrotate(node->__parent->__parent);
 					}
 				}
 			}
-			_rbt.ROOT->color = _S_black;
+			_rbt.ROOT->__color = _S_black;
 		}
 
-		void			_RBT_check_if_next(node_pointer& found, const  value_type& value, iterator i)
+		void			_RBT_check_if_next(node_pointer& found, const  value_type& __value, iterator i)
 		{
-			if (i.base() && i.base() != _rbt._nil && _compare(i.base()->value.first, value.first))
+			if (i.base() && i.base() != _rbt._nil && _compare(i.base()->__value.first, __value.first))
 			{
 				iterator	next = i;
 				++next;
-				if ((i.base() == _rbt._nil->left || (next.base() != _rbt._nil && _compare(value.first, next.base()->value.first))) && i.base()->right == _rbt._nil)
+				if ((i.base() == _rbt._nil->__left || (next.base() != _rbt._nil && _compare(__value.first, next.base()->__value.first))) && i.base()->__right == _rbt._nil)
 					found = i.base(); 
 			}
 		}
 
-		node_pointer	_RBT_find_whose_child(const value_type& value)
+		node_pointer	_RBT_find_whose_child(const value_type& __value)
 		{
 			node_pointer p = _rbt.ROOT;
 
-			for (; p != _rbt._nil && p->value.first != value.first;)
+			for (; p != _rbt._nil && p->__value.first != __value.first;)
 			{
-				if (_compare(value.first, p->value.first))
+				if (_compare(__value.first, p->__value.first))
 				{
-					if (p->left == _rbt._nil)
+					if (p->__left == _rbt._nil)
 						return p;
-					p = p->left;
+					p = p->__left;
 				}
 				else
 				{
-					if (p->right == _rbt._nil)
+					if (p->__right == _rbt._nil)
 						return p;
-					p = p->right;
+					p = p->__right;
 				}
 			}
 			return p;
 		}
 
-		ft::pair<iterator, bool>	_RBT_insert(const value_type& value, iterator i = iterator())
+		ft::pair<iterator, bool>	_RBT_insert(const value_type& __value, iterator i = iterator())
 		{
 			node_pointer	found = NULL;
 			ft::pair<iterator, bool> result;
 			
-			_RBT_check_if_next(found, value, i);
+			_RBT_check_if_next(found, __value, i);
 			if (found == NULL)
-				found = _RBT_find_whose_child(value);
-			if (found->value.first == value.first)
+				found = _RBT_find_whose_child(__value);
+			if (found->__value.first == __value.first)
 			{
 				result.first = iterator(found, _rbt._nil);
 				result.second = false;
 			}
 			else
 			{
-				node_pointer	newnode = _RBT_create_node(value);
+				node_pointer	newnode = _RBT_create_node(__value);
 				if (found == _rbt._nil)
 				{
 					_rbt.ROOT = newnode;
-					_rbt._nil->right = newnode;
-					_rbt._nil->left = newnode;
+					_rbt._nil->__right = newnode;
+					_rbt._nil->__left = newnode;
 				}
-				else if (_compare(value.first, found->value.first))
+				else if (_compare(__value.first, found->__value.first))
 				{
-					found->left = newnode;
-					if (_rbt._nil->right == found)
-						_rbt._nil->right = newnode;
+					found->__left = newnode;
+					if (_rbt._nil->__right == found)
+						_rbt._nil->__right = newnode;
 				}
 				else
 				{
-					found->right = newnode;
-					if (_rbt._nil->left == found)
-						_rbt._nil->left = newnode;
+					found->__right = newnode;
+					if (_rbt._nil->__left == found)
+						_rbt._nil->__left = newnode;
 				}
-				newnode->parent = found;
+				newnode->__parent = found;
 				result.first = iterator(newnode, _rbt._nil);
 				result.second = true;
 				++_rbt._n;
 
 				_RBT_insert_rebalance(newnode);
-				_rbt._nil->parent = _rbt._nil;
+				_rbt._nil->__parent = _rbt._nil;
 			}
 			if (result.second == true)
 				++this->_rbt._n;
@@ -342,7 +341,7 @@ namespace ft
 
 		//size_type				size() const
 		//{
-		//	return _rbt._nil->value.first;
+		//	return _rbt._nil->__value.first;
 		//}
 
 		size_type				max_size() const
@@ -350,14 +349,14 @@ namespace ft
 			return _rbt.max_size();
 		}
 
-		ft::pair<iterator, bool>	insert(const value_type& value)
+		ft::pair<iterator, bool>	insert(const value_type& __value)
 		{
-			return _RBT_insert(value);
+			return _RBT_insert(__value);
 		}
 
-		iterator					insert(const value_type& value, iterator i)
+		iterator					insert(const value_type& __value, iterator i)
 		{
-			ft::pair<iterator, bool> result = _RBT_insert(value, i);
+			ft::pair<iterator, bool> result = _RBT_insert(__value, i);
 		}
 
 		mapped_type&		operator[](const key_type& key)
@@ -405,19 +404,19 @@ namespace ft
 		//	return (this->_compare.comp);
 		//}
 
-		//value_compare	value_comp() const
+		//__value_compare	__value_comp() const
 		//{
 		//	return (this->_compare);
 		//}
 
 		//iterator			find(const key_type& key)
 		//{
-		//	return iterator(_M_get_value_by_key(key), _nil);
+		//	return iterator(_M_get___value_by_key(key), _nil);
 		//}
 //
 		//const_iterator		find(const key_type& key) const
 		//{
-		//	return const_iterator(_M_get_value_by_key(key), _nil);
+		//	return const_iterator(_M_get___value_by_key(key), _nil);
 		//}
 //
 		//size_type			count(const key_type& key) const
