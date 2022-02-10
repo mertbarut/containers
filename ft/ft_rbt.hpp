@@ -6,7 +6,7 @@
 /*   By: mbarut <mbarut@student.42wolfsburg.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/08 11:16:46 by mbarut            #+#    #+#             */
-/*   Updated: 2022/02/10 12:06:12 by mbarut           ###   ########.fr       */
+/*   Updated: 2022/02/10 19:27:21 by mbarut           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ namespace ft
 	public:
 
 		typedef _T						value_type;
-		typedef __RBT_Node<value_type>	link_type;
+		typedef __RBT_Node<value_type>	node_type;
 
 		value_type			__value;
 		__RBT_Node*			__parent;
@@ -44,22 +44,32 @@ namespace ft
 		__RBT_Node*			__right;
 		__RBT_Node_color	__color;
 
+	private:
+
 		__RBT_Node () : __value(), __parent(u_nullptr), __left(u_nullptr), __right(u_nullptr), __color(_S_red) {}
-		__RBT_Node (__RBT_Node* __parent = u_nullptr, __RBT_Node* __left = u_nullptr, __RBT_Node* __right = u_nullptr, __RBT_Node_color __color = _S_red) : __value(), __parent(__parent), __left(__left), __right(__right), __color(__color) {}
+		
+	public:
+
+		__RBT_Node(node_type* nil, const value_type& __value)
+		: __value(__value), __parent(nil), __left(nil), __right(nil), __color(_S_red) {}
+
+		__RBT_Node (const __RBT_Node& node)
+		: __value(node.__value), __parent(node.__parent), __left(node.__left), __right(node.__right), __color(node.__color) {}
+
+		__RBT_Node (__RBT_Node* __parent, __RBT_Node* __left, __RBT_Node* __right, __RBT_Node_color __color = _S_red) : __value(), __parent(__parent), __left(__left), __right(__right), __color(__color) {}
 		__RBT_Node (const value_type& __value, __RBT_Node* __parent = u_nullptr, __RBT_Node* __left = u_nullptr, __RBT_Node* __right = u_nullptr, __RBT_Node_color __color = _S_red) : __value(__value), __parent(__parent), __left(__left), __right(__right), __color(__color) {}
-		__RBT_Node (const __RBT_Node& node) : __value(node.__value), __parent(node.__parent), __left(node.__left), __right(node.__right), __color(node.__color) {}
-		virtual ~__RBT_Node() {}
+		~__RBT_Node() {}
 
 		__RBT_Node& operator= (const __RBT_Node& rhs)
 		{
 			if (rhs == *this)
-				return (*this);
+				return *this;
 			this->__value = rhs.__value;
 			this->__parent = rhs.__parent;
 			this->__left = rhs.__left;
 			this->__right = rhs.__right;
 			this->__color = rhs.__color;
-			return (*this);
+			return *this;
 		}
 
 		bool operator==(const __RBT_Node& rhs)
@@ -69,54 +79,59 @@ namespace ft
 			return (false);
 		}
 
-		static __RBT_Node* _get_min(__RBT_Node* node, const __RBT_Node* nil)
+		template <typename node_pointer> 
+		static node_pointer _get_min(node_pointer node, const __RBT_Node* nil)
 		{
-			for (; node->__left != nil; node = node->__left) {}
+			for (; node != nil && node->__left != nil; node = node->__left) {}
 				return node;
 		}
 
-		static __RBT_Node* _get_max(__RBT_Node* node, const __RBT_Node* nil)
+		template <typename node_pointer> 
+		static node_pointer _get_max(node_pointer node, const __RBT_Node* nil)
 		{
-			for (; node->__right != nil; node = node->__right) {}
+			for (; node != nil && node->__right != nil; node = node->__right) {}
 				return node;
 		}
 
-		static const __RBT_Node* _get_min(const __RBT_Node* node, const __RBT_Node* nil)
-		{
-			for (; node->__left != nil; node = node->__left) {}
-				return node;
-		}
+		//static const __RBT_Node* _get_min(const __RBT_Node* node, const __RBT_Node* nil)
+		//{
+		//	for (; node->__left != nil; node = node->__left) {}
+		//		return node;
+		//}
 
-		static const __RBT_Node* _get_max(const __RBT_Node* node, const __RBT_Node* nil)
-		{
-			for (; node->__right != nil; node = node->__right) {}
-				return node;
-		}
+		//static const __RBT_Node* _get_max(const __RBT_Node* node, const __RBT_Node* nil)
+		//{
+		//	for (; node->__right != nil; node = node->__right) {}
+		//		return node;
+		//}
 
-		template <typename Node>
-		static void	_increment(Node& node, const __RBT_Node* nil)
+		template <typename node_pointer>
+		static void	_increment(node_pointer& node, const __RBT_Node* nil)
 		{
 			if (node->__right != nil)
 				node = _get_min(node->__right, nil);
 			else if (node == nil || nil->__left == node)
 				node = node->__right;
 			else
+			{
 				for (; node->__parent != nil && node == node->__parent->__right; node = node->__parent) {}
 				node = node->__parent;
+			}
 		}
 
-		template <typename Node>
-		static void	_decrement(Node& node, const __RBT_Node* nil)
+		template <typename node_pointer>
+		static void	_decrement(node_pointer& node, const __RBT_Node* nil)
 		{
 			if (node->__left != nil)
 				node = _get_max(node->__left, nil);
 			else if (node == nil || nil->__right == node)
 				node = node->__left;
 			else
+			{
 				for (; node->__parent != nil && node == node->__parent->__left; node = node->__parent) {}
 				node = node->__parent;
+			}
 		}
-
     };
 
 	template <
@@ -144,24 +159,25 @@ namespace ft
 
 		size_t											_n;
 		node_pointer									_nil;
+		node_pointer									_root;
 		node_allocator									_nalloc;
 		compare_type									_compare;
 
-		#ifndef ROOT
-		# define ROOT									_nil->__parent
-		#endif
+		//#ifndef ROOT
+		//# define ROOT									_nil->__parent
+		//#endif
 
 		#ifndef FIRSTNODE
 		# define FIRSTNODE								_nil->__left
 		#endif
 
-		#ifndef NILNODE
-		# define NILNODE								_nil->__right
-		#endif
+		//#ifndef NILNODE
+		//# define NILNODE								_nil->__right
+		//#endif
 
-		#ifndef LASTNODE
-		# define LASTNODE								_nil
-		#endif
+		//#ifndef LASTNODE
+		//# define LASTNODE								_nil
+		//#endif
 
 		//#ifndef TREESIZE
 		//# define TREESIZE								_nil->__value.first
@@ -171,8 +187,8 @@ namespace ft
 		_RBT(const node_allocator& custom = node_allocator()) : _nalloc(custom)
 		{
 			_nil = _nalloc.allocate(1);
-			_nalloc.construct(_nil, node_type(_nil, _nil, _nil));
-			ROOT = _nil;
+			_nalloc.construct(_nil, node_type(_nil, _nil, _nil, _S_black));
+			_root = _nil;
 		}
 
 		/* dtor */

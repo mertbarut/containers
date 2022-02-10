@@ -6,20 +6,20 @@
 /*   By: mbarut <mbarut@student.42wolfsburg.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/23 14:44:43 by mbarut            #+#    #+#             */
-/*   Updated: 2022/02/10 12:08:58 by mbarut           ###   ########.fr       */
+/*   Updated: 2022/02/10 19:56:56 by mbarut           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
-//#include "ft_pair.hpp"
+#include "ft_debug.hpp"
 #include "ft_util.hpp"
 #include "ft_rbt.hpp"
 #include "ft_iterator.hpp"
 #include "ft_vector.hpp"
 
 #include <memory>
-
+#include <iostream>
 #include <string>
 
 namespace ft
@@ -51,7 +51,7 @@ namespace ft
 		typedef ft::reverse_iterator<const_iterator>						const_reverse_iterator;
 		typedef typename ft::iterator_traits<iterator>::difference_type		difference_type;
 
-		class __value_compare : public binary_function<value_type, value_type, bool>
+		class value_compare : public binary_function<value_type, value_type, bool>
 		{
 		private:
 
@@ -60,7 +60,7 @@ namespace ft
 		protected:
 
 			key_compare		comp;
-			__value_compare(key_compare c) : comp(c) {}
+			value_compare(key_compare c) : comp(c) {}
 			
 		public:
 			
@@ -83,29 +83,32 @@ namespace ft
 		tree_type														_rbt;
 		allocator_type													_allocator;
 		node_allocator_type												_node_allocator;
-		key_compare														_compare;
+		value_compare													_compare;
 
 		#ifndef _PARENT_IS_LEFT_CHILD
 		# define _PARENT_IS_LEFT_CHILD									node->__parent == node->__parent->__parent->__left
 		#endif
 
 		#ifndef _IS_LEFT_CHILD
-		# define _IS_LEFT_CHILD											node->__parent == node->__parent->__parent->__left
+		# define _IS_LEFT_CHILD											node == node->__parent->__left
 		#endif
 
 		#ifndef _IS_RIGHT_CHILD
-		# define _IS_RIGHT_CHILD										node->__parent == node->__parent->__parent->__left
+		# define _IS_RIGHT_CHILD										node == node->__parent->__right
 		#endif
 
 		node_pointer	_RBT_create_node(const value_type& __value)
 		{
-			allocator_type	map_allocator(_node_allocator);
+			allocator_type	pair_allocator(_node_allocator);
 			node_type*		node = _node_allocator.allocate(1);
 			node->__color = _S_red;
 			node->__parent = _rbt._nil;
 			node->__right = _rbt._nil;
 			node->__left = _rbt._nil;
-			map_allocator.construct(&(node->__value), __value);
+			pair_allocator.construct(&(node->__value), __value);
+			#ifdef __DEBUG
+				std::cout << "[debug] Creating a new node with key, value pair: ( " << node->__value.first << ", " << node->__value.second << " )" << std::endl;
+			#endif
 			return node;
 		}
 
@@ -122,7 +125,7 @@ namespace ft
 		//	_rbt._nil->__parent = _rbt._nil;
 		//	_rbt._nil->__right = _rbt._nil;
 		//	_rbt._nil->__left = _rbt._nil;
-		//	_rbt.ROOT = _rbt._nil;
+		//	_rbt._root = _rbt._nil;
 		//}
 
 		void		_RBT_lrotate(node_pointer node)
@@ -133,7 +136,7 @@ namespace ft
 			if ((node->__right = tmp->__left) != _rbt._nil)
 				node->__right->__parent = node;
 			if ((tmp->__parent = node->__parent) == _rbt._nil)
-				_rbt.ROOT = tmp;
+				_rbt._root = tmp;
 			else if (tmp->__parent->__left == node)
 				tmp->__parent->__left = tmp;
 			else
@@ -150,7 +153,7 @@ namespace ft
 			if ((node->__left = tmp->__right) != _rbt._nil)
 				node->__left->__parent = node;
 			if ((tmp->__parent = node->__parent) == _rbt._nil)
-				_rbt.ROOT = tmp;
+				_rbt._root = tmp;
 			else if (tmp->__parent->__right == node)
 				tmp->__parent->__right = tmp;
 			else
@@ -161,13 +164,13 @@ namespace ft
 
 		node_pointer	_RBT_search_for(const value_type& __value) const
 		{
-			node_pointer i = _rbt.ROOT;
+			node_pointer i = _rbt._root;
 			for (; i != _rbt._nil && i->__value.first != __value.first;
-				_compare(__value.first, i->___value.first) ? i = i->__left : i = i->__right) { }
+				_compare(__value, i->___value) ? i = i->__left : i = i->__right) { }
 			return i;
 		}
 
-		void			_RBT_flip___color(node_pointer& node, node_pointer aunt)
+		void			_RBT_flip_color(node_pointer& node, node_pointer aunt)
 		{
 			aunt->__color = _S_black;
 			node->__parent->__color = _S_black;
@@ -179,13 +182,13 @@ namespace ft
 		{
 			node_pointer	aunt;
 			
-			while (node != _rbt.ROOT && node->__parent->__color == _S_red)
+			while (node != _rbt._root && node->__parent->__color == _S_red)
 			{
 				if (_PARENT_IS_LEFT_CHILD)
 				{
 					aunt = node->__parent->__parent->__right;
 					if (aunt->__color == _S_red)
-						_RBT_flip___color(node, aunt);
+						_RBT_flip_color(node, aunt);
 					else
 					{
 						if (_IS_RIGHT_CHILD)
@@ -202,7 +205,7 @@ namespace ft
 				{
 					aunt = node->__parent->__parent->__left;
 					if (aunt->__color == _S_red)
-						_RBT_flip___color(node, aunt);
+						_RBT_flip_color(node, aunt);
 					else
 					{
 						if (_IS_LEFT_CHILD)
@@ -216,27 +219,27 @@ namespace ft
 					}
 				}
 			}
-			_rbt.ROOT->__color = _S_black;
+			_rbt._root->__color = _S_black;
 		}
 
 		void			_RBT_check_if_next(node_pointer& found, const  value_type& __value, iterator i)
 		{
-			if (i.base() && i.base() != _rbt._nil && _compare(i.base()->__value.first, __value.first))
+			if (i.base() && i.base() != _rbt._nil && _compare(i.base()->__value, __value))
 			{
 				iterator	next = i;
 				++next;
-				if ((i.base() == _rbt._nil->__left || (next.base() != _rbt._nil && _compare(__value.first, next.base()->__value.first))) && i.base()->__right == _rbt._nil)
+				if ((i.base() == _rbt._nil->__left || (next.base() != _rbt._nil && _compare(__value, next.base()->__value))) && i.base()->__right == _rbt._nil)
 					found = i.base(); 
 			}
 		}
 
 		node_pointer	_RBT_find_whose_child(const value_type& __value)
 		{
-			node_pointer p = _rbt.ROOT;
+			node_pointer p = _rbt._root;
 
 			for (; p != _rbt._nil && p->__value.first != __value.first;)
 			{
-				if (_compare(__value.first, p->__value.first))
+				if (_compare(__value, p->__value))
 				{
 					if (p->__left == _rbt._nil)
 						return p;
@@ -262,6 +265,9 @@ namespace ft
 				found = _RBT_find_whose_child(__value);
 			if (found->__value.first == __value.first)
 			{
+				#ifdef __DEBUG
+					std::cout << "[debug] inserted key \'" << found->__value.first << "\' already exists in the tree; changing its value" << std::endl;
+				#endif
 				result.first = iterator(found, _rbt._nil);
 				result.second = false;
 			}
@@ -270,11 +276,11 @@ namespace ft
 				node_pointer	newnode = _RBT_create_node(__value);
 				if (found == _rbt._nil)
 				{
-					_rbt.ROOT = newnode;
+					_rbt._root = newnode;
 					_rbt._nil->__right = newnode;
 					_rbt._nil->__left = newnode;
 				}
-				else if (_compare(__value.first, found->__value.first))
+				else if (_compare(__value, found->__value))
 				{
 					found->__left = newnode;
 					if (_rbt._nil->__right == found)
@@ -313,8 +319,7 @@ namespace ft
 		explicit map(const key_compare& compare = key_compare(), const allocator_type& allocator = allocator_type())
 		: _rbt(), _allocator(allocator), _compare(compare)
 		{
-			//ft::pair<const std::string, int> pair1("one", 1);
-			//_RBT_create_node(pair1);
+
 		}
 
 		/* ctor 2 */
@@ -331,12 +336,14 @@ namespace ft
 		}
 
 		/* assignment operator overload */
-
+		/* needs delete method... */
+		
 		/* dtor */
+		/* needs delete method... */
 
 		bool					empty() const
 		{
-			return _rbt.ROOT = _rbt._nil;
+			return _rbt._root == _rbt._nil;
 		}
 
 		//size_type				size() const

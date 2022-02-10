@@ -6,7 +6,7 @@
 /*   By: mbarut <mbarut@student.42wolfsburg.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/23 23:13:25 by mbarut            #+#    #+#             */
-/*   Updated: 2022/02/10 12:14:12 by mbarut           ###   ########.fr       */
+/*   Updated: 2022/02/10 19:37:07 by mbarut           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -343,20 +343,16 @@ namespace ft
 	template <typename T, class Compare>
 	class _RBT_iterator : ft::iterator<ft::bidirectional_iterator_tag, T>
 	{
-		#ifndef ROOT
-		# define ROOT									_nil->__parent
-		#endif
+		//#ifndef ROOT
+		//# define ROOT									_nil->__parent
+		//#endif
 
 		#ifndef FIRSTNODE
-		# define FIRSTNODE								_nil->__left
+		# define FIRSTNODE								_nil->__right
 		#endif
 
 		#ifndef NILNODE
 		# define NILNODE								_nil->__right
-		#endif
-
-		#ifndef LASTNODE
-		# define LASTNODE								_nil
 		#endif
 
 	public:
@@ -399,68 +395,28 @@ namespace ft
 
 		_RBT_iterator& operator++(void)
 		{
-			T* ptr = this->_node;
-
-			if (ptr == _nil)
-				this->_node = NILNODE;
-			else if (this->_node->__right == _nil)
-			{
-				ptr = this->_node->__parent;
-				while (ptr != _nil && _compare(ptr->__value.first, this->_node->__value.first))
-					ptr = ptr->__parent;
-				this->_node = ptr;
-			}
-			else
-			{
-				ptr = this->_node->__right;
-				if (ptr == _nil->__parent && ptr->__right == _nil)
-					this->_node = ptr;
-				else
-					while (ptr->__left != _nil)
-						ptr = ptr->__left;
-				this->_node = ptr;
-			}
+			T::_increment(_node, _nil);
 			return *this;
 		}
 
 		_RBT_iterator operator++(int)
 		{
-			_RBT_iterator tmp(*this);
-			operator++();
-			return (tmp);
+			_RBT_iterator tmp = *this;
+			++*this;
+			return tmp;
 		}
 
 		_RBT_iterator& operator--(void)
 		{
-			T* ptr = this->_node;
-
-			if (this->ptr == _nil)
-				this->_node = NILNODE;
-			else if (this->_node->__left == _nil)
-			{
-				ptr = this->_node->__parent;
-				while (ptr != _nil && !_compare(ptr->__value.first, this->_node->__value.first))
-					ptr = ptr->__parent;
-				this->_node = ptr;
-			}
-			else
-			{
-				ptr = this->_node->__left;
-				if (ptr == _nil->__parent && ptr->__left == _nil)
-					this->_node = ptr;
-				else
-					while (ptr->__right != _nil)
-						ptr = ptr->__right;
-				this->_node = ptr;
-			}
+			T::_decrement(_node, _nil);
 			return *this;
 		}
 
 		_RBT_iterator operator--(int)
 		{
-			_RBT_iterator tmp(*this);
-			operator--();
-			return (tmp);
+			_RBT_iterator tmp = *this;
+			--*this;
+			return tmp;
 		}
 
 	};
@@ -519,70 +475,29 @@ namespace ft
 
 		_RBT_const_iterator& operator++(void)
 		{
-			T* ptr = this->_node;
-
-			if (ptr == _nil)
-				this->_node = NILNODE;
-			else if (this->_node->__right == _nil)
-			{
-				ptr = this->_node->__parent;
-				while (ptr != _nil && _compare(ptr->__value.first, _node->__value.first))
-					ptr = ptr->__parent;
-				this->_node = ptr;
-			}
-			else
-			{
-				ptr = this->_node->__right;
-				if (ptr == _nil->__parent && ptr->__right == _nil)
-					this->_node = ptr;
-				else
-					while (ptr->__left != _nil)
-						ptr = ptr->__left;
-				this->_node = ptr;
-			}
+			T::_increment(_node, _nil);
 			return *this;
 		}
 
 		_RBT_const_iterator operator++(int)
 		{
-			_RBT_const_iterator tmp(*this);
-			operator++();
-			return (tmp);
+			_RBT_const_iterator tmp = *this;
+			++*this;
+			return tmp;
 		}
 
 		_RBT_const_iterator& operator--(void)
 		{
-			T* ptr = this->_node;
-
-			if (ptr == _nil)
-				this->_node = NILNODE;
-			else if (this->_node->__left == _nil)
-			{
-				ptr = this->_node->__parent;
-				while (ptr != _nil && !_compare(ptr->__value.first, _node->__value.first))
-					ptr = ptr->__parent;
-				this->_node = ptr;
-			}
-			else
-			{
-				ptr = this->_node->__left;
-				if (ptr == _nil->__parent && ptr->__left == _nil)
-					this->_node = ptr;
-				else
-					while (ptr->__right != _nil)
-						ptr = ptr->__right;
-				this->_node = ptr;
-			}
+			T::_decrement(_node, _nil);
 			return *this;
 		}
 
 		_RBT_const_iterator operator--(int)
 		{
-			_RBT_const_iterator tmp(*this);
-			operator--();
-			return (tmp);
+			_RBT_const_iterator tmp = *this;
+			++*this;
+			return tmp;
 		}
-
 	};
 
 	template <class T>

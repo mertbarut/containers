@@ -6,7 +6,7 @@
 /*   By: mbarut <mbarut@student.42wolfsburg.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/23 15:19:31 by mbarut            #+#    #+#             */
-/*   Updated: 2022/02/10 11:36:06 by mbarut           ###   ########.fr       */
+/*   Updated: 2022/02/10 19:33:01 by mbarut           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,11 +34,20 @@ void print_map(const ft::map<T, U>& m, std::string comment = "")
 		std::cout << it->first << " = " << it->second << "; ";
     std::cout << '\n';
 }
+
+template<typename T, typename U>
+void print_map(const std::map<T, U>& m, std::string comment = "")
+{
+	std::cout << comment;
+	for (typename std::map<T, U>::const_iterator it = m.begin(); it != m.end(); it++)
+		std::cout << it->first << " = " << it->second << "; ";
+    std::cout << '\n';
+}
  
 int main()
 {
     // Create a map of three (strings, int) pairs
-    ft::map<std::string, int> m;
+	ft::map<std::string, int> m;
 	m["CPU"] = 10;
 	m["GPU"] = 15;
 	m["RAM"] = 20;
@@ -47,8 +56,8 @@ int main()
 
     print_map(m, "1) Initial map: ");
 
-    //m["CPU"] = 25;  // update an existing value
-    //m["SSD"] = 30;  // insert a new value
+    m["CPU"] = 25;  // update an existing value
+    m["SSD"] = 30;  // insert a new value
     print_map(m, "2) Updated map: ");
 
     // using operator[] with non-existent key always performs an insert
