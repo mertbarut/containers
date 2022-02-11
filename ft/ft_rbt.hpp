@@ -6,7 +6,7 @@
 /*   By: mbarut <mbarut@student.42wolfsburg.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/08 11:16:46 by mbarut            #+#    #+#             */
-/*   Updated: 2022/02/10 19:27:21 by mbarut           ###   ########.fr       */
+/*   Updated: 2022/02/11 21:33:48 by mbarut           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -146,16 +146,16 @@ namespace ft
 
 	public:
 
-		typedef _RBT									self_type;
-		typedef _RBT&									self_type_reference;
-		typedef T										value_type;
-		typedef Node									node_type;
-		typedef Node*									node_pointer;
-		typedef Allocator_Node							node_allocator;
-		typedef ft::_RBT_iterator<Node, Compare>		iterator;
-		typedef ft::_RBT_const_iterator<Node, Compare>	const_iterator;
-		typedef size_t									size_type;
-		typedef Compare									compare_type;
+		typedef _RBT											self_type;
+		typedef _RBT&											self_type_reference;
+		typedef T												value_type;
+		typedef Node											node_type;
+		typedef Node*											node_pointer;
+		typedef Allocator_Node									node_allocator;
+		typedef ft::_RBT_iterator<Node, Compare>				iterator;
+		typedef ft::_RBT_const_iterator<Node, Compare>			const_iterator;
+		typedef size_t											size_type;
+		typedef Compare											compare_type;
 
 		size_t											_n;
 		node_pointer									_nil;
@@ -179,16 +179,13 @@ namespace ft
 		//# define LASTNODE								_nil
 		//#endif
 
-		//#ifndef TREESIZE
-		//# define TREESIZE								_nil->__value.first
-		//#endif
-
 		/* ctor 1 */
 		_RBT(const node_allocator& custom = node_allocator()) : _nalloc(custom)
 		{
 			_nil = _nalloc.allocate(1);
 			_nalloc.construct(_nil, node_type(_nil, _nil, _nil, _S_black));
 			_root = _nil;
+			_n = 0;
 		}
 
 		/* dtor */
@@ -196,55 +193,6 @@ namespace ft
 		{
 			_nalloc.destroy(_nil);
 			_nalloc.deallocate(_nil, 1);	
-		}
-
-		//void		_make_related(node_pointer node1, node_pointer node2)
-		//{
-		//	if (node1->__parent == _nil)
-		//		ROOT = node2;
-		//	else if (node1->__parent->__left == node1)
-		//		node1->__parent->__left = node2;
-		//	else
-		//		node1->__parent->__left = node2;
-		//	node2->__parent = node1->__parent;
-		//}
-
-		//template<class InputIterator>
-		//void	_range_init(InputIterator begin, InputIterator end)
-		//{
-		//	_init_nil();
-		//	while (begin != end)
-		//		_insert(*begin++);
-		//}
-
-		//node_pointer _find(value_type to_find)
-		//{
-		//	node_pointer node = ROOT;
-//
-		//	while (node != _nil)
-		//	{
-		//		if (node->__value.first == to_find.first)
-		//			return (node);
-		//		if (node->__value.first > to_find.first)
-		//			node = node->__left;
-		//		else
-		//			node = node->__right;
-		//	}
-		//	return node;
-		//}
-
-		size_type	_max_size() const
-		{
-			return (this->_nalloc.max_size());
-		}
-
-		void 		_swap(self_type_reference x)
-		{
-			if (x == this)
-				return ;
-			node_pointer save = this->_nil;
-			this->_nil = x._nil;
-			x._nil = save;
 		}
 
 	};

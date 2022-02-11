@@ -6,7 +6,7 @@
 /*   By: mbarut <mbarut@student.42wolfsburg.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/23 23:13:25 by mbarut            #+#    #+#             */
-/*   Updated: 2022/02/10 19:37:07 by mbarut           ###   ########.fr       */
+/*   Updated: 2022/02/11 19:45:09 by mbarut           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -351,9 +351,9 @@ namespace ft
 		# define FIRSTNODE								_nil->__right
 		#endif
 
-		#ifndef NILNODE
-		# define NILNODE								_nil->__right
-		#endif
+		//#ifndef NILNODE
+		//# define NILNODE								_nil->__right
+		//#endif
 
 	public:
 		T*			_node;
@@ -362,12 +362,13 @@ namespace ft
 		
 	public:
 
-		typedef typename T::value_type    value_type;
+		typedef typename T::value_type		value_type;
 		typedef typename ft::iterator<ft::bidirectional_iterator_tag, value_type>::iterator_category iterator_category;
 		typedef typename ft::iterator<ft::bidirectional_iterator_tag, value_type>::difference_type   difference_type;
 		typedef typename ft::iterator<ft::bidirectional_iterator_tag, value_type>::pointer   pointer;
 		typedef typename ft::iterator<ft::bidirectional_iterator_tag, value_type>::reference reference;
 		typedef _RBT_iterator<T, Compare>	self_type;
+		typedef T*							link_type;
 
 		_RBT_iterator(const Compare& comp = Compare()) : _node(), _nil(), _compare(comp) {}
 		_RBT_iterator(T* node, T* nil, const Compare& comp = Compare()) : _node(node), _nil(nil), _compare(comp) {}
@@ -390,8 +391,8 @@ namespace ft
 
 		bool		operator==(const _RBT_iterator& i) { return this->_node == i._node; }
 		bool		operator!=(const _RBT_iterator& i) { return this->_node != i._node; }
-		reference	operator*() const { return this->_node->__value; }
-		pointer		operator->() const { return &this->_node->__value; }
+		reference	operator*() const { return static_cast<link_type>(_node)->__value; }
+		pointer		operator->() const { return &static_cast<link_type>(_node)->__value; }
 
 		_RBT_iterator& operator++(void)
 		{
@@ -437,6 +438,8 @@ namespace ft
 		typedef typename ft::iterator<ft::bidirectional_iterator_tag, value_type>::difference_type   difference_type;
 		typedef typename ft::iterator<ft::bidirectional_iterator_tag, value_type>::pointer   pointer;
 		typedef typename ft::iterator<ft::bidirectional_iterator_tag, value_type>::reference reference;
+		typedef _RBT_iterator<T, Compare>	self_type;
+		typedef T*							link_type;
 
 		_RBT_const_iterator(const Compare& comp = Compare()) : _node(), _nil(), _compare(comp) {}
 		_RBT_const_iterator(T* node_p, T* last_node, const Compare& comp = Compare()) : _node(node_p), _nil(last_node), _compare(comp) {}

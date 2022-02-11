@@ -6,7 +6,7 @@
 /*   By: mbarut <mbarut@student.42wolfsburg.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/23 15:19:31 by mbarut            #+#    #+#             */
-/*   Updated: 2022/02/10 19:33:01 by mbarut           ###   ########.fr       */
+/*   Updated: 2022/02/11 21:52:34 by mbarut           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,14 +61,14 @@ int main()
     print_map(m, "2) Updated map: ");
 
     // using operator[] with non-existent key always performs an insert
-    //std::cout << "3) m[UPS] = " << m["UPS"] << '\n';
+    std::cout << "3) m[UPS] = " << m["UPS"] << '\n';
     print_map(m, "4) Updated map: ");
 
-    //m.erase("GPU");
-    //print_map(m, "5) After erase: ");
+    m.erase("GPU");
+    print_map(m, "5) After erase: ");
 
-    //std::cout << "7) m.size() = " << m.size() << '\n';
+    std::cout << "7) m.size() = " << m.size() << '\n';
 
-    //m.clear();
-    //std::cout << std::boolalpha << "8) Map is empty: " << m.empty() << '\n';
+    m.clear();
+    std::cout << std::boolalpha << "8) Map is empty: " << m.empty() << '\n';
 }

@@ -6,7 +6,7 @@
 /*   By: mbarut <mbarut@student.42wolfsburg.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/23 14:44:43 by mbarut            #+#    #+#             */
-/*   Updated: 2022/02/10 19:56:56 by mbarut           ###   ########.fr       */
+/*   Updated: 2022/02/11 21:57:35 by mbarut           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,6 +97,18 @@ namespace ft
 		# define _IS_RIGHT_CHILD										node == node->__parent->__right
 		#endif
 
+		#ifndef _MIN_NODE
+		# define _MIN_NODE												_rbt._nil->__right
+		#endif
+
+		#ifndef _MAX_NODE
+		# define _MAX_NODE												_rbt._nil->__left
+		#endif
+
+		#ifndef _NIL_NODE
+		# define _NIL_NODE												_rbt._nil
+		#endif
+
 		node_pointer	_RBT_create_node(const value_type& __value)
 		{
 			allocator_type	pair_allocator(_node_allocator);
@@ -106,16 +118,25 @@ namespace ft
 			node->__right = _rbt._nil;
 			node->__left = _rbt._nil;
 			pair_allocator.construct(&(node->__value), __value);
-			#ifdef __DEBUG
-				std::cout << "[debug] Creating a new node with key, value pair: ( " << node->__value.first << ", " << node->__value.second << " )" << std::endl;
-			#endif
 			return node;
 		}
 
-		void		_RBT_destroy_node(node_pointer node)
+		void			_RBT_destroy_node(node_pointer node)
 		{
+			#ifdef __DEBUG
+				std::cout << "[debug] Destroying a node with key, value pair: ( " << node->__value.first << ", " << node->__value.second << " )" << std::endl;
+			#endif
 			_node_allocator.destroy(node);
 			_node_allocator.deallocate(node, 1);
+		}
+
+		node_pointer	_RBT_clone_node(const node_pointer& node)
+		{
+			node_type*	__clone = _M_create_node(node->__value);
+			__clone->__color = node->__color;
+		 	__clone->__left = _rbt._nil;
+			__clone->__right = _rbt._nil;
+			return __clone;
 		}
 
 		//void		_RBT_init_nil()
@@ -162,11 +183,11 @@ namespace ft
 			node->__parent = tmp;
 		}
 
-		node_pointer	_RBT_search_for(const value_type& __value) const
+		node_pointer	_RBT_search_for(const key_type& key) const
 		{
 			node_pointer i = _rbt._root;
-			for (; i != _rbt._nil && i->__value.first != __value.first;
-				_compare(__value, i->___value) ? i = i->__left : i = i->__right) { }
+			for (; i != _rbt._nil && i->__value.first != key;
+				_compare.comp(key, i->__value.first) ? i = i->__left : i = i->__right) { }
 			return i;
 		}
 
@@ -178,46 +199,46 @@ namespace ft
 			node = node->__parent->__parent;
 		}
 
-		void			_RBT_insert_rebalance(node_pointer node)
+		void			_RBT_insert_branch(node_pointer& node, node_pointer aunt)
 		{
-			node_pointer	aunt;
-			
-			while (node != _rbt._root && node->__parent->__color == _S_red)
+			if (aunt->__color == _S_red)
+				_RBT_flip_color(node, aunt);
+			else
 			{
 				if (_PARENT_IS_LEFT_CHILD)
 				{
-					aunt = node->__parent->__parent->__right;
-					if (aunt->__color == _S_red)
-						_RBT_flip_color(node, aunt);
-					else
+					if (_IS_RIGHT_CHILD)
 					{
-						if (_IS_RIGHT_CHILD)
-						{
-							node = node->__parent;
-							_RBT_lrotate(node);
-						}
-						node->__parent->__color = _S_black;
-						node->__parent->__parent->__color = _S_red;
-						_RBT_rrotate(node->__parent->__parent);
+						node = node->__parent;
+						_RBT_lrotate(node);
 					}
+					node->__parent->__color = _S_black;
+					node->__parent->__parent->__color = _S_red;
+					_RBT_rrotate(node->__parent->__parent);
 				}
 				else
 				{
-					aunt = node->__parent->__parent->__left;
-					if (aunt->__color == _S_red)
-						_RBT_flip_color(node, aunt);
-					else
+					if (_IS_LEFT_CHILD)
 					{
-						if (_IS_LEFT_CHILD)
-						{
-							node = node->__parent;
-							_RBT_rrotate(node);
-						}
-						node->__parent->__color = _S_black;
-						node->__parent->__parent->__color = _S_red;
-						_RBT_lrotate(node->__parent->__parent);
+						node = node->__parent;
+						_RBT_rrotate(node);
 					}
+					node->__parent->__color = _S_black;
+					node->__parent->__parent->__color = _S_red;
+					_RBT_lrotate(node->__parent->__parent);
 				}
+			}
+			
+		}
+
+		void			_RBT_insert_rebalance(node_pointer node)
+		{
+			while (node != _rbt._root && node->__parent->__color == _S_red)
+			{
+				if (_PARENT_IS_LEFT_CHILD)
+					_RBT_insert_branch(node, node->__parent->__parent->__right);
+				else
+					_RBT_insert_branch(node, node->__parent->__parent->__left);
 			}
 			_rbt._root->__color = _S_black;
 		}
@@ -266,7 +287,7 @@ namespace ft
 			if (found->__value.first == __value.first)
 			{
 				#ifdef __DEBUG
-					std::cout << "[debug] inserted key \'" << found->__value.first << "\' already exists in the tree; changing its value" << std::endl;
+					std::cout << "[debug] inserted key \'" << found->__value.first << "\' already exists in the tree; changing its mapped value" << std::endl;
 				#endif
 				result.first = iterator(found, _rbt._nil);
 				result.second = false;
@@ -274,11 +295,17 @@ namespace ft
 			else
 			{
 				node_pointer	newnode = _RBT_create_node(__value);
+				#ifdef __DEBUG
+					std::cout << "[debug] Creating a new node with key, value pair: ( " << newnode->__value.first << ", " << newnode->__value.second << " )" << std::endl;
+				#endif
 				if (found == _rbt._nil)
 				{
 					_rbt._root = newnode;
 					_rbt._nil->__right = newnode;
 					_rbt._nil->__left = newnode;
+					#ifdef __DEBUG
+						std::cout << "[debug] RBT has the root node: ( " << newnode->__value.first << ", " << newnode->__value.second << " )" << std::endl;
+					#endif
 				}
 				else if (_compare(__value, found->__value))
 				{
@@ -300,9 +327,155 @@ namespace ft
 				_RBT_insert_rebalance(newnode);
 				_rbt._nil->__parent = _rbt._nil;
 			}
-			if (result.second == true)
-				++this->_rbt._n;
+
 			return result;
+		}
+
+		void		_RBT_replace_node(node_pointer node_to_replace, node_pointer new_node)
+		{
+			node_pointer node = node_to_replace;
+
+			if (node->__parent == _NIL_NODE)
+				_rbt._root = new_node;
+			else if (_IS_LEFT_CHILD)
+				node->__parent->__left = new_node;
+			else
+				node->__parent->__right = new_node;
+			new_node->__parent = node->__parent;
+		}
+
+		void		_RBT_delete_rebalance_branch_case1(node_pointer node, node_pointer sibling)
+		{
+			node->__parent->__color = _S_red;
+			sibling->__color = _S_black;
+			_IS_LEFT_CHILD ? _RBT_lrotate(node->__parent) : _RBT_rrotate(node->__parent);
+			sibling = _IS_LEFT_CHILD ? node->__parent->__right : node->__parent->__left;
+		}
+
+		void		_RBT_delete_rebalance_branch_case2(node_pointer node, node_pointer sibling)
+		{
+			sibling->__color = _S_red;
+			node = node->__parent;
+		}
+
+		void		_RBT_delete_rebalance_branch_case3(node_pointer node, node_pointer sibling)
+		{
+			node_pointer niece = _IS_LEFT_CHILD ? sibling->__right : sibling->__left;
+			node_pointer nephew = !(_IS_LEFT_CHILD) ? sibling->__right : sibling->__left;
+
+			if (niece->__color == _S_black)
+			{
+				nephew->__color = _S_black;
+				sibling->__color = _S_red;
+				_IS_LEFT_CHILD ? _RBT_rrotate(sibling) : _RBT_lrotate(sibling) ;
+				sibling = _IS_LEFT_CHILD ? node->__parent->__right : node->__parent->__left ;
+			}
+			sibling->__color = node->__parent->__color;
+			node->__parent->__color = _S_black;
+			niece->__color = _S_black ;
+			_IS_LEFT_CHILD ? _RBT_lrotate(node->__parent) : _RBT_rrotate(node->__parent) ;
+			node = _NIL_NODE;
+		}
+
+		void		_RBT_delete_rebalance_branch(node_pointer node, node_pointer sibling)
+		{
+			if (sibling->__color == _S_red)
+				_RBT_delete_rebalance_branch_case1(node, sibling);
+			else if (sibling->__left->__color == _S_black && sibling->__right->__color == _S_black)
+				_RBT_delete_rebalance_branch_case2(node, sibling);
+			else
+				_RBT_delete_rebalance_branch_case3(node, sibling);
+		}
+		
+		void		_RBT_delete_rebalance(node_pointer node)
+		{
+			node_pointer	sibling;
+
+			while (1)
+			{
+				if (node == _rbt._root) break;
+				else if (node->__color == _S_red) break;
+				#ifdef __DEBUG
+					std::cout << "[debug] RBT has been successfully rebalanced upon deletion of a node; breaking out of the balancing loop" << std::endl;
+				#endif
+				sibling = _IS_LEFT_CHILD ? node->__parent->__right : node->__parent->__left;
+				_RBT_delete_rebalance_branch(node, sibling);
+			}
+			#ifdef __DEBUG
+				std::cout << "[debug] RBT has been successfully rebalanced upon deletion of a node; breaking out of the balancing loop" << std::endl;
+			#endif
+			node->__color = _S_black;	
+		}
+
+		void		_RBT_llink(node_pointer node1, node_pointer node2)
+		{
+			node1->__left = node2->__left;
+			node1->__left->__parent = node1;
+		}
+
+		void		_RBT_rlink(node_pointer node1, node_pointer node2)
+		{
+			node1->__right = node2->__right;
+			node1->__right->__parent = node1;
+		}
+
+		void		_RBT_delete(node_pointer node)
+		{
+			if (node == _NIL_NODE)
+				return ;
+			if (node == _MIN_NODE)
+				node_type::_increment(_MIN_NODE, _NIL_NODE);
+			if (node == _MAX_NODE)
+				node_type::_decrement(_MAX_NODE, _NIL_NODE);
+			
+			node_pointer	tmp_min_node = _MIN_NODE;
+			node_pointer	tmp_max_node = _MAX_NODE;
+			_MIN_NODE = _NIL_NODE;
+			_MAX_NODE = _NIL_NODE;
+
+			node_pointer		node_child;
+			__RBT_Node_color	orig_color	= node->__color;
+			
+			if (node->__left == _NIL_NODE)
+			{
+				node_child = node->__right;
+				_RBT_replace_node(node, node_child);
+			}
+			else if (node->__right == _NIL_NODE)
+			{
+				node_child = node->__left;
+				_RBT_replace_node(node, node_child);
+			}
+			else
+			{
+				node_pointer node_successor = node_type::_get_min(node->__right, _NIL_NODE);
+				orig_color = node_successor->__color;
+				node_child = node_successor->__right;
+				if (node_successor->__parent == node)
+					node_child->__parent = node_successor;
+				else
+				{
+					_RBT_replace_node(node_successor, node_successor->__right);
+					_RBT_rlink(node_successor, node);
+				}
+				_RBT_replace_node(node, node_successor);
+				_RBT_llink(node_successor, node);
+				node_successor->__color = node->__color;
+			}
+			
+			if (orig_color == _S_black)
+			{
+				#ifdef __DEBUG
+				std::cout << "[debug] RBT has to be rebalanced upon deletion of a black node" << std::endl;
+				#endif
+				_RBT_delete_rebalance(node_child);
+			}
+			_MAX_NODE = tmp_max_node;
+			_MIN_NODE = tmp_min_node;
+			_NIL_NODE->__parent = _NIL_NODE;
+
+			_RBT_destroy_node(node);
+			--_rbt._n;
 		}
 
 		template<class InputIterator>
@@ -336,20 +509,30 @@ namespace ft
 		}
 
 		/* assignment operator overload */
-		/* needs delete method... */
-		
-		/* dtor */
-		/* needs delete method... */
+		map&	operator= (const map& rhs)
+		{
+			if (this == &rhs)
+				return *this;
+			clear();
+			_RBT_insert(rhs.begin(), rhs.end());
+			return *this;
+		}
 
+		/* dtor */
+		~map()
+		{
+			clear();
+		}
+		
 		bool					empty() const
 		{
 			return _rbt._root == _rbt._nil;
 		}
 
-		//size_type				size() const
-		//{
-		//	return _rbt._nil->__value.first;
-		//}
+		size_type				size() const
+		{
+			return _rbt._n;
+		}
 
 		size_type				max_size() const
 		{
@@ -381,10 +564,24 @@ namespace ft
 		iterator			rend() { return reverse_iterator(begin()); }
 		const_iterator		rend() const { return const_reverse_iterator(begin()); }
 
-		//void	clear()
-		//{
-		//	//
-		//}
+		void	clear()
+		{
+			while (_rbt._n != 0)
+				_RBT_delete(_MAX_NODE);
+			#ifdef __DEBUG
+			std::cout << "[debug] RBT has been cleared" << std::endl;
+			#endif
+		}
+
+		size_type	erase(const key_type& key)
+		{
+			node_pointer delete_me_if_you_can = _RBT_search_for(key);
+			_RBT_delete(delete_me_if_you_can);
+			if (delete_me_if_you_can == _NIL_NODE)
+				return 1;
+			else
+			 	return 0;
+		}
 
 		allocator_type get_allocator() const
 		{
