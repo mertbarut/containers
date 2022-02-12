@@ -6,12 +6,12 @@
 /*   By: mbarut <mbarut@student.42wolfsburg.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/10 19:55:09 by mbarut            #+#    #+#             */
-/*   Updated: 2022/02/11 21:06:08 by mbarut           ###   ########.fr       */
+/*   Updated: 2022/02/12 22:37:18 by mbarut           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef __DEBUG
-# define __DEBUG
+//# define __DEBUG
 
 # define	Black	\033[0;30m
 # define	Red		\033[0;31m

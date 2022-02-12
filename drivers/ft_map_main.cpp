@@ -6,12 +6,13 @@
 /*   By: mbarut <mbarut@student.42wolfsburg.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/23 15:19:31 by mbarut            #+#    #+#             */
-/*   Updated: 2022/02/11 21:52:34 by mbarut           ###   ########.fr       */
+/*   Updated: 2022/02/12 22:37:39 by mbarut           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <iostream>
 #include <algorithm>
+#include <functional>
 #include <ostream>
 #include <map>
 #include <iterator>
@@ -21,7 +22,6 @@
 
 #include "../ft/ft_map.hpp"
 #include "../ft/ft_iterator.hpp"
-//#include "../ft/ft_pair.hpp"
 #include "../ft/ft_util.hpp"
 
 /* maps & its iterators */
@@ -47,28 +47,58 @@ void print_map(const std::map<T, U>& m, std::string comment = "")
 int main()
 {
     // Create a map of three (strings, int) pairs
-	ft::map<std::string, int> m;
-	m["CPU"] = 10;
-	m["GPU"] = 15;
-	m["RAM"] = 20;
+	ft::map<std::string, int> m1;
+	m1["CPU"] = 10;
+	m1["GPU"] = 15;
+	m1["RAM"] = 20;
 
-	std::cout << m.empty() << std::endl;
+	std::cout << m1.empty() << std::endl;
 
-    print_map(m, "1) Initial map: ");
+    print_map(m1, "Initial map: ");
 
-    m["CPU"] = 25;  // update an existing value
-    m["SSD"] = 30;  // insert a new value
-    print_map(m, "2) Updated map: ");
+    m1["CPU"] = 25;  // update an existing value
+    m1["SSD"] = 30;  // insert a new value
+    print_map(m1, "Updated map: ");
 
     // using operator[] with non-existent key always performs an insert
-    std::cout << "3) m[UPS] = " << m["UPS"] << '\n';
-    print_map(m, "4) Updated map: ");
+    std::cout << "m1[UPS] = " << m1["UPS"] << '\n';
+    print_map(m1, "Updated map: ");
 
-    m.erase("GPU");
-    print_map(m, "5) After erase: ");
+    m1.erase("GPU");
+    print_map(m1, "After erase: ");
 
-    std::cout << "7) m.size() = " << m.size() << '\n';
+    std::cout << "m.size() = " << m1.size() << '\n';
 
-    m.clear();
-    std::cout << std::boolalpha << "8) Map is empty: " << m.empty() << '\n';
+	ft::map<std::string, int> m2 = m1;
+	print_map(m1, "Copy constructed map: ");
+	
+	std::cout << std::boolalpha << "m1 and m2 are equivalent: " << (m1 == m2) << '\n';
+	m2["PSU"] = 34;
+	m2["Peripherals"] = 12;
+	print_map(m2, "Updated map: ");
+	std::cout << std::boolalpha << "m1 and m2 are equivalent: " << (m1 == m2) << '\n';
+	
+	m1.swap(m2);
+	print_map(m2, "Swapped map: ");
+
+	ft::map<std::string, int>::key_compare key_comp = m1.key_comp();
+	ft::map<std::string, int>::value_compare val_comp = m1.value_comp();
+
+	std::cout << std::boolalpha << "Python is lexicographically less than C: " << key_comp("Python", "C") << '\n';
+	std::cout << (std::string("Python") < std::string("C")) << '\n';
+
+	ft::map<std::string, int>::value_type value1 = ft::make_pair("C", 2);
+	ft::map<std::string, int>::value_type value2 = ft::make_pair("C++", 7);
+
+	std::cout << std::boolalpha << "C is lexicographically less than C++: " << val_comp(value1, value2) << '\n';
+	std::cout << (std::string("C") < std::string("C++")) << '\n';
+
+	ft::map<std::string, int>::iterator it01 = m1.find("SSD");
+	std::cout << "Key \"SSD\" is in the map: " << m1.count("SSD") << '\n';
+	std::cout << "Key \"Stereo\" is in the map: " << m1.count("Stereo") << '\n';
+
+	//m1.print();
+
+    m1.clear();
+    std::cout << std::boolalpha << "Map is empty: " << m1.empty() << '\n';
 }

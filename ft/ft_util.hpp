@@ -6,7 +6,7 @@
 /*   By: mbarut <mbarut@student.42wolfsburg.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/26 14:09:36 by mbarut            #+#    #+#             */
-/*   Updated: 2022/02/10 11:35:48 by mbarut           ###   ########.fr       */
+/*   Updated: 2022/02/12 21:55:13 by mbarut           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -125,6 +125,7 @@ namespace ft
 		typedef Result result_type;
 	};
 
+	/* ft::nullptr_t */
 	static class nullptr_t
 	{
 
@@ -150,7 +151,7 @@ namespace ft
         return (ss.str());
     }
 
-		/* ft::pair:
+	/* ft::pair:
 	** Holds two objects of arbitrary type.
 	*/
 	template <typename T1, typename T2>
