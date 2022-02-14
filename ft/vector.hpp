@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_vector.hpp                                      :+:      :+:    :+:   */
+/*   vector.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mbarut <mbarut@student.42wolfsburg.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/23 14:44:38 by mbarut            #+#    #+#             */
-/*   Updated: 2022/02/10 11:19:07 by mbarut           ###   ########.fr       */
+/*   Updated: 2022/02/14 16:49:46 by mbarut           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,9 +15,10 @@
 #include <exception>
 #include <memory>
 #include <sstream>
-#include "ft_iterator.hpp"
-#include "ft_util.hpp"
-#include "ft_algorithm.hpp"
+
+#include "iterator.hpp"
+#include "utility.hpp"
+#include "algorithm.hpp"
 
 namespace ft
 {
@@ -301,29 +302,23 @@ namespace ft
 
 	public:
 
-		/* ctor 1 */
 		explicit vector(const allocator_type& alloc = allocator_type()) : base(alloc) { }
 
-		/* ctor 2 */
 		explicit vector(size_type n, const value_type& val = value_type(),
 			const allocator_type& alloc = allocator_type()) : base(n, val, alloc) { }
 
-		/* ctor 3 */
 		template <class InputIterator>
 		vector(InputIterator first, InputIterator last,
 			const allocator_type& alloc = allocator_type()) : base(first, last, alloc) { }
 
-		/* ctor 4 */
 		vector(const vector& v) : base(v) { }
 
-		/* ctor 5 */
 		~vector()
 		{
  			clear();
 			_M_deallocate();
  		}
 
-		/* assignment operator overload */
 		vector&		operator=(const vector& rhs)
 		{
 			if (this == &rhs)
@@ -332,7 +327,6 @@ namespace ft
  			return (*this);
 		}
 
-		/* iterators */
 		iterator				begin()
 		{
 			return (iterator(_p));
@@ -373,7 +367,6 @@ namespace ft
 			return (const_reverse_iterator(begin()));
 		}
 
-		/* member functions */
 		bool			empty() const
 		{
 			return (this->_size == 0);
@@ -422,7 +415,6 @@ namespace ft
 			return this->Allocator();
 		}
 
-		/* access operators */
  		reference			operator[](size_type n)
 		{
 			return (this->_p[n]);
@@ -465,7 +457,6 @@ namespace ft
 			return (this->_p[this->_size - 1]);
 		}
 
-		/* modifiers */
 		template <class InputIterator>
 		void		assign(InputIterator first, InputIterator last)
 		{
@@ -568,7 +559,6 @@ namespace ft
 		}
 	};
 
-	/* non-member comparison operator overloads */
 	template <class T, class Allocator>
 	bool	operator== (const ft::vector<T, Allocator>& lhs, const ft::vector<T, Allocator>& rhs)
 	{
@@ -592,13 +582,13 @@ namespace ft
 	template <class T, class Allocator>
 	bool	operator<= (const ft::vector<T, Allocator>& lhs, const ft::vector<T, Allocator>& rhs)
 	{
-		return !(rhs < lhs);
+		return !(rhs > lhs);
 	}
 
 	template <class T, class Allocator>
 	bool	operator > (const ft::vector<T, Allocator>& lhs, const ft::vector<T, Allocator>& rhs)
 	{
-		return rhs < lhs;
+		return !(rhs < lhs) && rhs == lhs;
 	}
 
 	template <class T, class Allocator>

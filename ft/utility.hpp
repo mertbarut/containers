@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_util.hpp                                        :+:      :+:    :+:   */
+/*   utility.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mbarut <mbarut@student.42wolfsburg.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/26 14:09:36 by mbarut            #+#    #+#             */
-/*   Updated: 2022/02/12 21:55:13 by mbarut           ###   ########.fr       */
+/*   Updated: 2022/02/14 18:06:18 by mbarut           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,10 +16,6 @@
 
 namespace ft
 {
-	/* ft::is_same
-	** Sets its member constant 'value' to true if the given types are the same,
-	** otherwise to false.
-	*/
 
 	template <typename T, typename U>
 	struct is_same
@@ -33,11 +29,6 @@ namespace ft
 		static const bool value = true;
 	};
 
-	/* ft::enable_if
-	** Forms its member constant 'type' if the given condition is true,
-	** otherwise 'type' is not formed.
-	*/
-
 	template <bool condition, class T = void>
 	struct enable_if
 	{
@@ -49,9 +40,7 @@ namespace ft
 	{
 		typedef T type;
 	};
-	
-	/* ft::integral_constant */
-	
+
 	template <class T, T v>
 	struct integral_constant 
 	{
@@ -63,15 +52,9 @@ namespace ft
 	template <class T, T v> const 
 	T integral_constant<T, v>::value;
 
-	/* true_type, false_type */
-
 	typedef integral_constant<bool, true>  true_type;
 	typedef integral_constant<bool, false> false_type;
 
-	/* ft::is_integral
-	** Sets its member constant 'value' to true if the given type is an integral,
-	** if not to false.
-	*/
 	template <class T> struct is_integral : public false_type { };
 
 	template <> struct is_integral<bool> : public true_type { };
@@ -85,18 +68,6 @@ namespace ft
 	template <> struct is_integral<long long> : public true_type { };
 	template <> struct is_integral<unsigned long long> : public true_type { };
 
-	/* ft::less
-	** Used to express that you want to use operator< to perform comparisons.
-	*/
-	template<typename T>
-	struct less
-	{
-	    bool operator()(T const& lhs, T const& rhs) { return lhs < rhs; }
-	};
-
-	/* ft::find_if
-	** Searches for an element for which predicate p returns true.
-	*/
 	template<class InputIt, class UnaryPredicate>
 	InputIt find_if(InputIt first, InputIt last, UnaryPredicate p)
 	{
@@ -108,7 +79,6 @@ namespace ft
 		return last;
 	}
 
-	/* ft::binary_function */
 	template <typename Arg1, typename Arg2, typename Result>
 	struct binary_function
 	{
@@ -117,7 +87,6 @@ namespace ft
 		typedef Result		result_type;
 	};
 
-	/* ft::unary_function */
 	template <class Arg, class Result>
 	struct unary_function
 	{
@@ -125,7 +94,6 @@ namespace ft
 		typedef Result result_type;
 	};
 
-	/* ft::nullptr_t */
 	static class nullptr_t
 	{
 
@@ -151,27 +119,19 @@ namespace ft
         return (ss.str());
     }
 
-	/* ft::pair:
-	** Holds two objects of arbitrary type.
-	*/
 	template <typename T1, typename T2>
 	struct pair
 	{
 		T1	first;
 		T2	second;
 
-		/* Default ctor */
 		pair() : first(T1()), second(T2()) { }
 
-		/* Copy ctor (1) */
 		pair(const T1& obj1, const T2& obj2) : first(obj1), second(obj2) { }
 
-		/* Copy ctor (2) */
 		template <typename U1, typename U2>
 		pair(const pair<U1, U2>& other) : first(other.first), second(other.second) { }
 	};
-
-	/* Relational operators for ft::pair */
 
 	template <typename T1, typename T2>
 	inline bool operator== (const pair<T1, T2>& obj1, const pair<T1, T2>& obj2)
@@ -211,16 +171,24 @@ namespace ft
 		return !(obj1 < obj2);
 	}
 
-	/* ft::make_pair */
-
 	template <typename T1, typename T2>
 	inline ft::pair<T1, T2> make_pair(T1 obj1, T2 obj2)
 	{
 		return ft::pair<T1, T2>(obj1, obj2);
 	}
 
-	/* Xtra: c00l factorial trick, no calculation made during runtime!! */
+	template <class value>
+	value extract_key(value v) { return v; }
+
+	template <class first, class second>
+	first extract_key(ft::pair<first, second> pair) { return pair.first; }
+
+	template <typename>
+	struct is_pair : ft::false_type { };
 	
+	template <typename T, typename U>
+	struct is_pair<ft::pair<T, U> > : ft::true_type { };
+
 	template <unsigned n>
 	struct factorial : ft::integral_constant<long long, n * factorial<n - 1>::value> { };
 

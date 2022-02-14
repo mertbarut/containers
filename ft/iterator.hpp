@@ -1,35 +1,28 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_iterator.hpp                                    :+:      :+:    :+:   */
+/*   iterator.hpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mbarut <mbarut@student.42wolfsburg.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/23 23:13:25 by mbarut            #+#    #+#             */
-/*   Updated: 2022/02/11 19:45:09 by mbarut           ###   ########.fr       */
+/*   Updated: 2022/02/14 16:47:27 by mbarut           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
-//#include "ft_iterator_base_funcs.hpp"
-//#include "ft_iterator_base_types.hpp"
-#include "ft_util.hpp"
-//#include "ft_base.hpp"
-
+#include "utility.hpp"
 #include <cstddef>
 
 namespace ft
 {
-	/* Iterator Tags */
-
 	struct input_iterator_tag {};
 	struct output_iterator_tag {};
 	struct forward_iterator_tag : public input_iterator_tag {} ;
 	struct bidirectional_iterator_tag : public forward_iterator_tag {} ;
 	struct random_access_iterator_tag : public bidirectional_iterator_tag {} ;
 
-	/* Typedefs for any iterator */ 
 	template <
 		typename Category,
 		typename T,
@@ -46,7 +39,6 @@ namespace ft
 		typedef Reference	reference;
 	};
 
-	/* type_traits */
 	template <typename Iterator>
 	struct iterator_traits
 	{
@@ -76,16 +68,13 @@ namespace ft
 		typedef T*							pointer;
 		typedef T&							reference;
 	};
-	
-	/* Get the iterator category of any iterator type */
+
 	template <typename Iterator>
 	inline typename iterator_traits<Iterator>::iterator_category iterator_category(const Iterator&)
 	{
 		return typename iterator_traits<Iterator>::iterator_category();
 	}
 
-		/* Distance: get the distance between two iterators */
-	
 	template <typename InputIterator>
 	static inline typename iterator_traits<InputIterator>::difference_type
 	_distance (InputIterator first, InputIterator last, ft::input_iterator_tag)
@@ -112,8 +101,6 @@ namespace ft
 	{
 		return ft::_distance(first, last, ft::iterator_category(first));
 	}
-
-	/* Advance: advance some iterator by some position */
 
 	template <typename InputIterator, typename Distance>
 	static inline void
@@ -167,42 +154,16 @@ namespace ft
 	
 	public:
 
-		/* Constructors */
-		/* (1) default constructor */
-		/* Constructs a reverse iterator that points to NULL. */
 		reverse_iterator() { }
 
-		/* (2) initalization constructor */
-		/* Constructs a reverse iterator from some original iterator 'iterator'. */
-		/* explicit keyword is used because implicit conversion from other iterators is not desired */
 		explicit reverse_iterator(iterator_type iterator) : _base(iterator) { }
 
-		/* Destructors */
-		/* not implemented in the original */
-		//~reverse_iterator(void)
-		//{
-		//	std::cout << "A reverse iterator has been destructed\n";
-		//}
-
-		/* Copy constructors */
 		reverse_iterator(const reverse_iterator<Iterator>& obj) : _base(obj.base())
 		{
-			//std::cout << "A copy constructor for the template class reverse iterator has been called\n";
+			
 		}
 
-		/* Assignment operator overload */
-		/* not implemented in the original */
-		//reverse_iterator& operator= (const reverse_iterator& obj)
-		//{
-		//	if (this != &obj)
-		//		this->setIterator(obj);
-		//	return *this;
-		//}
-
-		/* Exposing Base iterator */
 		iterator_type	base() const { return this->_base; }
-
-		/* Member access operators */
 
 		reference operator* () const
 		{
@@ -215,37 +176,25 @@ namespace ft
 
 		pointer operator-> () const { return &(operator*()); }
 
-		/* not implemented */
-		//pointer operator& ()
-		//{
-		//	return &this->_base;
-		//}
-
-		/* Increment/decrement operators */
-
-		/* ++i */
 		reverse_iterator& operator++ ()
 		{
 			--this->_base;
 			return *this;
 		}
 
-		/* i++ */
 		reverse_iterator operator++ (int)
 		{
 			reverse_iterator tmp = *this;
 			--this->_base;
 			return tmp;
 		}
-		
-		/* --i */
+
 		reverse_iterator& operator-- ()
 		{
 			++this->_base;
 			return *this;
 		}
 
-		/* i-- */
 		reverse_iterator operator-- (int)
 		{
 			reverse_iterator tmp = *this;
@@ -253,75 +202,63 @@ namespace ft
 			return tmp;
 		}
 
-		/* Pointer Arithmetic operators */
-		/* Reverse_iterator_2 = Reverse_iterator_1 + d */
 		reverse_iterator operator+ (difference_type d) const
 		{
 			return reverse_iterator(this->_base - d);
 		}
 
-		/* Reverse_iterator_2 = Reverse_iterator_1 - d */
 		reverse_iterator operator- (difference_type d) const
 		{
 			return reverse_iterator(this->_base + d);
 		}
 
-		/* Increment/decrement assignment operators */
-		/* reverse_iterator += d */
 		reverse_iterator& operator+= (difference_type d)
 		{
 			this->_base -= d;
 			return *this;
 		}
 
-		/* reverse_iterator -= d */
 		reverse_iterator& operator-= (difference_type d)
 		{
 			this->_base += d;
 			return *this;
 		}
-		
-		/* Reverse iterator friend functions */
-
-		/* Relational operators */
 
 		friend bool operator== (const reverse_iterator& lhs,
 								const reverse_iterator& rhs)
 		{
 			return lhs->base() == rhs->base();
 		}
-		
+
 		friend bool operator!= (const reverse_iterator& lhs,
 								const reverse_iterator& rhs)
 		{
 			return !(lhs->base() == rhs->base());
 		}
-		
+
 		friend bool operator < (const reverse_iterator& lhs,
 								const reverse_iterator& rhs)
 		{
 			return lhs->base() > rhs->base();
 		}
-		
+
 		friend bool operator<= (const reverse_iterator& lhs,
 								const reverse_iterator& rhs)
 		{
 			return !(lhs->base() < rhs->base());
 		}
-		
+
 		friend bool operator > (const reverse_iterator& lhs,
 								const reverse_iterator& rhs)
 		{
 			return lhs->base() < rhs->base();
 		}
-		
+
 		friend bool operator>= (const reverse_iterator& lhs,
 								const reverse_iterator& rhs)
 		{
 			return !(lhs->base() > rhs->base());
 		}
-		
-		/* return an iterator i where obj - i = d */
 
 		friend reverse_iterator operator+ (
 			typename reverse_iterator::difference_type d,
@@ -329,8 +266,7 @@ namespace ft
 		{
 			return reverse_iterator(obj.base() - d);
 		}
-		
-		/* return the distance between iterators ( = __right - __left ) */
+
 		friend typename reverse_iterator::difference_type operator- (
 			const reverse_iterator& lhs,
 			const reverse_iterator& rhs)
@@ -343,17 +279,17 @@ namespace ft
 	template <typename T, class Compare>
 	class _RBT_iterator : ft::iterator<ft::bidirectional_iterator_tag, T>
 	{
-		//#ifndef ROOT
-		//# define ROOT									_nil->__parent
-		//#endif
+		#ifndef ROOT
+		# define ROOT									_nil->__parent
+		#endif
 
 		#ifndef FIRSTNODE
 		# define FIRSTNODE								_nil->__right
 		#endif
 
-		//#ifndef NILNODE
-		//# define NILNODE								_nil->__right
-		//#endif
+		#ifndef NILNODE
+		# define NILNODE								_nil->__right
+		#endif
 
 	public:
 		T*			_node;
@@ -530,18 +466,14 @@ namespace ft
 		typedef typename trait_type::pointer			pointer;
 		typedef typename trait_type::reference			reference;
 
-		//using											bidirectional_iterator<Allocator>::base;
-
-		/* ctor 1 */
 		random_access_iterator() { this->_base = T(); }
-		/* ctor 2 */
+
 		random_access_iterator(const T& other) { this->_base = other; }
-		/* copy ctor */
+
 		random_access_iterator(const random_access_iterator& other) { this->_base = other._base; } 
-		/* dtor */
+
 		~random_access_iterator() { }
 
-		/* assignment operator overload */
 		random_access_iterator&		operator= (const random_access_iterator& other)
 		{
 			if (this == &other)
@@ -551,14 +483,12 @@ namespace ft
 		}
 
 		/* iterator -> const_iterator */
-		//template <typename Iter>
-		//random_access_iterator(const random_access_iterator<Iter, Container>& v,
-		//	typename ft::is_same<Iter, Container>::_type* _tmp = NULL)
-		//: bidirectional_iterator<Allocator>(v.base()) { (void)_tmp; }
+		//template <class ptr>
+		//random_access_iterator(const random_access_iterator<ptr, Container>& i,
+		//	typename ft::is_same<ptr, Container>::_type* value = NULL) :
+		//	_base(i.base()) { (void)value; }
 
 		T		base() const { return (this->_base); }
-
-		/* friends */
 
 		friend bool						operator==(const random_access_iterator& i1, const random_access_iterator& i2)
 		{
@@ -600,9 +530,7 @@ namespace ft
 			return i1._base - i2._base;
 		}
 
-		/* member operators overloads */
-
-		reference						operator* ()	const	{ return *this->_base; }
+		reference						operator* ()	const	{ return const_cast<reference>(*this->_base); }
 		pointer							operator->()	const	{ return this->_base; }
 		reference						operator[](difference_type d) const { return this->_base[d]; }
 
