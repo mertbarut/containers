@@ -6,13 +6,14 @@
 /*   By: mbarut <mbarut@student.42wolfsburg.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/23 14:44:40 by mbarut            #+#    #+#             */
-/*   Updated: 2022/02/14 16:43:51 by mbarut           ###   ########.fr       */
+/*   Updated: 2022/02/14 21:35:26 by mbarut           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
 #include "vector.hpp"
+#include "debug.hpp"
 #include <cstddef>
 
 namespace ft

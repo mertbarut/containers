@@ -6,17 +6,19 @@
 /*   By: mbarut <mbarut@student.42wolfsburg.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/08 11:16:46 by mbarut            #+#    #+#             */
-/*   Updated: 2022/02/14 16:44:11 by mbarut           ###   ########.fr       */
+/*   Updated: 2022/02/14 23:22:07 by mbarut           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#pragma once
+#ifndef FT_RBT_HPP
+# define FT_RBT_HPP
 
 #include "iterator.hpp"
 #include "utility.hpp"
 #include <cstddef>
 #include <memory>
 #include <iostream>
+#include "debug.hpp"
 
 namespace ft 
 {
@@ -151,8 +153,8 @@ namespace ft
 		typedef Node*											node_pointer;
 		typedef Allocator_T										allocator_type;
 		typedef Allocator_Node									node_allocator;
-		typedef ft::_RBT_iterator<Node, Compare>				iterator;
-		typedef ft::_RBT_const_iterator<Node, Compare>			const_iterator;
+		typedef ft::_RBT_iterator<Node>				iterator;
+		typedef ft::_RBT_const_iterator<Node>			const_iterator;
 		typedef size_t											size_type;
 		typedef Compare											compare_type;
 		typedef Key												key_type;
@@ -592,3 +594,5 @@ namespace ft
 	};
 
 }
+
+#endif

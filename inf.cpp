@@ -1,5 +1,3 @@
-// torture your compiler
-
 template <int i>
 void bar();
 
@@ -16,8 +14,14 @@ void bar()
 	foo<i - 1>();
 }
 
+template <>		// <- uncomment this template and run "make inf" to let chaos reign
+void foo<1>()
+{
+
+}
+
 int main(void)
 {
-	foo<2000>();
+	foo<200>();
 	return 0;
 }

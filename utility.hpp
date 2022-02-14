@@ -6,13 +6,15 @@
 /*   By: mbarut <mbarut@student.42wolfsburg.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/26 14:09:36 by mbarut            #+#    #+#             */
-/*   Updated: 2022/02/14 18:06:18 by mbarut           ###   ########.fr       */
+/*   Updated: 2022/02/14 21:35:33 by mbarut           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#pragma once
+#ifndef FT_UTILITY_HPP
+# define FT_UTILITY_HPP
 
 #include <sstream>
+#include "debug.hpp"
 
 namespace ft
 {
@@ -69,7 +71,7 @@ namespace ft
 	template <> struct is_integral<unsigned long long> : public true_type { };
 
 	template<class InputIt, class UnaryPredicate>
-	InputIt find_if(InputIt first, InputIt last, UnaryPredicate p)
+	inline InputIt find_if(InputIt first, InputIt last, UnaryPredicate p)
 	{
 		for (; first != last; ++first)
 		{
@@ -196,3 +198,5 @@ namespace ft
 	struct factorial<0> : ft::integral_constant<long long, 1> { };
 
 }
+
+#endif

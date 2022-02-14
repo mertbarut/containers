@@ -6,11 +6,12 @@
 /*   By: mbarut <mbarut@student.42wolfsburg.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/23 23:13:25 by mbarut            #+#    #+#             */
-/*   Updated: 2022/02/14 16:47:27 by mbarut           ###   ########.fr       */
+/*   Updated: 2022/02/14 23:24:19 by mbarut           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#pragma once
+#ifndef FT_ITERATOR_HPP
+# define FT_ITERATOR_HPP
 
 #include "utility.hpp"
 #include <cstddef>
@@ -276,7 +277,7 @@ namespace ft
 
 	};
 
-	template <typename T, class Compare>
+	template <typename T>
 	class _RBT_iterator : ft::iterator<ft::bidirectional_iterator_tag, T>
 	{
 		#ifndef ROOT
@@ -294,7 +295,6 @@ namespace ft
 	public:
 		T*			_node;
 		T*			_nil;
-		Compare     _compare;
 		
 	public:
 
@@ -303,12 +303,12 @@ namespace ft
 		typedef typename ft::iterator<ft::bidirectional_iterator_tag, value_type>::difference_type   difference_type;
 		typedef typename ft::iterator<ft::bidirectional_iterator_tag, value_type>::pointer   pointer;
 		typedef typename ft::iterator<ft::bidirectional_iterator_tag, value_type>::reference reference;
-		typedef _RBT_iterator<T, Compare>	self_type;
+		typedef _RBT_iterator<T>	self_type;
 		typedef T*							link_type;
 
-		_RBT_iterator(const Compare& comp = Compare()) : _node(), _nil(), _compare(comp) {}
-		_RBT_iterator(T* node, T* nil, const Compare& comp = Compare()) : _node(node), _nil(nil), _compare(comp) {}
-		_RBT_iterator(const _RBT_iterator& i) : _node(i._node), _nil(i._nil), _compare() {}
+		_RBT_iterator() : _node(), _nil() {}
+		_RBT_iterator(T* node, T* nil) : _node(node), _nil(nil) {}
+		_RBT_iterator(const _RBT_iterator& i) : _node(i._node), _nil(i._nil) {}
 		virtual ~_RBT_iterator() { }
 
 		_RBT_iterator& operator= (const _RBT_iterator& rhs)
@@ -317,13 +317,11 @@ namespace ft
 				return *this;
 			this->_node = rhs._node;
 			this->_nil = rhs._nil;
-			this->_compare = rhs._compare;
 			return *this;
 		}
 
 		T*			base() const { return this->_node; }
 		T*			nil() const { return this->_nil; }
-		Compare		compare() const { return this->_compare; }
 
 		bool		operator==(const _RBT_iterator& i) { return this->_node == i._node; }
 		bool		operator!=(const _RBT_iterator& i) { return this->_node != i._node; }
@@ -358,29 +356,28 @@ namespace ft
 
 	};
 
-	template <typename T, class Compare >
+	template <typename T>
 	class _RBT_const_iterator : ft::iterator<ft::bidirectional_iterator_tag, T>
 	{
 	
 	private:
 		T*			_node;
 		T*			_nil;
-		Compare		_compare;
 		
 	public:
 
-		typedef typename T::value_type    value_type;
+		typedef typename T::value_type		value_type;
 		typedef typename ft::iterator<ft::bidirectional_iterator_tag, value_type>::iterator_category iterator_category;
 		typedef typename ft::iterator<ft::bidirectional_iterator_tag, value_type>::difference_type   difference_type;
 		typedef typename ft::iterator<ft::bidirectional_iterator_tag, value_type>::pointer   pointer;
 		typedef typename ft::iterator<ft::bidirectional_iterator_tag, value_type>::reference reference;
-		typedef _RBT_iterator<T, Compare>	self_type;
+		typedef _RBT_iterator<T>			self_type;
 		typedef T*							link_type;
 
-		_RBT_const_iterator(const Compare& comp = Compare()) : _node(), _nil(), _compare(comp) {}
-		_RBT_const_iterator(T* node_p, T* last_node, const Compare& comp = Compare()) : _node(node_p), _nil(last_node), _compare(comp) {}
-		_RBT_const_iterator(const _RBT_const_iterator& i) : _node(i._node), _nil(i._nil), _compare(i._compare) {}
-		_RBT_const_iterator(const _RBT_iterator<T, Compare>& i) : _node(i._node), _nil(i._nil), _compare(i._compare) {}
+		_RBT_const_iterator() : _node(), _nil() {}
+		_RBT_const_iterator(T* node_p, T* last_node) : _node(node_p), _nil(last_node){}
+		_RBT_const_iterator(const _RBT_const_iterator& i) : _node(i._node), _nil(i._nil) {}
+		_RBT_const_iterator(const _RBT_iterator<T>& i) : _node(i._node), _nil(i._nil) {}
 		virtual ~_RBT_const_iterator() { }
 
 		_RBT_const_iterator& operator= (const _RBT_const_iterator& rhs)
@@ -389,23 +386,20 @@ namespace ft
 				return *this;
 			this->_node = rhs._node;
 			this->_nil = rhs._nil;
-			this->_compare = rhs._compare;
 			return *this;
 		}
 
-		//_RBT_const_iterator& operator= (const _RBT_iterator<T, Compare>& rhs)
-		//{
-		//	if (*this == rhs)
-		//		return (*this);
-		//	this->_node = rhs._node;
-		//	this->_nil = rhs._nil;
-		//	this->_comp = rhs._comp;
-		//	return *this;
-		//}
+		_RBT_const_iterator& operator= (const _RBT_iterator<T>& rhs)
+		{
+			if (*this == rhs)
+				return (*this);
+			this->_node = rhs._node;
+			this->_nil = rhs._nil;
+			return *this;
+		}
 
 		T*			base() const { return this->_node; }
 		T*			nil() const { return this->_nil; }
-		Compare		compare() const { return this->_compare; }
 
 		bool		operator==(const _RBT_const_iterator& i) { return this->_node == i._node; }
 		bool		operator!=(const _RBT_const_iterator& i) { return this->_node != i._node; }
@@ -483,10 +477,10 @@ namespace ft
 		}
 
 		/* iterator -> const_iterator */
-		//template <class ptr>
-		//random_access_iterator(const random_access_iterator<ptr, Container>& i,
-		//	typename ft::is_same<ptr, Container>::_type* value = NULL) :
-		//	_base(i.base()) { (void)value; }
+		template <class ptr>
+		random_access_iterator(const random_access_iterator<ptr, Container>& i,
+			typename ft::is_same<ptr, Container>::_type* value = NULL) :
+			_base(i.base()) { (void)value; }
 
 		T		base() const { return (this->_base); }
 
@@ -548,3 +542,5 @@ namespace ft
 	};
 
 }
+
+#endif
