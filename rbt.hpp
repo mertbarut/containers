@@ -6,7 +6,7 @@
 /*   By: mbarut <mbarut@student.42wolfsburg.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/08 11:16:46 by mbarut            #+#    #+#             */
-/*   Updated: 2022/02/14 23:22:07 by mbarut           ###   ########.fr       */
+/*   Updated: 2022/02/15 15:26:09 by mbarut           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -153,8 +153,8 @@ namespace ft
 		typedef Node*											node_pointer;
 		typedef Allocator_T										allocator_type;
 		typedef Allocator_Node									node_allocator;
-		typedef ft::_RBT_iterator<Node>				iterator;
-		typedef ft::_RBT_const_iterator<Node>			const_iterator;
+		typedef ft::_RBT_iterator<Node>							iterator;
+		typedef ft::_RBT_const_iterator<Node>					const_iterator;
 		typedef size_t											size_type;
 		typedef Compare											compare_type;
 		typedef Key												key_type;
@@ -502,11 +502,6 @@ namespace ft
 			if (node == _MAX_NODE)
 				node_type::_decrement(_MAX_NODE, _nil);
 			
-			node_pointer	tmp_min_node = _MIN_NODE;
-			node_pointer	tmp_max_node = _MAX_NODE;
-			_MIN_NODE = _nil;
-			_MAX_NODE = _nil;
-
 			node_pointer		node_child;
 			__RBT_Node_color	orig_color	= node->__color;
 			
@@ -544,8 +539,6 @@ namespace ft
 				#endif
 				_delete_rebalance(node_child);
 			}
-			_MAX_NODE = tmp_max_node;
-			_MIN_NODE = tmp_min_node;
 			_nil->__parent = _nil;
 
 			_destroy_node(node);

@@ -6,7 +6,7 @@
 /*   By: mbarut <mbarut@student.42wolfsburg.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/23 14:44:38 by mbarut            #+#    #+#             */
-/*   Updated: 2022/02/14 21:35:29 by mbarut           ###   ########.fr       */
+/*   Updated: 2022/02/15 14:30:35 by mbarut           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ namespace ft
 		typedef typename _Allocator::size_type			size_type;
 		typedef typename _Allocator::pointer			pointer;
 		typedef ft::iterator<pointer, pointer>			iterator;
-			
+
 		allocator_type									_allocator;
 		size_type										_capacity;
 		size_type										_size;
@@ -270,26 +270,26 @@ namespace ft
 	template <typename T, class Allocator = std::allocator<T> >
 	class vector : protected _vector_base<T, Allocator>
 	{
-	
+
 	public:
 
 		typedef T													value_type;
 		typedef Allocator											allocator_type;
-		typedef typename Allocator::reference						reference;
-		typedef typename Allocator::const_reference					const_reference;
+		typedef typename Allocator::size_type						size_type;
+		typedef typename Allocator::difference_type					difference_type;
+		typedef value_type&											reference;
+		typedef const value_type&									const_reference;
 		typedef typename Allocator::pointer							pointer;
 		typedef typename Allocator::const_pointer					const_pointer;
-		typedef typename Allocator::difference_type					difference_type;
-		typedef typename Allocator::size_type						size_type;
 		typedef random_access_iterator<pointer, pointer>			iterator;
 		typedef random_access_iterator<const_pointer, pointer>		const_iterator;
 		typedef ft::reverse_iterator<iterator>						reverse_iterator;
 		typedef ft::reverse_iterator<const_iterator>				const_reverse_iterator;
-		typedef _vector_base<T, Allocator>							base;	
-		typedef ft::random_access_iterator_tag						iterator_category;
 
 	protected:
 
+		typedef _vector_base<T, Allocator>							base;	
+		typedef ft::random_access_iterator_tag						iterator_category;
 		using	base::_M_allocate;
 		using	base::_M_deallocate;
 		using	base::_M_copy_assign;
@@ -304,7 +304,9 @@ namespace ft
 
 	public:
 
-		explicit vector(const allocator_type& alloc = allocator_type()) : base(alloc) { }
+		vector() : base() { }
+
+		explicit vector(const allocator_type& alloc) : base(alloc) { }
 
 		explicit vector(size_type n, const value_type& val = value_type(),
 			const allocator_type& alloc = allocator_type()) : base(n, val, alloc) { }
@@ -317,16 +319,74 @@ namespace ft
 
 		~vector()
 		{
- 			clear();
+			clear();
 			_M_deallocate();
- 		}
+		}
 
-		vector&		operator=(const vector& rhs)
+		vector&					operator=(const vector& rhs)
 		{
 			if (this == &rhs)
 				return (*this);
 			_M_copy_assign(rhs);
  			return (*this);
+		}
+
+		allocator_type			get_allocator() const
+		{
+			return this->Allocator();
+		}
+
+		template <class InputIterator>
+		void					assign(InputIterator first, InputIterator last)
+		{
+			_M_range_assign(first, last, ft::is_integral<InputIterator>());
+		}
+
+		void					assign(size_type n, const value_type& val)
+		{
+			_M_fill_assign(n, val);
+		}
+
+		reference				at(size_type n)
+		{
+			_M_range_check(n, "_M_range_check: __n");
+			return (this->_p[n]);
+		}
+
+		const_reference			at(size_type n) const
+		{
+			_M_range_check(n, "_M_range_check: __n");
+			return (this->_p[n]);
+		}
+
+		reference				operator[](size_type n)
+		{
+			return (this->_p[n]);
+		}
+
+		const_reference			operator[](size_type n) const
+		{
+			return (this->_p[n]);
+		}
+
+		reference				front()
+		{
+			return (this->_p[0]);
+		}
+
+		const_reference			front() const
+		{
+			return (this->_p[0]);
+		}
+
+		reference				back()
+		{
+			return (this->_p[this->_size - 1]);
+		}
+
+		const_reference			back() const
+		{
+			return (this->_p[this->_size - 1]);
 		}
 
 		iterator				begin()
@@ -369,37 +429,22 @@ namespace ft
 			return (const_reverse_iterator(begin()));
 		}
 
-		bool			empty() const
+		bool					empty() const
 		{
 			return (this->_size == 0);
 		}
 
-		size_type		size() const
+		size_type				size() const
 		{
 			return (this->_size);
 		}
 
-		size_type		capacity() const
-		{
-			return (this->_capacity);
-		}
-
-		size_type		max_size() const
+		size_type				max_size() const
 		{
 			return (this->_allocator.max_size());
 		}
 
-		void			resize(size_type n, value_type val = value_type())
-		{
-			while (n < _size)
-				pop_back();
-			if (n > _capacity)
-				reserve(n);
-			while (n > _size)
-				push_back(val);
-		}
-
-		void			reserve(size_type n)
+		void					reserve(size_type n)
 		{
 			if (n > this->max_size())
 				throw (std::length_error("vector::reserve"));
@@ -412,105 +457,36 @@ namespace ft
 			}
 		}
 
-		allocator_type get_allocator() const
+		size_type				capacity() const
 		{
-			return this->Allocator();
+			return (this->_capacity);
 		}
 
- 		reference			operator[](size_type n)
+		void					clear()
 		{
-			return (this->_p[n]);
+			while (_size != 0)
+				pop_back();
 		}
 
-		const_reference		operator[](size_type n) const
-		{
-			return (this->_p[n]);
-		}
-
-		reference			at(size_type n)
-		{
-			_M_range_check(n, "_M_range_check: __n");
-			return (this->_p[n]);
-		}
-
-		const_reference		at(size_type n) const
-		{
-			_M_range_check(n, "_M_range_check: __n");
-			return (this->_p[n]);
-		}
-
-		reference			front()
-		{
-			return (this->_p[0]);
-		}
-
-		const_reference		front() const
-		{
-			return (this->_p[0]);
-		}
-
-		reference			back()
-		{
-			return (this->_p[this->_size - 1]);
-		}
-
-		const_reference		back() const
-		{
-			return (this->_p[this->_size - 1]);
-		}
-
-		template <class InputIterator>
-		void		assign(InputIterator first, InputIterator last)
-		{
-			_M_range_assign(first, last, ft::is_integral<InputIterator>());
-		}
-
-		void		assign(size_type n, const value_type& val)
-		{
-			_M_fill_assign(n, val);
-		}
-
-		void		push_back(const value_type& val)
-		{
-			if (_size == _capacity)
-			{
-				if (_capacity == 0)
-					reserve(1);
-				else
-					reserve(_capacity * 2);
-			}
-			_allocator.construct(_p + _size, val);
-			++_size;
-		}
-
-		void		pop_back()
-		{
-			if (_size == 0)
-				return ;
-			_allocator.destroy(_p + _size - 1);
-			--_size;
-		}
-
-		iterator	insert(iterator position, const value_type& val)
+		iterator				insert(iterator position, const value_type& val)
 		{
 			return (_M_fill_insert(position, 1, val));
 		}
 
-		void		insert(iterator position, size_type n, const value_type& val)
+		void					insert(iterator position, size_type n, const value_type& val)
 		{
 			_M_fill_insert(position, n, val);
 		}
 
 		template <class InputIterator>
-		void		insert(iterator position, InputIterator first, InputIterator last)
+		void					insert(iterator position, InputIterator first, InputIterator last)
 		{
 			_M_range_insert(position, first, last, ft::is_integral<InputIterator>());
 		}
 
-		iterator	erase(iterator position)
+		iterator				erase(iterator position)
 		{
 			_allocator.destroy(position.base());
-
 			iterator	it = position;
 			while (++it != end())
 			{
@@ -521,7 +497,7 @@ namespace ft
 			return (position);
 		}
 
-		iterator	erase(iterator first, iterator last)
+		iterator				erase(iterator first, iterator last)
 		{
 			difference_type	diff = ft::distance(first, last);
 			if (diff <= 0)
@@ -539,7 +515,38 @@ namespace ft
 			return (first);
 		}
 
-		void		swap(vector& v)
+		void					push_back(const value_type& val)
+		{
+			if (_size == _capacity)
+			{
+				if (_capacity == 0)
+					reserve(1);
+				else
+					reserve(_capacity * 2);
+			}
+			_allocator.construct(_p + _size, val);
+			++_size;
+		}
+
+		void					pop_back()
+		{
+			if (_size == 0)
+				return ;
+			_allocator.destroy(_p + _size - 1);
+			--_size;
+		}
+
+		void					resize(size_type n, value_type val = value_type())
+		{
+			while (n < _size)
+				pop_back();
+			if (n > _capacity)
+				reserve(n);
+			while (n > _size)
+				push_back(val);
+		}
+
+		void					swap(vector& v)
 		{
 			size_type	capacity = this->_capacity;
 			size_type	size = this->_size;
@@ -553,12 +560,7 @@ namespace ft
 			v._size = size;
 			v._p = p;
 		}
-
-		void		clear()
-		{
-			while (_size != 0)
-				pop_back();
-		}
+		
 	};
 
 	template <class T, class Allocator>
@@ -598,7 +600,7 @@ namespace ft
 	}
 
 	template <class T, class Allocator>
-	inline void	swap(ft::vector<T, Allocator>& v1, ft::vector<T, Allocator>& v2)
+	void	swap(ft::vector<T, Allocator>& v1, ft::vector<T, Allocator>& v2)
 	{
 		v1.swap(v2);
 	}

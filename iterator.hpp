@@ -6,7 +6,7 @@
 /*   By: mbarut <mbarut@student.42wolfsburg.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/23 23:13:25 by mbarut            #+#    #+#             */
-/*   Updated: 2022/02/14 23:24:19 by mbarut           ###   ########.fr       */
+/*   Updated: 2022/02/15 13:58:26 by mbarut           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -443,28 +443,31 @@ namespace ft
 		typedef typename ft::iterator<ft::bidirectional_iterator_tag, T>::reference             reference;
 	};
 
-	template<typename T, typename Container>
+	template<typename T, typename nonconst_T>
 	class random_access_iterator : ft::iterator<ft::random_access_iterator_tag, T>
 	{
 
 	private:
 
-		T												_base;
-		typedef typename ft::iterator_traits<T>			trait_type;
+		T													_base;
+		typedef typename ft::iterator_traits<T>				trait_type_T;
+		typedef typename ft::iterator_traits<nonconst_T>	trait_type_nonconst_T;
 
 	public:
 
-		typedef typename trait_type::value_type			value_type;
-		typedef typename trait_type::difference_type	difference_type;
-		typedef typename trait_type::iterator_category	iterator_category;
-		typedef typename trait_type::pointer			pointer;
-		typedef typename trait_type::reference			reference;
+		typedef typename trait_type_T::value_type			value_type;
+		typedef typename trait_type_T::difference_type		difference_type;
+		typedef typename trait_type_T::iterator_category	iterator_category;
+		typedef typename trait_type_T::pointer				pointer;
+		typedef typename trait_type_T::reference			reference;
+		typedef typename trait_type_nonconst_T::pointer		const_pointer;
+		typedef typename trait_type_nonconst_T::reference	const_reference;
 
-		random_access_iterator() { this->_base = T(); }
+		random_access_iterator() : _base(T()) { }
 
-		random_access_iterator(const T& other) { this->_base = other; }
+		random_access_iterator(const T& other) : _base(other) { }
 
-		random_access_iterator(const random_access_iterator& other) { this->_base = other._base; } 
+		random_access_iterator(const random_access_iterator& other) : _base(other._base) { } 
 
 		~random_access_iterator() { }
 
@@ -476,11 +479,11 @@ namespace ft
 			return *this;
 		}
 
-		/* iterator -> const_iterator */
-		template <class ptr>
-		random_access_iterator(const random_access_iterator<ptr, Container>& i,
-			typename ft::is_same<ptr, Container>::_type* value = NULL) :
-			_base(i.base()) { (void)value; }
+		template <class It>
+		random_access_iterator(const random_access_iterator<It, nonconst_T>& i, typename ft::enable_if<ft::is_same<It, nonconst_T>::value>::type* = NULL) : _base(i.base())
+		{
+			
+		}
 
 		T		base() const { return (this->_base); }
 
@@ -524,9 +527,9 @@ namespace ft
 			return i1._base - i2._base;
 		}
 
-		reference						operator* ()	const	{ return const_cast<reference>(*this->_base); }
-		pointer							operator->()	const	{ return this->_base; }
-		reference						operator[](difference_type d) const { return this->_base[d]; }
+		const_reference					operator* ()	const	{ return const_cast<reference>(*this->_base); }
+		const_pointer					operator->()	const	{ return this->_base; }
+		const_reference					operator[](difference_type d) const { return this->_base[d]; }
 
 		random_access_iterator& 		operator++()				{ ++this->_base; return *this; }
 		random_access_iterator& 		operator--()				{ --this->_base; return *this; }

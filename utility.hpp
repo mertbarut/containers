@@ -6,7 +6,7 @@
 /*   By: mbarut <mbarut@student.42wolfsburg.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/26 14:09:36 by mbarut            #+#    #+#             */
-/*   Updated: 2022/02/14 21:35:33 by mbarut           ###   ########.fr       */
+/*   Updated: 2022/02/15 13:07:36 by mbarut           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,7 @@ namespace ft
 	struct is_same<T, T>
 	{
 		static const bool value = true;
+		//typedef T type;
 	};
 
 	template <bool condition, class T = void>

@@ -9,93 +9,49 @@
 	#include <set>
 	namespace ft = std;
 
-	template<typename T>
-	void	print_vector(std::vector<T>& v, size_t id = 0, const std::string& delimiter = " ")
-	{
-		std::cout << "vector" << id << ": " << "[ ";
-		for (typename std::vector<T>::iterator it1 = v.begin(); it1 != v.end(); ++it1)
-			std::cout << *it1 << delimiter;
-		std::cout << "]" << std::endl;
-	}
-
-	template<typename T, typename U>
-	void	print_map(const std::map<T, U>& m, std::string comment = "")
-	{
-		std::cout << comment;
-		for (typename std::map<T, U>::const_iterator it = m.begin(); it != m.end(); it++)
-			std::cout << it->first << " = " << it->second << "; ";
-		std::cout << '\n';
-	}
-
-	template<typename T>
-	void print_set(const std::set<T>& s, std::string comment = "")
-	{
-		std::cout << comment;
-		for (typename std::set<T>::const_iterator it = s.begin(); it != s.end(); it++)
-			std::cout << *it << " -> ";
-		std::cout << "(end)" << std::endl;
-	}
-
-
-	template<typename T>
-	void	print_stack(std::stack<T> s, size_t id = 0, const std::string& delimiter = "\n")
-	{
-		size_t n_elems = s.size();
-		std::cout << "stack" << id << ":\n";
-		for (; !s.empty(); --n_elems)
-		{
-			std::cout << "[ " << s.top() << " ]" << delimiter;
-			s.pop();
-		}
-	}
-
 #else
 	#include "map.hpp"
 	#include "stack.hpp"
 	#include "vector.hpp"
 	#include "set.hpp"
 
-	template<typename T>
-	void	print_vector(ft::vector<T>& v, size_t id = 0, const std::string& delimiter = " ")
-	{
-		std::cout << "vector" << id << ": " << "[ ";
-		for (typename ft::vector<T>::iterator it1 = v.begin(); it1 != v.end(); ++it1)
-			std::cout << *it1 << delimiter;
-		std::cout << "]" << std::endl;
-	}
-
-	template<typename T, typename U>
-	void	print_map(const ft::map<T, U>& m, std::string comment = "")
-	{
-		std::cout << comment;
-		for (typename ft::map<T, U>::const_iterator it = m.begin(); it != m.end(); it++)
-			std::cout << it->first << " = " << it->second << "; ";
-		std::cout << '\n';
-	}
-
-	template<typename T>
-	void	print_stack(ft::stack<T> s, size_t id = 0, const std::string& delimiter = "\n")
-	{
-		size_t n_elems = s.size();
-		std::cout << "stack" << id << ":\n";
-		for (; !s.empty(); --n_elems)
-		{
-			std::cout << "[ " << s.top() << " ]" << delimiter;
-			s.pop();
-		}
-	}
-
-	template<typename T>
-	void print_set(const ft::set<T>& s, std::string comment = "")
-	{
-		std::cout << comment;
-		for (typename ft::set<T>::const_iterator it = s.begin(); it != s.end(); it++)
-			std::cout << *it << " -> ";
-		std::cout << "(end)" << std::endl;
-	}
-
-
 #endif
+
+template<typename T>
+void	print_vector(ft::vector<T>& v, size_t id = 0, const std::string& delimiter = " ")
+{
+	std::cout << "vector" << id << ": " << "[ ";
+	for (typename ft::vector<T>::iterator it1 = v.begin(); it1 != v.end(); ++it1)
+		std::cout << *it1 << delimiter;
+	std::cout << "]" << std::endl;
+}
+template<typename T, typename U>
+void	print_map(const ft::map<T, U>& m, std::string comment = "")
+{
+	std::cout << comment;
+	for (typename ft::map<T, U>::const_iterator it = m.begin(); it != m.end(); it++)
+		std::cout << it->first << " = " << it->second << "; ";
+	std::cout << '\n';
+}
+template<typename T>
+void	print_stack(ft::stack<T> s, size_t id = 0, const std::string& delimiter = "\n")
+{
+	size_t n_elems = s.size();
+	std::cout << "stack" << id << ":\n";
+	for (; !s.empty(); --n_elems)
+	{
+		std::cout << "[ " << s.top() << " ]" << delimiter;
+		s.pop();
+	}
+}
+template<typename T>
+void print_set(const ft::set<T>& s, std::string comment = "")
+{
+	std::cout << comment;
+	for (typename ft::set<T>::const_iterator it = s.begin(); it != s.end(); it++)
+		std::cout << *it << " -> ";
+	std::cout << "(end)" << std::endl;
+}
 
 #include <stdlib.h>
 
@@ -198,7 +154,7 @@ int main(int argc, char** argv) {
 	}
 	std::cout << std::endl;
 
-	/* vector tests */
+	/* vector */
 
 	ft::vector<int> v1;
 	print_vector(v1, 1);
@@ -319,6 +275,21 @@ int main(int argc, char** argv) {
 	std::cout << "*(it4 - 3): " << *(it4 - 3) << std::endl;
 	std::cout << "it4 - it5: " << it4 - it5 << std::endl;
 
+	it1 = v1.begin();
+	it2 = v1.begin() + 3;
+
+	ft::vector<int>::const_iterator cit1 = it1;
+	ft::vector<int>::const_iterator cit2 = it2;
+
+	std::cout << "*cit1: " << *cit1 << std::endl;
+	std::cout << "*cit2: " << *cit2 << std::endl;
+
+	// nope!
+	//cit2 = 67;
+
+	// sure
+	*it1 = 55;
+
 	print_vector(v1, 1);
 	print_vector(v2, 2);
 
@@ -329,9 +300,17 @@ int main(int argc, char** argv) {
 	std::cout << std::boolalpha << (v1 >= v2) << std::endl;
 	std::cout << std::boolalpha << (v1 <= v2) << std::endl;
 
+	ft::swap(v1, v2);
+	v1.swap(v2);
+
+	print_vector(v1, 1);
+	print_vector(v2, 2);
+
 	/* map */
 
 	ft::map<std::string, int> m1;
+	std::cout << m1.empty() << std::endl;
+
 	m1["CPU"] = 10;
 	m1["GPU"] = 15;
 	m1["RAM"] = 20;
@@ -340,43 +319,42 @@ int main(int argc, char** argv) {
 
 	print_map(m1, "Initial map: ");
 
-	m1["CPU"] = 25;  // update an existing value
-	m1["SSD"] = 30;  // insert a new value
+	m1["CPU"] = 25;
+	m1["SSD"] = 30;
 	print_map(m1, "Updated map: ");
 
-	// using operator[] with non-existent key always performs an insert
 	std::cout << "m1[UPS] = " << m1["UPS"] << '\n';
 	print_map(m1, "Updated map: ");
-	
+
 	m1.erase("GPU");
 	print_map(m1, "After erase: ");
-	
+
 	std::cout << "m.size() = " << m1.size() << '\n';
-	
+
 	ft::map<std::string, int> m2 = m1;
 	print_map(m1, "Copy constructed map: ");
-		
+	
 	std::cout << std::boolalpha << "m1 and m2 are equivalent: " << (m1 == m2) << '\n';
 	m2["PSU"] = 34;
 	m2["Peripherals"] = 12;
 	print_map(m2, "Updated map: ");
 	std::cout << std::boolalpha << "m1 and m2 are equivalent: " << (m1 == m2) << '\n';
-		
+
 	m1.swap(m2);
 	print_map(m2, "Swapped map: ");
-	
+
 	ft::map<std::string, int>::key_compare key_comp_map = m1.key_comp();
 	ft::map<std::string, int>::value_compare val_comp_map = m1.value_comp();
-	
+
 	std::cout << std::boolalpha << "Python is lexicographically less than C: " << key_comp_map("Python", "C") << '\n';
 	std::cout << (std::string("Python") < std::string("C")) << '\n';
-	
+
 	ft::map<std::string, int>::value_type value1_map = ft::make_pair("C", 2);
 	ft::map<std::string, int>::value_type value2_map = ft::make_pair("C++", 7);
-	
+
 	std::cout << std::boolalpha << "C is lexicographically less than C++: " << val_comp_map(value1_map, value2_map) << '\n';
 	std::cout << (std::string("C") < std::string("C++")) << '\n';
-	
+
 	ft::map<std::string, int>::iterator it01 = m1.find("SSD");
 	(void)it01;
 	std::cout << "Key \"SSD\" is in the map: " << m1.count("SSD") << '\n';
@@ -387,8 +365,9 @@ int main(int argc, char** argv) {
 
 	/* set */
 
-	// Create a set of strings
 	ft::set<std::string> s1;
+	std::cout << s1.empty() << std::endl;
+
 	s1.insert("CPU");
 	s1.insert("GPU");
 	s1.insert("RAM");
@@ -397,8 +376,8 @@ int main(int argc, char** argv) {
 	
 	print_set(s1, "Initial set: ");
 	
-	s1.insert("CPU");  // update an existing value
-	s1.insert("SSD");  // insert a new value
+	s1.insert("CPU");
+	s1.insert("SSD");
 	print_set(s1, "Updated set: ");
 	
 	s1.erase("GPU");
@@ -439,8 +418,6 @@ int main(int argc, char** argv) {
 	
 	s1.clear();
 	std::cout << std::boolalpha << "Map is empty: " << s1.empty() << '\n';
-
-
 
 	return (0);
 }
