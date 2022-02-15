@@ -6,7 +6,7 @@
 /*   By: mbarut <mbarut@student.42wolfsburg.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/08 11:16:46 by mbarut            #+#    #+#             */
-/*   Updated: 2022/02/15 15:26:09 by mbarut           ###   ########.fr       */
+/*   Updated: 2022/02/15 16:37:31 by mbarut           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -446,9 +446,9 @@ namespace ft
 			}
 			sibling->__color = node->__parent->__color;
 			node->__parent->__color = _S_black;
-			niece->__color = _S_black ;
+			niece->__color = _S_black;
 			_IS_LEFT_CHILD ? _lrotate_node(node->__parent) : _rrotate_node(node->__parent) ;
-			node = _nil;
+			node = _root;
 		}
 
 		void		_delete_rebalance_branch(node_pointer node, node_pointer sibling)
@@ -502,6 +502,11 @@ namespace ft
 			if (node == _MAX_NODE)
 				node_type::_decrement(_MAX_NODE, _nil);
 			
+			node_pointer	tmp_max_node = _MAX_NODE;
+			node_pointer	tmp_min_node = _MIN_NODE;
+			_nil->__left = _nil;
+			_nil->__right = _nil;
+
 			node_pointer		node_child;
 			__RBT_Node_color	orig_color	= node->__color;
 			
@@ -540,6 +545,8 @@ namespace ft
 				_delete_rebalance(node_child);
 			}
 			_nil->__parent = _nil;
+			_MAX_NODE = tmp_max_node;
+			_MIN_NODE = tmp_min_node;
 
 			_destroy_node(node);
 			--_n;

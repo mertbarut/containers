@@ -6,7 +6,7 @@
 /*   By: mbarut <mbarut@student.42wolfsburg.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/23 14:44:38 by mbarut            #+#    #+#             */
-/*   Updated: 2022/02/15 14:30:35 by mbarut           ###   ########.fr       */
+/*   Updated: 2022/02/15 16:53:18 by mbarut           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -566,7 +566,7 @@ namespace ft
 	template <class T, class Allocator>
 	inline bool	operator== (const ft::vector<T, Allocator>& lhs, const ft::vector<T, Allocator>& rhs)
 	{
-		return lhs.size() != rhs.size() && ft::equal(lhs.begin(), lhs.end(), rhs.begin());
+		return lhs.size() == rhs.size() && ft::equal(lhs.begin(), lhs.end(), rhs.begin());
 	}
 
 	template <class T, class Allocator>
@@ -584,7 +584,7 @@ namespace ft
 	template <class T, class Allocator>
 	inline bool	operator > (const ft::vector<T, Allocator>& lhs, const ft::vector<T, Allocator>& rhs)
 	{
-		return lhs < rhs;
+		return rhs < lhs;
 	}
 
 	template <class T, class Allocator>
