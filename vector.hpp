@@ -6,7 +6,7 @@
 /*   By: mbarut <mbarut@student.42wolfsburg.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/23 14:44:38 by mbarut            #+#    #+#             */
-/*   Updated: 2022/02/15 16:53:18 by mbarut           ###   ########.fr       */
+/*   Updated: 2022/03/12 20:32:14 by mbarut           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ namespace ft
 		typedef _Allocator								allocator_type;
 		typedef typename _Allocator::size_type			size_type;
 		typedef typename _Allocator::pointer			pointer;
-		typedef ft::iterator<pointer, pointer>			iterator;
+		typedef ft::random_access_iterator<pointer, pointer>			iterator;
 
 		allocator_type									_allocator;
 		size_type										_capacity;
@@ -247,7 +247,7 @@ namespace ft
 		template <class Integer>
 		void		_M_range_insert(iterator pos, Integer n, Integer val, ft::true_type)
 		{
-			_vector_fill_insert(pos, static_cast<size_type>(n), val);
+			_M_fill_insert(pos, static_cast<size_type>(n), val);
 		}
 
 		template <class InputIterator>
@@ -260,8 +260,8 @@ namespace ft
 
 			for (size_type i = 0; i < tmp._size; i++)
 			{
-				_vector_check_range(i, "at: n");
-				pos = _vector_fill_insert(pos, 1, tmp._p(i));
+				_M_range_check(i, "at: n");
+				pos = _M_fill_insert(pos, 1, tmp._p[i]);
 				++pos;
 			}
 		}
@@ -333,7 +333,7 @@ namespace ft
 
 		allocator_type			get_allocator() const
 		{
-			return this->Allocator();
+			return allocator_type();
 		}
 
 		template <class InputIterator>
@@ -387,6 +387,16 @@ namespace ft
 		const_reference			back() const
 		{
 			return (this->_p[this->_size - 1]);
+		}
+
+		pointer					data()
+		{
+			return _p;
+		}
+
+		const_pointer			data() const
+		{
+			return _p;
 		}
 
 		iterator				begin()
@@ -481,7 +491,7 @@ namespace ft
 		template <class InputIterator>
 		void					insert(iterator position, InputIterator first, InputIterator last)
 		{
-			_M_range_insert(position, first, last, ft::is_integral<InputIterator>());
+			this->_M_range_insert(position, first, last, ft::is_integral<InputIterator>());
 		}
 
 		iterator				erase(iterator position)
@@ -600,7 +610,7 @@ namespace ft
 	}
 
 	template <class T, class Allocator>
-	void	swap(ft::vector<T, Allocator>& v1, ft::vector<T, Allocator>& v2)
+	inline void	swap(ft::vector<T, Allocator>& v1, ft::vector<T, Allocator>& v2)
 	{
 		v1.swap(v2);
 	}

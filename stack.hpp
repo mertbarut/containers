@@ -6,7 +6,7 @@
 /*   By: mbarut <mbarut@student.42wolfsburg.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/23 14:44:40 by mbarut            #+#    #+#             */
-/*   Updated: 2022/02/14 21:35:26 by mbarut           ###   ########.fr       */
+/*   Updated: 2022/03/12 23:32:48 by mbarut           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,9 +29,6 @@ namespace ft
 		typedef T											value_type;
 		typedef Container									container_type;
 		typedef size_t										size_type;
-
-	private:
-
 		typedef typename container_type::reference			reference;
 		typedef typename container_type::const_reference	const_reference;	
 
@@ -51,11 +48,17 @@ namespace ft
 			
 		}
 
+		stack(const stack& other): c(other.c)
+		{
+
+		}
+
 		container_type&	operator= (const container_type& rhs)
 		{
 			if (*this == rhs)
 				return *this;
-			this->_base = rhs._base;
+			this->c = rhs.c;
+			return *this;
 		}
 
 		void			push( const value_type& value )
@@ -105,11 +108,6 @@ namespace ft
 
 		friend bool operator>= (const stack<T, Container>& lhs, const stack<T, Container>& rhs)
 		{ return !(lhs < rhs); }
-
-		friend void	swap(stack<T, Container>& s1, stack<T, Container>& s2)
-		{
-			s1.swap(s2);
-		}
 
 	};
 

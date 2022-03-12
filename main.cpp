@@ -1,4 +1,7 @@
+#include <algorithm>
 #include <iostream>
+#include <ostream>
+#include <stdexcept>
 #include <string>
 #include <deque>
 
@@ -25,6 +28,7 @@ void	print_vector(ft::vector<T>& v, size_t id = 0, const std::string& delimiter 
 		std::cout << *it1 << delimiter;
 	std::cout << "]" << std::endl;
 }
+
 template<typename T, typename U>
 void	print_map(const ft::map<T, U>& m, std::string comment = "")
 {
@@ -33,6 +37,7 @@ void	print_map(const ft::map<T, U>& m, std::string comment = "")
 		std::cout << it->first << " = " << it->second << "; ";
 	std::cout << '\n';
 }
+
 template<typename T>
 void	print_stack(ft::stack<T> s, size_t id = 0, const std::string& delimiter = "\n")
 {
@@ -44,6 +49,7 @@ void	print_stack(ft::stack<T> s, size_t id = 0, const std::string& delimiter = "
 		s.pop();
 	}
 }
+
 template<typename T>
 void print_set(const ft::set<T>& s, std::string comment = "")
 {
@@ -200,6 +206,9 @@ int main(int argc, char** argv) {
 	v6.assign(v6_it1, v6_it2);
 	print_vector(v6, 6);
 
+	ft::vector<int>::allocator_type Allocator = v6.get_allocator();
+	ft::vector<int> v66(Allocator);
+
 	ft::vector<int>::iterator v6_it3 = v6.begin() + 3;
 	v6.erase(v6_it3);
 	print_vector(v6, 6);
@@ -208,6 +217,39 @@ int main(int argc, char** argv) {
 	ft::vector<int>::iterator v6_it5 = v6.begin() + 6;
 	v6.erase(v6_it4, v6_it5);
 	print_vector(v6, 6);
+
+	ft::vector<int> v7((size_t)10, (int)99);
+
+	v7.at(3) = 42;
+
+	try
+	{
+		v7.at(42) = 666;
+	} catch (std::out_of_range const& exc) {
+		std::cout << exc.what() << '\n';
+	}
+
+	v7[4] = 84;
+	v7[2] = 84;
+
+	print_vector(v7, 7);
+
+	ft::vector<int>::value_type* ptr = v7.data();
+	std::cout << "Same element: " << (*ptr == *v7.begin()) << std::endl;
+
+	ft::vector<int> v8 = v7;
+	print_vector(v8, 8);
+	v8.clear();
+	print_vector(v8, 8);
+
+	v8.insert(v8.begin(), 42);
+	v8.insert(v8.begin(), 41);
+	v8.insert(v8.begin(), 40);
+	v8.insert(v8.begin(), (size_t)5, 1);
+	v8.insert(v8.begin(), (size_t)5, 0);
+	v8.insert(v8.end(), v7.begin() + 2, v7.begin() + 4);
+
+	print_vector(v8, 8);
 
 	ft::vector<int>::iterator it1;
 	ft::vector<int>::iterator it2;
@@ -332,8 +374,8 @@ int main(int argc, char** argv) {
 	std::cout << "m.size() = " << m1.size() << '\n';
 
 	ft::map<std::string, int> m2 = m1;
-	print_map(m1, "Copy constructed map: ");
-	
+	print_map(m2, "Copy constructed map: ");
+
 	std::cout << std::boolalpha << "m1 and m2 are equivalent: " << (m1 == m2) << '\n';
 	m2["PSU"] = 34;
 	m2["Peripherals"] = 12;
@@ -342,6 +384,76 @@ int main(int argc, char** argv) {
 
 	m1.swap(m2);
 	print_map(m2, "Swapped map: ");
+
+	ft::map<std::string, int> m3(m1);
+	ft::map<std::string, int>::iterator mit01 = m3.begin();
+	ft::map<std::string, int>::iterator mit02 = m3.end();
+	mit02--;
+	ft::map<std::string, int>::reverse_iterator rmit01 = m3.rbegin();
+	ft::map<std::string, int>::reverse_iterator rmit02 = m3.rend();
+	rmit02++;
+	print_map(m3, "m3: ");
+
+	std::cout << "Begin --- Key: " << mit01->first << " | Value: " << mit01->second << std::endl;
+	std::cout << "End   --- Key: " << mit02->first << " | Value: " << mit02->second << std::endl;
+	std::cout << "Reverse Begin --- Key: " << rmit01->first << " | Value: " << rmit01->second << std::endl;
+	std::cout << "Reverse End   --- Key: " << rmit02->first << " | Value: " << rmit02->second << std::endl;
+
+	ft::map<std::string, int> m4(mit01, mit02);
+	print_map(m4, "m4: ");
+	std::cout << "m4 size = " << m4.size() << std::endl;
+	std::cout << "m4 size = " << m4.max_size() << std::endl;
+
+	ft::map<std::string, int>::allocator_type mapalloc = m4.get_allocator();
+
+	try
+	{
+		m4.at("LOL");
+	}
+	catch (std::out_of_range const& exc)
+	{
+		std::cout << "Exception caught: " << exc.what() << '\n';
+	}
+
+	std::cout << "SSD mapped value: " << m4.at("SSD") << std::endl;
+
+	ft::map<std::string, int> m5 = m4;
+
+	m2["Mousepad"] = 5;
+	m5.insert(m2.begin(), m2.end());
+	print_map(m2, "m2: ");
+	print_map(m5, "m5: ");
+
+	ft::map<std::string, int> m6 = m5;
+	m6.erase(m6.begin());
+	print_map(m6, "m6: ");
+
+	m6.erase(m6.begin(), m6.end());
+	print_map(m6, "m6: ");
+
+	m6.swap(m5);
+	print_map(m6, "m6: ");
+	swap(m5, m6);
+	print_map(m6, "m6: ");
+
+	std::cout << m5.count("RAM") << std::endl;
+	std::cout << m5.count("HDD") << std::endl;
+
+	std::cout << (*m5.find("RAM")).second << std::endl;
+	std::cout << (*m5.find("UPS")).second << std::endl;
+
+	ft::pair<ft::map<std::string, int>::iterator, ft::map<std::string, int>::iterator> range00 = m5.equal_range("PSU");
+	std::cout << range00.first->first << " = " << range00.first->second << std::endl;
+	std::cout << range00.second->first << " = " << range00.second->second << std::endl;
+	std::cout << (*m5.lower_bound("PSU")).first << " = " << (*m5.lower_bound("PSU")).second << std::endl;
+	std::cout << (*m5.upper_bound("PSU")).first << " = " << (*m5.upper_bound("PSU")).second << std::endl;
+
+	std::cout << std::boolalpha << (m3 == m5) << std::endl;
+	std::cout << std::boolalpha << (m3 != m5) << std::endl;
+	std::cout << std::boolalpha << (m3 <  m5) << std::endl;
+	std::cout << std::boolalpha << (m3 >  m5) << std::endl;
+	std::cout << std::boolalpha << (m3 >= m5) << std::endl;
+	std::cout << std::boolalpha << (m3 <= m5) << std::endl;
 
 	ft::map<std::string, int>::key_compare key_comp_map = m1.key_comp();
 	ft::map<std::string, int>::value_compare val_comp_map = m1.value_comp();
@@ -414,10 +526,104 @@ int main(int argc, char** argv) {
 	std::cout << "Key \"SSD\" is in the set: " << s1.count("SSD") << '\n';
 	std::cout << "Key \"Stereo\" is in the set: " << s1.count("Stereo") << '\n';
 	
-	//s1.print();
+	ft::set<std::string> s3(s1);
+	ft::set<std::string>::iterator sit01 = s3.begin();
+	ft::set<std::string>::iterator sit02 = s3.end();
+	sit02--;
+	ft::set<std::string>::reverse_iterator rsit01 = s3.rbegin();
+	ft::set<std::string>::reverse_iterator rsit02 = s3.rend();
+	rsit02++;
+	print_set(s3, "s3: ");
+
+	std::cout << "Begin --- Key: " << *sit01 << std::endl;
+	std::cout << "End   --- Key: " << *sit02 << std::endl;
+	std::cout << "Reverse Begin --- Key: " << *rsit01 << std::endl;
+	std::cout << "Reverse End   --- Key: " << *rsit02 << std::endl;
+
+	ft::set<std::string> s4(sit01, sit02);
+	print_set(s4, "s4: ");
+	std::cout << "s4 size = " << s4.size() << std::endl;
+	std::cout << "s4 size = " << s4.max_size() << std::endl;
+
+	ft::set<std::string>::allocator_type setalloc = s4.get_allocator();
+
+	ft::set<std::string> s5 = s4;
+
+	s5.insert(s2.begin(), s2.end());
+	print_set(s2, "s2: ");
+	print_set(s5, "s5: ");
+
+	ft::set<std::string> s6 = s5;
+	s6.erase(s6.begin());
+	print_set(s6, "m6: ");
+
+	s6.erase(s6.begin(), s6.end());
+	print_set(s6, "s6: ");
+
+	s6.swap(s5);
+	print_set(s6, "s6: ");
+	swap(s5, s6);
+	print_set(s6, "s6: ");
+
+	std::cout << s5.count("RAM") << std::endl;
+	std::cout << s5.count("HDD") << std::endl;
+
+	std::cout << (*s5.find("RAM")) << std::endl;
+	std::cout << (*s5.find("UPS")) << std::endl;
+
+	ft::pair<ft::set<std::string>::iterator, ft::set<std::string>::iterator> srange00 = s5.equal_range("PSU");
+	std::cout << *(srange00.first) << " = " << *(srange00.first) << std::endl;
+	std::cout << *(srange00.first) << " = " << *(srange00.second) << std::endl;
+	std::cout << (*m5.lower_bound("PSU")).first << " = " << (*m5.lower_bound("PSU")).second << std::endl;
+	std::cout << (*m5.upper_bound("PSU")).first << " = " << (*m5.upper_bound("PSU")).second << std::endl;
+
+	std::cout << std::boolalpha << (s3 == s5) << std::endl;
+	std::cout << std::boolalpha << (s3 != s5) << std::endl;
+	std::cout << std::boolalpha << (s3 <  s5) << std::endl;
+	std::cout << std::boolalpha << (s3 >  s5) << std::endl;
+	std::cout << std::boolalpha << (s3 >= s5) << std::endl;
+	std::cout << std::boolalpha << (s3 <= s5) << std::endl;
 	
 	s1.clear();
-	std::cout << std::boolalpha << "Map is empty: " << s1.empty() << '\n';
+	std::cout << std::boolalpha << "Set is empty: " << s1.empty() << '\n';
+
+	/* stack */
+
+	ft::stack<int> stack0;
+	stack0.push(1);
+	stack0.push(2);
+	stack0.push(3);
+	stack0.push(4);
+	print_stack(stack0, 0);
+
+	ft::stack<int> stack1 = stack0;
+	print_stack(stack1, 1);
+
+	ft::stack<int> stack2(stack1);
+	print_stack(stack2, 2);
+
+	stack1.pop();
+
+	stack2.pop();
+	stack2.pop();
+
+	std::cout << stack0.top() << std::endl;
+	std::cout << stack1.top() << std::endl;
+	std::cout << stack2.top() << std::endl;
+
+	stack2.pop();
+	stack2.pop();
+	std::cout << std::boolalpha << "Stack2 is empty: " << stack2.empty() << '\n';
+	std::cout << std::boolalpha << "Stack0 is empty: " << stack0.empty() << '\n';
+	std::cout << "Stack2 size: " << stack2.size() << '\n';
+	std::cout << "Stack0 size: " << stack0.size() << '\n';
+
+	std::cout << std::boolalpha << (stack0 == stack1) << std::endl;
+	std::cout << std::boolalpha << (stack0 != stack1) << std::endl;
+	std::cout << std::boolalpha << (stack0 <  stack1) << std::endl;
+	std::cout << std::boolalpha << (stack0 >  stack1) << std::endl;
+	std::cout << std::boolalpha << (stack0 >= stack1) << std::endl;
+	std::cout << std::boolalpha << (stack0 <= stack1) << std::endl;
 
 	return (0);
 }

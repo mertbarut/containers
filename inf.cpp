@@ -14,7 +14,7 @@ void bar()
 	foo<i - 1>();
 }
 
-template <>		// <- uncomment this template and run "make inf" to let chaos reign
+template <>		// <- comment this template out and run "make inf" to let chaos reign
 void foo<1>()
 {
 

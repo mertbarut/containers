@@ -6,7 +6,7 @@
 /*   By: mbarut <mbarut@student.42wolfsburg.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/14 13:37:10 by mbarut            #+#    #+#             */
-/*   Updated: 2022/02/14 21:07:44 by mbarut           ###   ########.fr       */
+/*   Updated: 2022/03/12 23:14:32 by mbarut           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -147,7 +147,7 @@ namespace ft
 
 		size_type					max_size() const
 		{
-			return _rbt.max_size();
+			return _rbt._nalloc.max_size();
 		}
 
 		ft::pair<iterator, bool>	insert(const value_type& __value)
@@ -160,14 +160,20 @@ namespace ft
 			ft::pair<iterator, bool> result = _rbt._insert(__value, i);
 		}
 
+		void						insert(iterator first, iterator last)
+		{
+			for (iterator it = first; it != last; it++)
+				_rbt._insert(*it);
+		}
+
 		iterator					begin() { return iterator(this->_rbt.FIRSTNODE, this->_NIL_NODE); }
 		const_iterator				begin() const { return const_iterator(this->_rbt.FIRSTNODE, this->_NIL_NODE); }
 		iterator					end() { return iterator(this->_NIL_NODE, this->_NIL_NODE); }
 		const_iterator				end() const { return const_iterator(this->_NIL_NODE, this->_NIL_NODE); }
-		iterator					rbegin() { return reverse_iterator(end()); }
-		const_iterator				rbegin() const { return const_reverse_iterator(end()); }
-		iterator					rend() { return reverse_iterator(begin()); }
-		const_iterator				rend() const { return const_reverse_iterator(begin()); }
+		reverse_iterator			rbegin() { return reverse_iterator(end()); }
+		const_reverse_iterator		rbegin() const { return const_reverse_iterator(end()); }
+		reverse_iterator			rend() { return reverse_iterator(begin()); }
+		const_reverse_iterator		rend() const { return const_reverse_iterator(begin()); }
 
 		void						clear()
 		{
@@ -188,9 +194,20 @@ namespace ft
 			 	return 0;
 		}
 
+		void						erase(iterator pos)
+		{
+			_rbt._delete(_rbt._search_for(extract_key(*pos)));
+		}
+
+		void						erase(iterator first, iterator last)
+		{
+			for (iterator it = first; it != last; it++)
+				erase(it);
+		}
+
 		allocator_type				get_allocator() const
 		{
-			return this->_allocator();
+			return this->_allocator;
 		}
 
 		void						swap(set& other)
@@ -219,7 +236,7 @@ namespace ft
 		{
 			iterator	i;
 			for (i = begin(); i != end(); ++i)
-				if (!(_compare.comp(i->first, key)))
+				if (!(_compare(*i, key)))
 					break ;
 			return i;
 		}
@@ -228,7 +245,7 @@ namespace ft
 		{
 			const_iterator	i;
 			for (i = begin(); i != end(); ++i)
-				if (!(_compare.comp(i->first, key)))
+				if (!(_compare(*i, key)))
 					break ;
 			return i;
 		}
@@ -237,7 +254,7 @@ namespace ft
 		{
 			iterator		i;
 			for (i = begin(); i != end(); ++i)
-				if (_compare.comp(key, i->first))
+				if (_compare(key, *i))
 					break ;
 			return i;
 		}
@@ -246,7 +263,7 @@ namespace ft
 		{
 			const_iterator	i;
 			for (i = begin(); i != end(); ++i)
-				if (_compare.comp(k, i->first))
+				if (_compare(k, *i))
 					break ;
 			return (i);
 		}
@@ -290,13 +307,13 @@ namespace ft
 		}
 
 		friend bool					operator> (const set& lhs, const set& rhs)
-		{ return rhs < lhs; }
+		{ return !(lhs < rhs) && !(rhs == lhs); }
 
 		friend bool					operator<=(const set& lhs, const set& rhs)
-		{ return !rhs < lhs; }
+		{ return !(lhs > rhs); }
 
 		friend bool					operator>=(const set& lhs, const set& rhs)
-		{ return !lhs < rhs; }
+		{ return !(lhs < rhs); }
 
 		#ifdef __DEBUG
 		

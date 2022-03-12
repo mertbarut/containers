@@ -6,7 +6,7 @@
 /*   By: mbarut <mbarut@student.42wolfsburg.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/26 14:09:36 by mbarut            #+#    #+#             */
-/*   Updated: 2022/02/15 15:36:48 by mbarut           ###   ########.fr       */
+/*   Updated: 2022/03/12 22:15:05 by mbarut           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -184,6 +184,12 @@ namespace ft
 
 	template <class first, class second>
 	first extract_key(ft::pair<first, second> pair) { return pair.first; }
+
+	template <class value>
+	value extract_value(value v) { return v; }
+
+	template <class first, class second>
+	second extract_value(ft::pair<first, second> pair) { return pair.second; }
 
 	template <typename>
 	struct is_pair : ft::false_type { };

@@ -6,7 +6,7 @@
 /*   By: mbarut <mbarut@student.42wolfsburg.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/08 11:16:46 by mbarut            #+#    #+#             */
-/*   Updated: 2022/02/15 16:37:31 by mbarut           ###   ########.fr       */
+/*   Updated: 2022/03/12 22:15:54 by mbarut           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -193,7 +193,7 @@ namespace ft
 		void			_destroy_node(node_pointer node)
 		{
 			#ifdef __DEBUG
-				std::cout << "[debug] Destroying a node with key, value pair: ( " << node->__value.first << ", " << node->__value.second << " )" << std::endl;
+				std::cout << "[debug] Destroying a node with key, value pair: ( " << extract_key(node->__value) << ", " << extract_value(node->__value) << " )" << std::endl;
 			#endif
 			_nalloc.destroy(node);
 			_nalloc.deallocate(node, 1);
@@ -374,7 +374,7 @@ namespace ft
 			if (extract_key(found->__value) == extract_key(__value))
 			{
 				#ifdef __DEBUG
-					std::cout << "[debug] inserted key \'" << found->__value.first << "\' already exists in the tree; changing its mapped value" << std::endl;
+					std::cout << "[debug] inserted key \'" << extract_key(found->__value) << "\' already exists in the tree; changing its mapped value" << std::endl;
 				#endif
 				result.first = iterator(found, _nil);
 				result.second = false;
@@ -383,7 +383,7 @@ namespace ft
 			{
 				node_pointer	newnode = _create_node(__value);
 				#ifdef __DEBUG
-					std::cout << "[debug] Creating a new node with key, value pair: ( " << newnode->__value.first << ", " << newnode->__value.second << " )" << std::endl;
+					std::cout << "[debug] Creating a new node with key, value pair: ( " << extract_key(newnode->__value) << ", " << extract_value(newnode->__value) << " )" << std::endl;
 				#endif
 				if (found == _nil)
 				{
@@ -391,7 +391,7 @@ namespace ft
 					_nil->__right = newnode;
 					_nil->__left = newnode;
 					#ifdef __DEBUG
-						std::cout << "[debug] RBT has the root node: ( " << newnode->__value.first << ", " << newnode->__value.second << " )" << std::endl;
+						std::cout << "[debug] RBT has the root node: ( " << extract_key(newnode->__value) << ", " << extract_value(newnode->__value) << " )" << std::endl;
 					#endif
 				}
 				else if (_compare(extract_key(__value), extract_key(found->__value)))
