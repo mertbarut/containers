@@ -5,7 +5,7 @@
 #include <string>
 #include <deque>
 
-#if 0 //CREATE A REAL STL EXAMPLE
+#if 1 //CREATE A REAL STL EXAMPLE
 	#include <map>
 	#include <stack>
 	#include <vector>
@@ -435,8 +435,9 @@ int main(int argc, char** argv) {
 	ft::map<std::string, int> m6 = m5;
 	m6.erase(m6.begin());
 	print_map(m6, "m6: ");
+	print_map(m2, "m2: ");
 
-	m6.erase(m2.begin(), m2.end());
+	m6.erase(m6.begin(), m6.end());
 	print_map(m6, "m6: ");
 
 	m6.swap(m5);
@@ -563,9 +564,9 @@ int main(int argc, char** argv) {
 
 	ft::set<std::string> s6 = s5;
 	s6.erase(s6.begin());
-	print_set(s6, "m6: ");
+	print_set(s6, "s6: ");
 
-	s6.erase(s2.begin(), s2.end());
+	s6.erase(s6.begin(), s6.end());
 	print_set(s6, "s6: ");
 
 	s6.swap(s5);
