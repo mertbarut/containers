@@ -6,7 +6,7 @@
 /*   By: mbarut <mbarut@student.42wolfsburg.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/02/08 11:16:46 by mbarut            #+#    #+#             */
-/*   Updated: 2022/03/12 22:15:54 by mbarut           ###   ########.fr       */
+/*   Updated: 2022/03/13 11:29:41 by mbarut           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,8 +40,10 @@ namespace ft
 		__RBT_Node*						__right;
 		__RBT_Node_color				__color;
 
+	private:
 		__RBT_Node () : __value(), __parent(u_nullptr), __left(u_nullptr), __right(u_nullptr), __color(_S_red) {}
 
+	public:
 		__RBT_Node(node_type* nil, const value_type& __value)
 		: __value(__value), __parent(nil), __left(nil), __right(nil), __color(_S_red) {}
 

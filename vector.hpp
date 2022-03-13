@@ -6,7 +6,7 @@
 /*   By: mbarut <mbarut@student.42wolfsburg.de>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/23 14:44:38 by mbarut            #+#    #+#             */
-/*   Updated: 2022/03/12 20:32:14 by mbarut           ###   ########.fr       */
+/*   Updated: 2022/03/13 02:06:32 by mbarut           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -264,6 +264,7 @@ namespace ft
 				pos = _M_fill_insert(pos, 1, tmp._p[i]);
 				++pos;
 			}
+			tmp._M_deallocate();
 		}
 	};
 

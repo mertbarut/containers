@@ -222,20 +222,28 @@ int main(int argc, char** argv) {
 
 	v7.at(3) = 42;
 
-	try
-	{
-		v7.at(42) = 666;
-	} catch (std::out_of_range const& exc) {
-		std::cout << exc.what() << '\n';
-	}
+	//try
+	//{
+	//	v7.at(42) = 666;
+	//} catch (std::out_of_range const& exc) {
+	//	std::cout << exc.what() << '\n';
+	//}
 
 	v7[4] = 84;
 	v7[2] = 84;
 
 	print_vector(v7, 7);
 
-	ft::vector<int>::value_type* ptr = v7.data();
-	std::cout << "Same element: " << (*ptr == *v7.begin()) << std::endl;
+	//ft::vector<int>::value_type* ptr = v7.data();
+	//std::cout << "Same element: " << (*ptr == *v7.begin()) << std::endl;
+
+	v7.push_back(66);
+	v7.push_back(97);
+	v7.push_back(62);
+	v7.push_back(28);
+	v7.push_back(66);
+	v7.push_back(57);
+	v7.push_back(12);
 
 	ft::vector<int> v8 = v7;
 	print_vector(v8, 8);
@@ -428,7 +436,7 @@ int main(int argc, char** argv) {
 	m6.erase(m6.begin());
 	print_map(m6, "m6: ");
 
-	m6.erase(m6.begin(), m6.end());
+	m6.erase(m2.begin(), m2.end());
 	print_map(m6, "m6: ");
 
 	m6.swap(m5);
@@ -557,7 +565,7 @@ int main(int argc, char** argv) {
 	s6.erase(s6.begin());
 	print_set(s6, "m6: ");
 
-	s6.erase(s6.begin(), s6.end());
+	s6.erase(s2.begin(), s2.end());
 	print_set(s6, "s6: ");
 
 	s6.swap(s5);
